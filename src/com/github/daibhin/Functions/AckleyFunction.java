@@ -1,6 +1,8 @@
-package com.github.daibhin;
+package com.github.daibhin.Functions;
 
-public class AckleyFunction extends Function {
+import com.github.daibhin.Position;
+
+public class AckleyFunction implements Function {
 	
 	private static double A = 2.0;
 	private static double B = 0.2;
@@ -33,6 +35,16 @@ public class AckleyFunction extends Function {
 			sum += Math.pow(values[i], 2);
 		}
 		return sum;
+	}
+
+	@Override
+	public double getLowerBound() {
+		return -32;
+	}
+
+	@Override
+	public double getUpperBound() {
+		return 32;
 	}
 
 }

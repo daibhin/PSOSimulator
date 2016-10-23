@@ -1,11 +1,13 @@
 package com.github.daibhin;
 
+import com.github.daibhin.Functions.Function;
+
 import java.util.Random;
 
 public class GlobalPSO extends PSO {
 	
 	private int PARTICLE_COUNT = 50;
-	private int DIMENSIONS = 10;
+	private int DIMENSIONS = 30;
 	private int MAX_ITERATIONS = 10000;
 	private double CONSTRICTION_FACTOR = 0.72984;
 	private double C_1 = 2.05;
@@ -25,107 +27,94 @@ public class GlobalPSO extends PSO {
 
 		for(int i=0; i < PARTICLE_COUNT; i++) {
 			Particle particle = particles[i];
-			double fitness = function.evaluate(particle.getPosition());
-			particle.setBestPersonalFitness(fitness);
-			particle.setPersonalBest(particle.getPosition());
+			particle.updateCurrentFitness(function);
+			particle.setBestFitnessToCurrent();
+			particle.setPersonalBestPosition(particle.getLocation());
+			
+			if(i == 0 || particle.bestBetterThan(this.globalFitness)) {
+				this.globalFitness = particle.getCurrentFitness();
+				this.globalBest = particle.getLocation();
+			}
 		}
 
 		int iteration = 0;
 		while (iteration < MAX_ITERATIONS) {
-			
-			// update global best
-			Particle currentBestParticle = getMinimumFitnessParticle();
-			double fitness = function.evaluate(currentBestParticle.getPosition());
-			if(iteration == 0 || fitness < this.globalFitness) {
-				this.globalFitness = fitness;
-				this.globalBest = currentBestParticle.getPosition();
-			}
-			
+
 			for (int i=0; i < PARTICLE_COUNT; i++) {
 				Particle particle = particles[i];
 				
-				
-				// update personal best
-				double personalFitness = function.evaluate(particle.getPosition());
-				
-				if(personalFitness < particle.getBestPersonalFitness()) {
-					particle.setBestPersonalFitness(personalFitness);
-					particle.setPersonalBest(particle.getPosition());
+				// algorithm has converged
+				if (particle.getCurrentFitness() == function.getOptimum()) {
+					System.out.println("Solution found at iteration " + (iteration));
+					System.out.println("Position: " + this.globalBest);
+					return particle.getLocation();
 				}
 
-				if (function.evaluate(particle.getPosition()) == 0.0) {
-					System.out.println("\nSolution found at iteration " + (iteration));
-					System.out.println(function.evaluate(this.globalBest));
-					return particle.getPosition();
+				if (particle.withinBounds(function)) {
+					// update global best
+					if(iteration == 0 || particle.currentlyBetterThan(this.globalFitness)) {
+						this.globalFitness = particle.getCurrentFitness();
+						this.globalBest = particle.getLocation();
+					}
+	
+					// update personal best
+					if(particle.currentlyBetterThanPersonalBest()) {
+						particle.setBestFitnessToCurrent();
+						particle.setPersonalBestPosition(particle.getLocation());
+					}
 				}
 				
-				// update particle velocity
+				// generate & update particle velocity
 				Random generator = new Random();
 				double r1 = generator.nextDouble();
 				double r2 = generator.nextDouble();
 
 				double[] updatedVelocity = new double[DIMENSIONS];
 				for(int vel=0; vel < DIMENSIONS; vel++) {
-					double personalContribution = (C_1 * r1) * (particle.getBestPersonalPosition().getValues()[vel] - particle.getPosition().getValues()[vel]);
-					double globalContribution = (C_2 * r2) * (this.globalBest.getValues()[vel] - particle.getPosition().getValues()[vel]);
+					double personalContribution = (C_1 * r1) * (particle.getBestPersonalPosition().getValues()[vel] - particle.getLocation().getValues()[vel]);
+					double globalContribution = (C_2 * r2) * (this.globalBest.getValues()[vel] - particle.getLocation().getValues()[vel]);
 					double newVel = CONSTRICTION_FACTOR*(particle.getVelocity()[vel] + personalContribution + globalContribution);
 					updatedVelocity[vel] = newVel;
 				}
 				particle.setVelocity(updatedVelocity);
 				
-				// update particle position
+				// update particle position & fitness
 				double[] newLocation = new double[DIMENSIONS];
 				for(int dim=0; dim < DIMENSIONS; dim++) {
-					newLocation[dim] = particle.getPosition().getValues()[dim] + updatedVelocity[dim];
+					newLocation[dim] = particle.getLocation().getValues()[dim] + updatedVelocity[dim];
 				}
 				Position updatedPosition = new Position(newLocation);
-				particle.setPosition(updatedPosition);				
+				particle.setLocation(updatedPosition);	
+				particle.updateCurrentFitness(function);
 			}
+
 			iteration++;
+			System.out.println("Iteration: " + iteration + " / Fitness: " + function.evaluate(this.globalBest));
 		}
 		
-		System.out.println("\nSolution found at iteration " + (iteration));
-		System.out.println(function.evaluate(this.globalBest));
+		System.out.println("Solution found at iteration: " + iteration + " / Final fitness: " + function.evaluate(this.globalBest));
+//		System.out.println("Position: " + this.globalBest);
 		return this.globalBest;
-	}
-	
-	private Particle getMinimumFitnessParticle() {
-		Particle fittestParticle = null;
-		for (int i=0; i < PARTICLE_COUNT; i++) {
-			Particle particle = particles[i];
-			double fitness = function.evaluate(particle.getPosition());
-			
-			if(i == 0 || fitness < function.evaluate(fittestParticle.getPosition())) {
-				fittestParticle = particle;
-			}
-		}
-		return fittestParticle;
 	}
 
 	private void initializeSwarm() {
-		Random generator = new Random();
 		this.particles = new Particle[PARTICLE_COUNT];
+		Particle particle;
 		for (int i=0; i < PARTICLE_COUNT; i++) {
-			Particle particle = new Particle();
-			
-			double[] velocity = new double[DIMENSIONS];
-			for(int j=0; j < DIMENSIONS; j++) {
-				velocity[j] = generator.nextDouble();
-			}
-			
-			particle.setVelocity(velocity);
-			particle.setPosition(generatePosition());
-			
+			particle = new Particle();
+			particle.setVelocity(generateRandomlyInitialisedArray(DIMENSIONS));
+			Position position = new Position(generateRandomlyInitialisedArray(DIMENSIONS));
+			particle.setLocation(position);
 			particles[i] = particle;
 		}
 	}
 	
-	private Position generatePosition() {
+	private double[] generateRandomlyInitialisedArray(int dimensions) {
 		Random generator = new Random();
-		double[] values = new double[DIMENSIONS];
-		for(int i=0; i < DIMENSIONS; i++) {
+		double[] values = new double[dimensions];
+		for(int i=0; i < dimensions; i++) {
 			values[i] = generator.nextDouble();
 		}
-		return new Position(values);
+		return values;
 	}
 }

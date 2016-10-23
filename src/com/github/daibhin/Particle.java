@@ -1,31 +1,20 @@
 package com.github.daibhin;
 
-import java.util.Random;
+import com.github.daibhin.Functions.Function;
 
 public class Particle {
 	
-	private double CONSTRICTION_FACTOR = 0.72984;
-	private double C_1 = 2.05;
-	private double C_2 = 2.05;
-	
 	private Position location;
 	private double[] velocity;
+	private double currentFitness;
 	private double bestPersonalFitness;
 	private Position personalBest;
 	
-//	public void updatePosition() {
-//		double[] values = new double[location.getValues().length];
-//		for(int i=0; i < velocity.length; i++) {
-//			values[i] = this.location.getValues()[i] + velocity[i];
-//		}
-//		this.location = new Position(values);
-//	}
-	
-	public Position getPosition() {
+	public Position getLocation() {
 		return this.location;
 	}
 	
-	public void setPosition(Position position) {
+	public void setLocation(Position position) {
 		this.location = position;
 	}
 	
@@ -37,20 +26,45 @@ public class Particle {
 		this.velocity = velocity;
 	}
 
-	public void setBestPersonalFitness(double fitness) {
-		this.bestPersonalFitness = fitness;
+	public void setBestFitnessToCurrent() {
+		this.bestPersonalFitness = this.currentFitness;
 	}
 	
-	public void setPersonalBest(Position position) {
+	public void setPersonalBestPosition(Position position) {
 		this.personalBest = position;
-	}
-	
-	public double getBestPersonalFitness() {
-		return this.bestPersonalFitness;
 	}
 	
 	public Position getBestPersonalPosition() {
 		return this.personalBest;
 	}
+	
+	public boolean currentlyBetterThanPersonalBest() {
+		return this.currentlyBetterThan(this.bestPersonalFitness);
+	}
+	
+	public boolean currentlyBetterThan(double fitness) {
+		return this.currentFitness < fitness;
+	}
 
+	public void updateCurrentFitness(Function function) {
+		this.currentFitness = function.evaluate(this.location);
+	}
+	
+	public double getCurrentFitness() {
+		return this.currentFitness;
+	}
+	
+	public boolean bestBetterThan(double fitness) {
+		return this.bestPersonalFitness < fitness;
+	}
+	
+	public boolean withinBounds(Function function) {
+		double[] locationValues = this.location.getValues();
+		for (int i=0; i < locationValues.length; i++) {
+			if (locationValues[i] < function.getLowerBound() || locationValues[i] > function.getUpperBound()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

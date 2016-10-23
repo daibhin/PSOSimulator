@@ -1,6 +1,9 @@
-package com.github.daibhin;
+package com.github.daibhin.Functions;
 
-public class RosenbrockFunction extends Function {
+import com.github.daibhin.Functions.Function;
+import com.github.daibhin.Position;
+
+public class RosenbrockFunction implements Function {
 
 	@Override
 	public double evaluate(Position position) {
@@ -15,6 +18,16 @@ public class RosenbrockFunction extends Function {
 			sum += (100*x) + y;
 		}
 		return sum;
+	}
+
+	@Override
+	public double getLowerBound() {
+		return -2.048;
+	}
+
+	@Override
+	public double getUpperBound() {
+		return 2.048;
 	}
 
 }

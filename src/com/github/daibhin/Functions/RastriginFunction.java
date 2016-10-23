@@ -1,6 +1,9 @@
-package com.github.daibhin;
+package com.github.daibhin.Functions;
 
-public class RastriginFunction extends Function {
+import com.github.daibhin.Functions.Function;
+import com.github.daibhin.Position;
+
+public class RastriginFunction implements Function {
 
 	@Override
 	public double evaluate(Position position) {
@@ -12,6 +15,16 @@ public class RastriginFunction extends Function {
 			sum += Math.pow(xi, 2) - 10*Math.cos(2*Math.PI*xi);
 		}
 		return 10*dimensions + sum;
+	}
+
+	@Override
+	public double getLowerBound() {
+		return -5.12;
+	}
+
+	@Override
+	public double getUpperBound() {
+		return 5.12;
 	}
 
 }

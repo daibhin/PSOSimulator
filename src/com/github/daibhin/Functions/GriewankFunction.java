@@ -1,6 +1,9 @@
-package com.github.daibhin;
+package com.github.daibhin.Functions;
 
-public class GriewankFunction extends Function {
+import com.github.daibhin.Functions.Function;
+import com.github.daibhin.Position;
+
+public class GriewankFunction implements Function {
 
 	@Override
 	public double evaluate(Position position) {
@@ -14,6 +17,16 @@ public class GriewankFunction extends Function {
 			product *= Math.cos(xi/Math.sqrt(xi));
 		}
 		return sum - product + 1;
+	}
+
+	@Override
+	public double getLowerBound() {
+		return -600;
+	}
+
+	@Override
+	public double getUpperBound() {
+		return 600;
 	}
 
 }
