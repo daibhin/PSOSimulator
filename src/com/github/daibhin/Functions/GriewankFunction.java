@@ -29,4 +29,10 @@ public class GriewankFunction implements Function {
 		return 600;
 	}
 
+	@Override
+	public boolean isFitter(Position position, Position other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

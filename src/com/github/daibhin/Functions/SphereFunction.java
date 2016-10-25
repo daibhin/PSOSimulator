@@ -13,7 +13,8 @@ public class SphereFunction implements Function {
 		double[] values = position.getValues();
 		
 		for (int i=0; i < values.length; i++) {
-			sum += Math.pow(values[i], 2);
+			double xSquared = Math.pow(values[i], 2);
+			sum += xSquared;
 		}
 		return sum;
 	}
@@ -24,5 +25,9 @@ public class SphereFunction implements Function {
 	
 	public double getLowerBound() {
 		return -5.12;
+	}
+	
+	public boolean isFitter(Position position, Position other) {
+		return this.evaluate(position) < this.evaluate(other);
 	}
 }

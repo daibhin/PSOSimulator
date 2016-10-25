@@ -1,35 +1,45 @@
 package com.github.daibhin;
 
+import org.jfree.chart.plot.XYPlot;
 import com.github.daibhin.Functions.*;
 
 public class Simulator {
 	
 	public static void main(String[] args) {
-		Function sphere = new SphereFunction();
-		PSO algorithm = new GlobalPSO(sphere);
-		System.out.println(sphere.evaluate(algorithm.run()));
+		BoundaryCondition boundary = new InvisibleBoundary();
 		
+		Function sphere = new SphereFunction();
+//		PSO algorithm = new SPSO(sphere);
+		PSO algorithm = new GlobalPSO(sphere, boundary);
+		System.out.println(sphere.evaluate(algorithm.run()));
+
+
 //		Function shiftedSphere = new ShiftedSphereFunction();
-//		PSO algorithm = new GlobalPSO(shiftedSphere);
+//		PSO algorithm = new GlobalPSO(shiftedSphere, sphere, boundary);
 		
 //		Function rosenbrock = new RosenbrockFunction();
-//		PSO algorithm = new GlobalPSO(rosenbrock);
+//		PSO algorithm = new GlobalPSO(rosenbrock, boundary);
+//        System.out.println(rosenbrock.evaluate(algorithm.run()));
 		
 //		Function ackley = new AckleyFunction();
-//		PSO algorithm = new GlobalPSO(ackley);
+//		PSO algorithm = new GlobalPSO(ackley, boundary);
+//        System.out.println(ackley.evaluate(algorithm.run()));
 		
 //		Function schaffer2D = new Schaffer2DFunction();
-//		PSO algorithm = new GlobalPSO(schaffer2D);
+//		PSO algorithm = new GlobalPSO(schaffer2D, boundary);
+//        System.out.println(schaffer2D.evaluate(algorithm.run()));
 
 //		Function shiftedSchwefel = new ShiftedSchwefelFunction();
-//		PSO algorithm = new GlobalPSO(shiftedSchwefel);
+//		PSO algorithm = new GlobalPSO(shiftedSchwefel, boundary);
 		
 //		double sum = 0;
-//		for(int i=0; i < 25; i++) {
-//			PSO algorithm = new GlobalPSO(sphere);
+//		int loopCount = 1;
+//		for(int i=0; i < loopCount; i++) {
+//			PSO algorithm = new GlobalPSO(sphere, boundary);
 //			sum += sphere.evaluate(algorithm.run());
+//			System.out.println("Loop:" + i + " / Average: " + (sum/(i+1)));
 //		}
-//		System.out.println(sum/25);
+//		System.out.println(sum/loopCount);
 	}
 
 }

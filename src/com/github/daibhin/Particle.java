@@ -6,9 +6,8 @@ public class Particle {
 	
 	private Position location;
 	private double[] velocity;
-	private double currentFitness;
-	private double bestPersonalFitness;
 	private Position personalBest;
+	private Neighbourhood neighbourhood;
 	
 	public Position getLocation() {
 		return this.location;
@@ -25,39 +24,23 @@ public class Particle {
 	public void setVelocity(double[] velocity) {
 		this.velocity = velocity;
 	}
-
-	public void setBestFitnessToCurrent() {
-		this.bestPersonalFitness = this.currentFitness;
-	}
 	
-	public void setPersonalBestPosition(Position position) {
+	public void setPersonalBest(Position position) {
 		this.personalBest = position;
 	}
 	
-	public Position getBestPersonalPosition() {
+	public Position getPersonalBest() {
 		return this.personalBest;
 	}
 	
-	public boolean currentlyBetterThanPersonalBest() {
-		return this.currentlyBetterThan(this.bestPersonalFitness);
+	public Neighbourhood getNeighbourhood() {
+		return this.neighbourhood;
 	}
 	
-	public boolean currentlyBetterThan(double fitness) {
-		return this.currentFitness < fitness;
+	public void setNeighbourhood(Particle[] particles) {
+		this.neighbourhood = new Neighbourhood(particles);
 	}
 
-	public void updateCurrentFitness(Function function) {
-		this.currentFitness = function.evaluate(this.location);
-	}
-	
-	public double getCurrentFitness() {
-		return this.currentFitness;
-	}
-	
-	public boolean bestBetterThan(double fitness) {
-		return this.bestPersonalFitness < fitness;
-	}
-	
 	public boolean withinBounds(Function function) {
 		double[] locationValues = this.location.getValues();
 		for (int i=0; i < locationValues.length; i++) {

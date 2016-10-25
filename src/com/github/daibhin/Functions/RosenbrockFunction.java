@@ -17,17 +17,27 @@ public class RosenbrockFunction implements Function {
 			
 			sum += (100*x) + y;
 		}
+		if (sum < 35) {
+			String me = "hel";
+			String you = me;
+		}
 		return sum;
 	}
 
 	@Override
 	public double getLowerBound() {
-		return -2.048;
+		return -30;
 	}
 
 	@Override
 	public double getUpperBound() {
-		return 2.048;
+		return 30;
+	}
+
+	@Override
+	public boolean isFitter(Position position, Position other) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

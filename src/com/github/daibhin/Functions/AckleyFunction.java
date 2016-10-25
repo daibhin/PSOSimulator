@@ -47,4 +47,10 @@ public class AckleyFunction implements Function {
 		return 32;
 	}
 
+	@Override
+	public boolean isFitter(Position position, Position other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

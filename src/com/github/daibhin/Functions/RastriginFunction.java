@@ -27,4 +27,10 @@ public class RastriginFunction implements Function {
 		return 5.12;
 	}
 
+	@Override
+	public boolean isFitter(Position position, Position other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

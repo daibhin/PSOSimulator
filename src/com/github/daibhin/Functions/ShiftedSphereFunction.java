@@ -32,4 +32,10 @@ public class ShiftedSphereFunction implements Function {
 	public double getUpperBound() {
 		return 100;
 	}
+
+	@Override
+	public boolean isFitter(Position position, Position other) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

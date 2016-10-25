@@ -1,9 +1,19 @@
 package com.github.daibhin;
 
-import com.github.daibhin.Functions.Function;
+import java.awt.BorderLayout;
 import java.util.Random;
 
-public class GlobalPSO extends PSO {
+import javax.swing.JFrame;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import com.github.daibhin.Functions.Function;
+
+public class GlobalPSOwithConvergenceGraph {
 	
 	private int PARTICLE_COUNT = 50;
 	private int DIMENSIONS = 30;
@@ -12,21 +22,22 @@ public class GlobalPSO extends PSO {
 	private double C_1 = 2.05;
 	private double C_2 = 2.05;
 	private Random generator;
-	private BoundaryCondition boundary;
 	
 	private Position globalBest;
 	private Function function;
 	private Particle[] particles;
+	
+	private XYSeries series;
 
-	public GlobalPSO(Function function, BoundaryCondition boundary) {
+	public GlobalPSOwithConvergenceGraph(Function function) {
 		this.function = function;
-		this.boundary = boundary;
 		this.generator = new Random();
+		this.series = new XYSeries("Convergence");
 		initializeSwarm();
 	}
 
 	public Position run() {
-		int boundaryExits = 0;
+		
 		int iteration = 0;
 		while (iteration < MAX_ITERATIONS) {
 
@@ -45,10 +56,12 @@ public class GlobalPSO extends PSO {
 				for(int vel=0; vel < DIMENSIONS; vel++) {
 					double r1 = this.generator.nextDouble();
 					double r2 = this.generator.nextDouble();
-					double personalContribution = (C_1 * r1) * (particle.getPersonalBest().getValues()[vel] - particle.getLocation().getValues()[vel]);
-					double socialContribution = (C_2 * r2) * (this.globalBest.getValues()[vel] - particle.getLocation().getValues()[vel]);
+					double personalDifference = particle.getPersonalBest().getValues()[vel] - particle.getLocation().getValues()[vel];
+					double personalContribution = (C_1 * r1) * personalDifference;
+					double globalDifference = this.globalBest.getValues()[vel] - particle.getLocation().getValues()[vel];
+					double globalContribution = (C_2 * r2) * globalDifference;
 					double currentVelocity = particle.getVelocity()[vel];
-					double updatedVel = CONSTRICTION_FACTOR*(currentVelocity + personalContribution + socialContribution);
+					double updatedVel = CONSTRICTION_FACTOR*(currentVelocity + personalContribution + globalContribution);
 					newVelocity[vel] = updatedVel;
 				}
 				particle.setVelocity(newVelocity);
@@ -61,29 +74,32 @@ public class GlobalPSO extends PSO {
 				Position newPosition = new Position(newLocation);
 				particle.setLocation(newPosition);
 
-				// BOUNDARY CHECK
+				//invisible boundary
 				if (particle.withinBounds(function)) {
 					// UPDATE GLOBAL BEST
 					if(iteration == 0 || function.isFitter(particle.getLocation(), this.globalBest)) {
 						this.globalBest = particle.getLocation();
 					}
-					
+	
 					// UPDATE PERSONAL BEST
 					if(function.isFitter(particle.getLocation(), particle.getPersonalBest())) {
 						particle.setPersonalBest(particle.getLocation());
 					}
-					
-				} else {
-					boundary.handleParticle(particle, function);
-					boundaryExits++;
 				}
 			}
 
 			iteration++;
-			System.out.println("Iteration: " + iteration + " / Fitness: " + function.evaluate(this.globalBest));
-		}		
-		System.out.println("Particles exited the boundary: " + boundaryExits);
-		System.out.println("Solution found after max iterations of " + iteration + " / Final fitness: " + function.evaluate(this.globalBest));
+			this.series.add(iteration, function.evaluate(this.globalBest));
+			if (iteration % 10 == 0) {
+				System.out.println("Iteration: " + iteration + " / Fitness: " + function.evaluate(this.globalBest));
+			}
+		}
+		
+		System.out.println("Solution found at iteration: " + iteration + " / Final fitness: " + function.evaluate(this.globalBest));
+//		System.out.println("Position: " + this.globalBest);
+		
+//		plotConvergence(this.series);
+		
 		return this.globalBest;
 	}
 
@@ -92,45 +108,37 @@ public class GlobalPSO extends PSO {
 		Particle particle;
 		for (int i=0; i < PARTICLE_COUNT; i++) {
 			particle = new Particle();
-			
-			// SET INITIAL POSITION
-			Position position = new Position(randomProblemSpacePosition(DIMENSIONS));
+			particle.setVelocity(generateRandomlyInitialisedArray(DIMENSIONS, 1));
+			Position position = new Position(generateRandomlyInitialisedArray(DIMENSIONS, 5));
 			particle.setLocation(position);
-			
-			// SET INITIAL VELOCITY
-			double[] initialVelocity = halfDiffVelocityArray(DIMENSIONS, particle);
-			particle.setVelocity(initialVelocity);
-			
 			particles[i] = particle;
 			
-			// SET PERSONAL & GLOBAL BESTS
 			particle.setPersonalBest(particle.getLocation());
+			
 			if(i == 0 || function.isFitter(particle.getLocation(), this.globalBest)) {
 				this.globalBest = particle.getLocation();
 			}
 		}
 	}
 	
-	private double[] randomProblemSpacePosition(int dimensions) {
+	private double[] generateRandomlyInitialisedArray(int dimensions, double amount) {
 		double[] values = new double[dimensions];
 		for(int i=0; i < dimensions; i++) {
-			double max = function.getUpperBound();
-			double min = function.getLowerBound();
-			double rangeRandom = min + (max - min) * this.generator.nextDouble();
-			values[i] = rangeRandom;
+			values[i] = this.generator.nextDouble()*amount;
 		}
 		return values;
 	}
 	
-	private double[] halfDiffVelocityArray(int dimensions, Particle particle) {
-		double[] values = new double[dimensions];
-		for(int i=0; i < dimensions; i++) {
-			double max = function.getUpperBound();
-			double min = function.getLowerBound();
-			double rangeRandom = min + (max - min) * this.generator.nextDouble();
-			double ans = (rangeRandom - particle.getLocation().getValues()[i]) / 2;
-			values[i] = ans;
-		}
-		return values;
+	private void plotConvergence(XYSeries series) {
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		dataset.addSeries(series);
+		JFreeChart chart = ChartFactory.createXYLineChart("Convergence", "Iteration", "Fitness", dataset);
+		ChartPanel chartPanel = new ChartPanel(chart);
+		
+		JFrame frame = new JFrame("Convergence Chart");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().add(chartPanel, BorderLayout.CENTER);
+		frame.pack();
+		frame.setVisible(true);
 	}
 }
