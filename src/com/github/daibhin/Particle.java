@@ -1,5 +1,7 @@
 package com.github.daibhin;
 
+import java.util.Arrays;
+
 import com.github.daibhin.Functions.Function;
 
 public class Particle {
@@ -37,8 +39,8 @@ public class Particle {
 		return this.neighbourhood;
 	}
 	
-	public void setNeighbourhood(Particle[] particles) {
-		this.neighbourhood = new Neighbourhood(particles);
+	public void setNeighbourhood(Particle[] particles, Function function, Particle[] allParticles) {
+		this.neighbourhood = new Neighbourhood(particles, function, allParticles);
 	}
 
 	public boolean withinBounds(Function function) {
@@ -49,5 +51,9 @@ public class Particle {
 			}
 		}
 		return true;
+	}
+	
+	public String toString() {
+		return Arrays.toString(this.velocity);
 	}
 }

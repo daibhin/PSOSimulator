@@ -4,8 +4,8 @@ import com.github.daibhin.Functions.Function;
 import java.util.Random;
 
 public class GlobalPSO extends PSO {
-	
-	private int PARTICLE_COUNT = 50;
+
+	private int SWARM_SIZE = 50;
 	private int DIMENSIONS = 30;
 	private int MAX_ITERATIONS = 10000;
 	private double CONSTRICTION_FACTOR = 0.72984;
@@ -13,7 +13,7 @@ public class GlobalPSO extends PSO {
 	private double C_2 = 2.05;
 	private Random generator;
 	private BoundaryCondition boundary;
-	
+
 	private Position globalBest;
 	private Function function;
 	private Particle[] particles;
@@ -30,49 +30,52 @@ public class GlobalPSO extends PSO {
 		int iteration = 0;
 		while (iteration < MAX_ITERATIONS) {
 
-			for (int index=0; index < PARTICLE_COUNT; index++) {
+			for (int index = 0; index < SWARM_SIZE; index++) {
 				Particle particle = particles[index];
-				
-				// EVALUATE CONVERGENCE //
-				if (function.evaluate(particle.getLocation()) == function.getOptimum()) {
-					System.out.println("Solution found at iteration " + (iteration));
-					System.out.println("Position: " + this.globalBest);
-					return particle.getLocation();
-				}
-				
+
 				// GENERATE & UPDATE PARTICLE VELOCITY //
 				double[] newVelocity = new double[DIMENSIONS];
-				for(int vel=0; vel < DIMENSIONS; vel++) {
+				for (int vel = 0; vel < DIMENSIONS; vel++) {
 					double r1 = this.generator.nextDouble();
 					double r2 = this.generator.nextDouble();
-					double personalContribution = (C_1 * r1) * (particle.getPersonalBest().getValues()[vel] - particle.getLocation().getValues()[vel]);
-					double socialContribution = (C_2 * r2) * (this.globalBest.getValues()[vel] - particle.getLocation().getValues()[vel]);
+					double personalContribution = (C_1 * r1)
+							* (particle.getPersonalBest().getValues()[vel] - particle.getLocation().getValues()[vel]);
+					double socialContribution = (C_2 * r2)
+							* (this.globalBest.getValues()[vel] - particle.getLocation().getValues()[vel]);
 					double currentVelocity = particle.getVelocity()[vel];
-					double updatedVel = CONSTRICTION_FACTOR*(currentVelocity + personalContribution + socialContribution);
+					double updatedVel = CONSTRICTION_FACTOR
+							* (currentVelocity + personalContribution + socialContribution);
 					newVelocity[vel] = updatedVel;
 				}
 				particle.setVelocity(newVelocity);
-				
+
 				// UDPATE PARTICLE POSITION //
 				double[] newLocation = new double[DIMENSIONS];
-				for(int dim=0; dim < DIMENSIONS; dim++) {
+				for (int dim = 0; dim < DIMENSIONS; dim++) {
 					newLocation[dim] = particle.getLocation().getValues()[dim] + newVelocity[dim];
 				}
-				Position newPosition = new Position(newLocation);
-				particle.setLocation(newPosition);
+				particle.setLocation(new Position(newLocation));
 
-				// BOUNDARY CHECK
+				// BOUNDARY CHECK //
 				if (particle.withinBounds(function)) {
-					// UPDATE GLOBAL BEST
-					if(iteration == 0 || function.isFitter(particle.getLocation(), this.globalBest)) {
-						this.globalBest = particle.getLocation();
+
+					// EVALUATE CONVERGENCE //
+					if (function.evaluate(particle.getLocation()) == function.getOptimum()) {
+						System.out.println("Solution found at iteration " + (iteration));
+						System.out.println("Position: " + this.globalBest);
+						return particle.getLocation();
 					}
-					
-					// UPDATE PERSONAL BEST
-					if(function.isFitter(particle.getLocation(), particle.getPersonalBest())) {
+
+					// UPDATE PERSONAL BEST //
+					if (function.isFitter(particle.getLocation(), particle.getPersonalBest())) {
 						particle.setPersonalBest(particle.getLocation());
 					}
-					
+
+					// UPDATE GLOBAL BEST //
+					if (iteration == 0 || function.isFitter(particle.getLocation(), this.globalBest)) {
+						this.globalBest = particle.getLocation();
+					}
+
 				} else {
 					boundary.handleParticle(particle, function);
 					boundaryExits++;
@@ -80,40 +83,44 @@ public class GlobalPSO extends PSO {
 			}
 
 			iteration++;
-			System.out.println("Iteration: " + iteration + " / Fitness: " + function.evaluate(this.globalBest));
-		}		
+			if (iteration % 10 == 0) {
+				System.out.println("Iteration: " + iteration + " / Fitness: " + function.evaluate(this.globalBest));
+			}
+		}
 		System.out.println("Particles exited the boundary: " + boundaryExits);
-		System.out.println("Solution found after max iterations of " + iteration + " / Final fitness: " + function.evaluate(this.globalBest));
+		System.out.println("Solution found after max iterations of " + iteration + " / Final fitness: "
+				+ function.evaluate(this.globalBest));
 		return this.globalBest;
 	}
 
 	private void initializeSwarm() {
-		this.particles = new Particle[PARTICLE_COUNT];
+		this.particles = new Particle[SWARM_SIZE];
 		Particle particle;
-		for (int i=0; i < PARTICLE_COUNT; i++) {
+		for (int i = 0; i < SWARM_SIZE; i++) {
 			particle = new Particle();
-			
-			// SET INITIAL POSITION
-			Position position = new Position(randomProblemSpacePosition(DIMENSIONS));
+
+			// SET INITIAL POSITION //
+			Position position = new Position(randomProblemSpacePosition());
 			particle.setLocation(position);
-			
-			// SET INITIAL VELOCITY
-			double[] initialVelocity = halfDiffVelocityArray(DIMENSIONS, particle);
+
+			// SET INITIAL VELOCITY //
+			double[] initialVelocity = halfDiffVelocityArray(particle);
 			particle.setVelocity(initialVelocity);
-			
+
+			// ADD PARTICLE //
 			particles[i] = particle;
-			
-			// SET PERSONAL & GLOBAL BESTS
+
+			// SET PERSONAL & GLOBAL BESTS //
 			particle.setPersonalBest(particle.getLocation());
-			if(i == 0 || function.isFitter(particle.getLocation(), this.globalBest)) {
+			if (i == 0 || function.isFitter(particle.getLocation(), this.globalBest)) {
 				this.globalBest = particle.getLocation();
 			}
 		}
 	}
-	
-	private double[] randomProblemSpacePosition(int dimensions) {
-		double[] values = new double[dimensions];
-		for(int i=0; i < dimensions; i++) {
+
+	private double[] randomProblemSpacePosition() {
+		double[] values = new double[DIMENSIONS];
+		for (int i = 0; i < DIMENSIONS; i++) {
 			double max = function.getUpperBound();
 			double min = function.getLowerBound();
 			double rangeRandom = min + (max - min) * this.generator.nextDouble();
@@ -121,10 +128,10 @@ public class GlobalPSO extends PSO {
 		}
 		return values;
 	}
-	
-	private double[] halfDiffVelocityArray(int dimensions, Particle particle) {
-		double[] values = new double[dimensions];
-		for(int i=0; i < dimensions; i++) {
+
+	private double[] halfDiffVelocityArray(Particle particle) {
+		double[] values = new double[DIMENSIONS];
+		for (int i = 0; i < DIMENSIONS; i++) {
 			double max = function.getUpperBound();
 			double min = function.getLowerBound();
 			double rangeRandom = min + (max - min) * this.generator.nextDouble();

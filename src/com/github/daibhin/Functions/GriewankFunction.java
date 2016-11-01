@@ -13,8 +13,8 @@ public class GriewankFunction implements Function {
 		
 		for (int i=0; i < values.length; i++) {
 			double xi = values[i];
-			sum += (Math.pow(xi, 2)/4000);
-			product *= Math.cos(xi/Math.sqrt(xi));
+			sum += Math.pow(xi, 2)/4000;
+			product *= Math.cos(xi/Math.sqrt(i+1));
 		}
 		return sum - product + 1;
 	}
@@ -31,8 +31,7 @@ public class GriewankFunction implements Function {
 
 	@Override
 	public boolean isFitter(Position position, Position other) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.evaluate(position) < this.evaluate(other);
 	}
 
 }

@@ -11,33 +11,30 @@ public class RosenbrockFunction implements Function {
 		double[] values = position.getValues();
 		
 		for (int i=0; i < values.length - 1; i++) {
-			double z = values[i+1] - Math.pow(values[i], 2);
-			double x = Math.pow(z, 2);
-			double y = Math.pow((values[i] - 1), 2);
+			double xi = values[i];
+			double xnext = values[i+1];
 			
-			sum += (100*x) + y;
-		}
-		if (sum < 35) {
-			String me = "hel";
-			String you = me;
+			double z = xnext - Math.pow(xi, 2);
+			double value = 100*Math.pow(z, 2) + Math.pow((xi - 1), 2);
+			
+			sum += value;
 		}
 		return sum;
 	}
 
 	@Override
 	public double getLowerBound() {
-		return -30;
+		return -2.048;
 	}
 
 	@Override
 	public double getUpperBound() {
-		return 30;
+		return 2.048;
 	}
 
 	@Override
 	public boolean isFitter(Position position, Position other) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.evaluate(position) < this.evaluate(other);
 	}
 
 }

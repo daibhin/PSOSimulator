@@ -7,9 +7,26 @@ public class Neighbourhood {
 	private Position neighbourhoodBest;
 	
 	
-	public Neighbourhood(Particle[] particles) {
+	public Neighbourhood(Particle[] particles, Function function, Particle[] allParticles) {
 		this.particles = particles;
+		setInitialBestPosition(function);
+		
+		
+//		for(int i=0; i< particles.length; i++) {
+//			Particle p = particles[i];
+//			for(int j=0; j< allParticles.length; j++) {
+//				if (p == allParticles[j]) {
+//					System.out.print(j + " ");
+//				}
+//			}
+//		}
+//		System.out.println("");
+//		System.out.println("****");
+	}
+	
+	public void setInitialBestPosition(Function function) {
 		this.neighbourhoodBest = particles[0].getLocation();
+		this.updateBestPosition(function);
 	}
 	
 	public void updateBestPosition(Function function) {

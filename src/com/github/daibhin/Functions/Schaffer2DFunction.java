@@ -5,10 +5,12 @@ import com.github.daibhin.Position;
 
 public class Schaffer2DFunction implements Function {
 
+	static int DIMENSION_SIZE = 2;
+	
 	@Override
 	public double evaluate(Position position) {
 		double[] values = position.getValues();
-		if(values.length != 2) {
+		if(values.length != DIMENSION_SIZE) {
 			//write test for this
 			try {
 				throw new Exception("Not a valid dimension size");
@@ -17,10 +19,13 @@ public class Schaffer2DFunction implements Function {
 				System.exit(1);
 			}
 		}
-		double x1squared = Math.pow(values[0], 2);
-		double x2squared = Math.pow(values[1], 2);
+		double x1 = values[0];
+		double x2 = values[1];
+		double x1squared = Math.pow(x1, 2);
+		double x2squared = Math.pow(x2, 2);
+		double squaredSin = Math.pow(Math.sin(x1squared - x2squared), 2);
 		
-		double num = Math.pow(Math.sin(x1squared - x2squared), 2) - 0.5;
+		double num = squaredSin - 0.5;
 		double denom = Math.pow(1 + (0.001*(x1squared + x2squared)), 2);
 		
 		return 0.5 + (num/denom);
@@ -38,8 +43,7 @@ public class Schaffer2DFunction implements Function {
 
 	@Override
 	public boolean isFitter(Position position, Position other) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.evaluate(position) < this.evaluate(other);
 	}
 
 }

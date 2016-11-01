@@ -29,8 +29,7 @@ public class RastriginFunction implements Function {
 
 	@Override
 	public boolean isFitter(Position position, Position other) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.evaluate(position) < this.evaluate(other);
 	}
 
 }
