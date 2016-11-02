@@ -8,7 +8,6 @@ public abstract class Func {
 	protected double bias;
 	protected String funcName;
 	
-	
 	public abstract double evaluate(Position position);
 	public abstract double getUpperBound();
 	public abstract double getLowerBound();

@@ -2,15 +2,14 @@ package com.github.daibhin.Functions;
 
 import com.github.daibhin.Benchmark;
 import com.github.daibhin.Position;
-import com.github.daibhin.Functions.F15_HybridComposition_1.F15;
 
-public class F16_RotatedHybridComposition_1 extends Func {
-	
-	static final public String FUNCTION_NAME = "Rotated Hybrid Composition Function 1";
+public class F23_NoncontinuousRotatedHybridComposition_3 extends Func {
+
+	static final public String FUNCTION_NAME = "Non-Continuous Rotated Hybrid Composition Function 3";
 	static final public int NUM_FUNC = 10;
 	
-	private final double[] sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
-	private final double[] lambda = {1.0, 1.0, 10.0, 10.0, 5.0/60.0, 5.0/60.0, 5.0/32.0, 5.0/32.0, 5.0/100.0, 5.0/100.0};
+	private final double[] sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0};
+	private final double[] lambda = {5.0*5.0/100.0, 5.0/100.0, 5.0*1.0, 1.0, 5.0*1.0, 1.0, 5.0*10.0, 10.0, 5.0*5.0/200.0, 5.0/200.0};
 	private final double[] biases = { 0.0, 100.0, 200.0, 300.0, 400.0, 500.0, 600.0, 700.0, 800.0, 900.0};
 	
 	private final double[][] o;
@@ -22,7 +21,7 @@ public class F16_RotatedHybridComposition_1 extends Func {
 	
 	private final HybridComposition hc;
 
-	public F16_RotatedHybridComposition_1(int dimension, double bias) {
+	public F23_NoncontinuousRotatedHybridComposition_3(int dimension, double bias) {
 		super(dimension, bias, FUNCTION_NAME);
 		
 		o = new double[NUM_FUNC][dimensions];
@@ -37,7 +36,7 @@ public class F16_RotatedHybridComposition_1 extends Func {
 //		// Load the matrix
 //		Benchmark.loadNMatrixFromFile(file_m, NUM_FUNC, dimensions, dimensions, M);
 		
-		hc = new F16(NUM_FUNC, dimensions, lambda, biases, sigma, o, z, M, w, zM);
+		hc = new F23(NUM_FUNC, dimensions, lambda, biases, sigma, o, z, M, w, zM);
 		hc.calculateFunctionMaximums();
 	}
 
@@ -45,9 +44,13 @@ public class F16_RotatedHybridComposition_1 extends Func {
 	public double evaluate(Position position) {
 		double[] x = position.getValues();
 		double result = 0.0;
+		
+		for (int i=0; i < dimensions; i ++) {
+			x[i] = Benchmark.zRound(x[i], o[0][i]);
+		}
 
 		result = Benchmark.hybridComposition(x, hc);
-		
+
 		return result + bias;
 	}
 
@@ -67,9 +70,9 @@ public class F16_RotatedHybridComposition_1 extends Func {
 		return false;
 	}
 	
-	private class F16 extends HybridComposition {
+	private class F23 extends HybridComposition {
 		
-		public F16(int numFunc, int dimensions, double[] lambda, double[] biases, double[] sigma, double[][] o, double[][] z, double[][][] M, double[] w, double[][] zM) {
+		public F23(int numFunc, int dimensions, double[] lambda, double[] biases, double[] sigma, double[][] o, double[][] z, double[][][] M, double[] w, double[][] zM) {
 			this.num_func = numFunc;
 			this.num_dim = dimensions;
 			
@@ -91,29 +94,29 @@ public class F16_RotatedHybridComposition_1 extends Func {
 			switch(func_no) {
 				case 0:
 				case 1:
-					result = Benchmark.rastrigin(x);
+					result = Benchmark.ExpandedScaffer(x);
 					break;
 				case 2:
 				case 3:
-					result = Benchmark.weierstrass(x);
+					result = Benchmark.rastrigin(x);
 					break;
 				case 4:
 				case 5:
-					result = Benchmark.griewank(x);
+					result = Benchmark.F8F2(x);
 					break;
 				case 6:
 				case 7:
-					result = Benchmark.ackley(x);
+					result = Benchmark.weierstrass(x);
 					break;
 				case 8:
 				case 9:
-					result = Benchmark.sphere(x);
+					result = Benchmark.griewank(x);
 					break;
 				default:
 					System.err.println("func_no is out of range.");
 					System.exit(-1);
 			}
-			return (result);
+			return result;
 		}
 
 		@Override
@@ -121,8 +124,8 @@ public class F16_RotatedHybridComposition_1 extends Func {
 			double[] testPoint = new double[dimensions];
 			double[] testPointM = new double[dimensions];
 			double[] fmax = new double[num_func];
-			for (int i = 0 ; i < num_func ; i ++) {
-				for (int j = 0 ; j < num_dim; j ++) {
+			for (int i=0; i < num_func; i ++) {
+				for (int j=0; j < num_dim; j ++) {
 					testPoint[j] = (5.0 / this.lambda[i]);
 				}
 				Benchmark.rotate(testPointM, testPoint, this.M[i]);
@@ -130,6 +133,7 @@ public class F16_RotatedHybridComposition_1 extends Func {
 			}
 			this.fmax = fmax;
 		}
+		
 	}
 
 }

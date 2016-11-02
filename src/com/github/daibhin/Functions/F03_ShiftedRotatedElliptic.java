@@ -41,6 +41,8 @@ public class F03_ShiftedRotatedElliptic extends Func {
 		for (int i = 0 ; i < dimensions ; i ++) {
 			result += Math.pow(constant, i) * (zM[i] * zM[i]);
 		}
+		
+//		Benchmark.elliptic(x);
 
 		return result + bias;
 	}

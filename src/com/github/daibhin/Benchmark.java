@@ -160,6 +160,27 @@ public class Benchmark {
 		}
 	}
 	
+	// *** ROUND FUNCTIONS *** //
+
+	// 1. "o" is provided
+	static public double zRound(double x, double o) {
+		double absoluteZ = Math.abs(x - o);
+		return (absoluteZ < 0.5) ? x : ( round(2.0 * x) / 2.0);
+	}
+	// 2. "o" is not provided
+	static public double round(double x) {
+		int absoluteInteger = (int) Math.abs(x);
+		double decimal = Math.abs(x) - absoluteInteger;
+		return (decimal < 0.5) ? (int) x : roundUp(x);
+//		return ((Math.abs(x) < 0.5) ? x : (myRound(2.0 * x) / 2.0));
+	}
+	// 3. Matlab rounding (Round positive numbers to next highest integer, round neg numbers to next lowest integer)
+	static private double roundUp(double x) {
+		double integer = (int) x;
+		return (x <= 0) ? integer - 1 : integer + 1;
+//		return (Math.signum(x) * Math.round(Math.abs(x)));
+	}
+	
 	// *** BENCHMARK FUNCTIONS *** //
 	
 	// Sphere function
@@ -168,6 +189,20 @@ public class Benchmark {
 		for (int i = 0 ; i < x.length ; i ++) {
 			sum += x[i] * x[i];
 		}
+		return sum;
+	}
+	
+	// Sphere function with noise
+	static public double sphereNoise(double[] x) {
+		double sum = 0.0;
+
+		for (int i = 0 ; i < x.length ; i ++) {
+			sum += x[i] * x[i];
+		}
+
+		// Noise
+		sum *= (1.0 + 0.1 * Math.abs(Benchmark.generator.nextGaussian()));
+
 		return sum;
 	}
 	
@@ -239,6 +274,19 @@ public class Benchmark {
 		return sum;
 	}
 	
+	// Non-Continuous Rastrigin's function
+	static public double nonContRastrigin(double[] x) {
+		double sum = 0.0;
+		double yi;
+
+		for (int i = 0 ; i < x.length ; i ++) {
+			yi = round(x[i]);
+			sum += (yi * yi) - (10.0 * Math.cos(2* Math.PI * yi)) + 10.0;
+		}
+
+		return sum;
+	}
+	
 	// Weierstrass function
 	static public double weierstrass(double[] x) {
 		return (weierstrass(x, 0.5, 3.0, 20));
@@ -300,6 +348,36 @@ public class Benchmark {
 			sum += Scaffer(x[i-1], x[i]);
 		}
 		sum += Scaffer(x[x.length-1], x[0]);
+
+		return sum;
+	}
+	
+	// Non-Continuous Expanded Scaffer's F6 function
+	static public double nonContExpandedScaffer(double[] x) {
+		double sum = 0.0;
+		double prevX, currX;
+
+		currX = round(x[0]);
+		for (int i = 1 ; i < x.length ; i ++) {
+			prevX = currX;
+			currX = round(x[i]);
+			sum += Scaffer(prevX, currX);
+		}
+		prevX = currX;
+		currX = round(x[0]);
+		sum += Scaffer(prevX, currX);
+
+		return sum;
+	}
+	
+	// Elliptic
+	static public double elliptic(double[] x) {
+		double sum = 0.0;
+		double a = 1e6;
+
+		for (int i = 0 ; i < x.length ; i ++) {
+			sum += Math.pow(a, (double) i/((double) (x.length - 1)) ) * (x[i] * x[i]);
+		}
 
 		return sum;
 	}

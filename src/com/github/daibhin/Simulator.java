@@ -9,16 +9,19 @@ public class Simulator {
 	public static void main(String[] args) {
 		int DIMENSIONS = 30;
 		
-		BoundaryCondition boundary = new InvisibleBoundary();
-		Function function = new SphereFunction();
-		PSO algorithm = new GlobalPSO(function, boundary);
+//		BoundaryCondition boundary = new InvisibleBoundary();
+//		Function function = new SphereFunction();
+//		PSO algorithm = new GlobalPSO(function, boundary);
+//		
+//		Func function1 = new Benchmark().testFunctionFactory(0, 30);
 		
-		Func function1 = new Benchmark().testFunctionFactory(0, 30);
+		
+		System.out.println(Benchmark.round(-5.65));
 		
 //		PSO algorithm = new SPSO(function, boundary);
 //		Position soln = new Position(((ShiftedRosenbrockFunction) function).globalOptimum);
 //		System.out.println(soln);
-		System.out.println(function1.evaluate(algorithm.run()));
+//		System.out.println(function1.evaluate(algorithm.run()));
 		
 //		double sum = 0;
 //		int loopCount = 25;
