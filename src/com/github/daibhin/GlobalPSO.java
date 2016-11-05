@@ -1,5 +1,6 @@
 package com.github.daibhin;
 
+import com.github.daibhin.Functions.Func;
 import com.github.daibhin.Functions.Function;
 import java.util.Random;
 
@@ -15,13 +16,17 @@ public class GlobalPSO extends PSO {
 	private BoundaryCondition boundary;
 
 	private Position globalBest;
-	private Function function;
+	private Func function;
 	private Particle[] particles;
-
-	public GlobalPSO(Function function, BoundaryCondition boundary) {
+	
+	private Run statsTracker;
+	
+	public GlobalPSO(Func function, BoundaryCondition boundary, int dimensions, Run statsTracker) {
 		this.function = function;
 		this.boundary = boundary;
+		this.DIMENSIONS = dimensions;
 		this.generator = new Random();
+		this.statsTracker = statsTracker;
 		initializeSwarm();
 	}
 
@@ -85,6 +90,13 @@ public class GlobalPSO extends PSO {
 			iteration++;
 			if (iteration % 10 == 0) {
 				System.out.println("Iteration: " + iteration + " / Fitness: " + function.evaluate(this.globalBest));
+			}
+			
+			if (iteration == 1000 - 1) {
+				statsTracker.addThousand(function.evaluate(globalBest));
+			}
+			if (iteration == 10000 - 1) {
+				statsTracker.addTenThousand(function.evaluate(globalBest));
 			}
 		}
 		System.out.println("Particles exited the boundary: " + boundaryExits);

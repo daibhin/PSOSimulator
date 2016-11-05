@@ -1,16 +1,17 @@
 package com.github.daibhin;
 
-import com.github.daibhin.Functions.Function;
+import java.util.ArrayList;
+
+import com.github.daibhin.Functions.Func;
 
 public class Neighbourhood {
-	private Particle[] particles;
+	private ArrayList<Particle> particles;
 	private Position neighbourhoodBest;
 	
 	
-	public Neighbourhood(Particle[] particles, Function function, Particle[] allParticles) {
+	public Neighbourhood(ArrayList<Particle> particles, Func function, Particle[] allParticles) {
 		this.particles = particles;
 		setInitialBestPosition(function);
-		
 		
 //		for(int i=0; i< particles.length; i++) {
 //			Particle p = particles[i];
@@ -24,25 +25,27 @@ public class Neighbourhood {
 //		System.out.println("****");
 	}
 	
-	public void setInitialBestPosition(Function function) {
-		this.neighbourhoodBest = particles[0].getLocation();
-		this.updateBestPosition(function);
+	public void setInitialBestPosition(Func function) {
+		if (particles.size() > 0) {
+			this.neighbourhoodBest = particles.get(0).getLocation();
+			this.updateBestPosition(function);
+		}
 	}
 	
-	public void updateBestPosition(Function function) {
-		for(int i=0; i< particles.length; i++) {
-			Position particleBest = particles[i].getPersonalBest();
+	public void updateBestPosition(Func function) {
+		for(int i=0; i< particles.size(); i++) {
+			Position particleBest = particles.get(i).getPersonalBest();
 			if (function.isFitter(particleBest, this.neighbourhoodBest)) {
 				this.neighbourhoodBest = particleBest;
 			}
 		}
 	}
 	
-	public Particle[] getParticles() {
+	public ArrayList<Particle> getParticles() {
 		return particles;
 	}
 	
-	public void setParticles(Particle[] particles) {
+	public void setParticles(ArrayList<Particle> particles) {
 		this.particles = particles;
 	}
 	
@@ -52,5 +55,9 @@ public class Neighbourhood {
 	
 	public void setNeighbourhoodBest(Position neighbourhoodBest) {
 		this.neighbourhoodBest = neighbourhoodBest;
+	}
+	
+	public void addToNeighbourhood(ArrayList<Particle> newParticles) {
+		this.particles.addAll(newParticles);
 	}
 }

@@ -4,6 +4,8 @@ import com.github.daibhin.Position;
 
 public abstract class Func {
 	
+	static final public String DEFAULT_FILE_SUFFIX = ".txt";
+	
 	protected int dimensions;
 	protected double bias;
 	protected String funcName;
@@ -23,6 +25,10 @@ public abstract class Func {
 	public int dimension() {
 		return this.dimensions;
 	}
+	
+	public double getOptimum() {
+		return 0;
+	}
 
 	public double bias() {
 		return this.bias;
@@ -30,5 +36,13 @@ public abstract class Func {
 
 	public String name() {
 		return this.funcName;
+	}
+	
+	public int getDimensions() {
+		return this.dimensions;
+	}
+	
+	public boolean hasDefinedDimensions() {
+		return false;
 	}
 }

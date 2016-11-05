@@ -1,7 +1,9 @@
 package com.github.daibhin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.github.daibhin.Functions.Func;
 import com.github.daibhin.Functions.Function;
 
 public class Particle {
@@ -39,11 +41,11 @@ public class Particle {
 		return this.neighbourhood;
 	}
 	
-	public void setNeighbourhood(Particle[] particles, Function function, Particle[] allParticles) {
+	public void setNeighbourhood(ArrayList<Particle> particles, Func function, Particle[] allParticles) {
 		this.neighbourhood = new Neighbourhood(particles, function, allParticles);
 	}
 
-	public boolean withinBounds(Function function) {
+	public boolean withinBounds(Func function) {
 		double[] locationValues = this.location.getValues();
 		for (int i=0; i < locationValues.length; i++) {
 			if (locationValues[i] < function.getLowerBound() || locationValues[i] > function.getUpperBound()) {

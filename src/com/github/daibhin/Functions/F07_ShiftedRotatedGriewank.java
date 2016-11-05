@@ -1,6 +1,6 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F07_ShiftedRotatedGriewank extends Func {
@@ -21,7 +21,7 @@ public class F07_ShiftedRotatedGriewank extends Func {
 		z = new double[dimensions];
 		zM = new double[dimensions];
 		
-		this.o = Benchmark.randomProblemSpaceVector(this.getLowerBound(), this.getUpperBound(), dimensions);
+		this.o = Benchmarker.randomProblemSpaceVector(this.getLowerBound(), this.getUpperBound(), dimensions);
 //		NOT COMPLETE
 //		Benchmark.loadMatrixFromFile(file_m, m_dimension, m_dimension, m_matrix);
 	}
@@ -31,10 +31,10 @@ public class F07_ShiftedRotatedGriewank extends Func {
 		double[] x = position.getValues();
 		double result = 0.0;
 
-		Benchmark.shift(z, x, o);
-		Benchmark.rotate(zM, z, matrix);
+		Benchmarker.shift(z, x, o);
+		Benchmarker.rotate(zM, z, matrix);
 
-		result = Benchmark.griewank(zM);
+		result = Benchmarker.griewank(zM);
 
 		return result + bias;
 	}

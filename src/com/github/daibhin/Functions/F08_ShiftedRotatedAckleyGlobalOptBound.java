@@ -1,6 +1,6 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F08_ShiftedRotatedAckleyGlobalOptBound extends Func {
@@ -24,7 +24,7 @@ public class F08_ShiftedRotatedAckleyGlobalOptBound extends Func {
 		zM = new double[dimensions];
 		
 		// Load the shifted global optimum
-		this.o = Benchmark.randomProblemSpaceVector(this.getLowerBound(), this.getUpperBound(), dimensions);
+		this.o = Benchmarker.randomProblemSpaceVector(this.getLowerBound(), this.getUpperBound(), dimensions);
 		// Load the matrix
 		// NOT COMPLETE
 //		benchmark.loadMatrixFromFile(file_m, m_dimension, m_dimension, m_matrix);
@@ -39,10 +39,10 @@ public class F08_ShiftedRotatedAckleyGlobalOptBound extends Func {
 		double[] x = position.getValues();
 		double result = 0.0;
 		
-		Benchmark.shift(z, x, o);
-		Benchmark.rotate(zM, z, matrix);
+		Benchmarker.shift(z, x, o);
+		Benchmarker.rotate(zM, z, matrix);
 
-		result = Benchmark.ackley(zM);
+		result = Benchmarker.ackley(zM);
 
 		return result + bias;
 	}

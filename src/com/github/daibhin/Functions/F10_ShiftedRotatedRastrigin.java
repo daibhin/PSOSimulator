@@ -1,6 +1,6 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F10_ShiftedRotatedRastrigin extends Func {
@@ -22,7 +22,7 @@ public class F10_ShiftedRotatedRastrigin extends Func {
 		zM = new double[dimensions];
 		
 		// Load the shifted global optimum
-		this.o = Benchmark.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
+		this.o = Benchmarker.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
 		
 		// Load the matrix
 //		benchmark.loadMatrixFromFile(file_m, m_dimension, m_dimension, m_matrix);
@@ -33,9 +33,9 @@ public class F10_ShiftedRotatedRastrigin extends Func {
 		double[] x = position.getValues();
 		double result = 0.0;
 
-		Benchmark.shift(z, x, o);
-		Benchmark.rotate(zM, z, matrix);
-		result = Benchmark.rastrigin(zM);
+		Benchmarker.shift(z, x, o);
+		Benchmarker.rotate(zM, z, matrix);
+		result = Benchmarker.rastrigin(zM);
 		
 		return result + bias;
 	}

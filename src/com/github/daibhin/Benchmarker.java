@@ -1,117 +1,146 @@
 package com.github.daibhin;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.Random;
+import java.util.StringTokenizer;
 
+import com.github.daibhin.Functions.Ackley;
+import com.github.daibhin.Functions.F01_ShiftedSphere;
+import com.github.daibhin.Functions.F02_ShiftedSchwefel;
+import com.github.daibhin.Functions.F03_ShiftedRotatedElliptic;
+import com.github.daibhin.Functions.F04_ShiftedSchwefelNoise;
+import com.github.daibhin.Functions.F05_ShiftedSchwefelGlobalOptBound;
+import com.github.daibhin.Functions.F06_ShiftedRosenbrock;
 import com.github.daibhin.Functions.Func;
-import com.github.daibhin.Functions.Function;
+import com.github.daibhin.Functions.Griewank;
+import com.github.daibhin.Functions.Griewank10D;
 import com.github.daibhin.Functions.HybridComposition;
+import com.github.daibhin.Functions.Rastrigin;
+import com.github.daibhin.Functions.Rosenbrock;
+import com.github.daibhin.Functions.Schaffer2D;
+import com.github.daibhin.Functions.Sphere;
 
-public class Benchmark {
+public class Benchmarker {
 
-	static final public ClassLoader loader = ClassLoader.getSystemClassLoader();
+	static public ClassLoader loader = ClassLoader.getSystemClassLoader();
 	
 	static final public String[] FUNCTION_CLASS_NAMES = {
-			"F01_Sphere",
-			"F02_shifted_schwefel",
-			"F03_shifted_rotated_high_cond_elliptic",
-			"F04_shifted_schwefel_noise",
-			"F05_schwefel_global_opt_bound",
-			"F06_shifted_rosenbrock",
-			"F07_shifted_rotated_griewank",
-			"F08_shifted_rotated_ackley_global_opt_bound",
-			"F09_shifted_rastrigin",
-			"F10_shifted_rotated_rastrigin",
-			"F11_shifted_rotated_weierstrass",
-			"F12_schwefel",
-			"F13_shifted_expanded_griewank_rosenbrock",
-			"F14_shifted_rotated_expanded_scaffer",
-			"F15_hybrid_composition_1",
-			"F16_rotated_hybrid_composition_1",
-			"F17_rotated_hybrid_composition_1_noise",
-			"F18_rotated_hybrid_composition_2",
-			"F19_rotated_hybrid_composition_2_narrow_basin_global_opt",
-			"F20_rotated_hybrid_composition_2_global_opt_bound",
-			"F21_rotated_hybrid_composition_3",
-			"F22_rotated_hybrid_composition_3_high_cond_num_matrix",
-			"F23_noncontinuous_rotated_hybrid_composition_3",
-			"F24_rotated_hybrid_composition_4",
-			"F25_rotated_hybrid_composition_4_bound"
+			"Sphere",
+			"F01_ShiftedSphere",
+			"F02_ShiftedSchwefel",
+			"F03_ShiftedRotatedElliptic",
+			"F04_ShiftedSchwefelNoise",
+			"F05_ShiftedSchwefelGlobalOptBound",
+			"F06_ShiftedRosenbrock",
+			"F07_ShiftedRotatedGriewank",
+			"F08_ShiftedRotatedAckleyGlobalOptBound",
+			"F09_ShiftedRastrigin",
+			"F10_ShiftedRotatedRastrigin",
+			"F11_ShiftedRotatedWeierstrass",
+			"F12_Schwefel",
+			"F13_ShiftedExpandedGriewankRosenbrock",
+			"F14_ShiftedRotatedExpandedScaffer",
+			"F15_HybridComposition_1",
+			"F16_RotatedHybridComposition_1",
+			"F17_RotatedHybridCompositionNoise_1",
+			"F18_RotatedHybridComposition_2",
+			"F19_RotatedHybridCompositionNarrowBasinGlobalOpt_2",
+			"F20_RotatedHybridCompositionGlobalOptBound_2",
+			"F21_RotatedHybridComposition_3",
+			"F22_RotatedHybridCompositionHighConditionNumMatrix_3",
+			"F23_NoncontinuousRotatedHybridComposition_3",
+			"F24_RotatedHybridComposition_4",
+			"F25_RotatedHybridCompositionWithoutBounds_4"
 		};
 	
-	static final public double[] biases = {
-			0,
-			0,
-			0,
-			0,
-			0,
-			-450,
-			-450,
-			-450,
-			-450,
-			-310,
-			390,
-			-180,
-			-140,
-			-330,
-			-330,
-			90,
-			-460,
-			-130,
-			-300,
-			120,
-			120,
-			120,
-			10,
-			10,
-			10,
-			360,
-			360,
-			360,
-			260,
-			260
-		};
+	static final public double[] biases = {0, 0, 0, 0, 0, -450, -450, -450, -450, -310,
+										   390, -180, -140, -330, -330, 90, -460, -130,
+										   -300, 120, 120, 120, 10, 10, 10, 360, 360,
+										   360, 260, 260};
 	
 	static final public int MAX_SUPPORT_DIM = 100;
 	static final public int NUM_TEST_FUNC = 30;
 	
+	private static final int NUM_RUNS = 5;
+	private static final int NUM_FUNCTIONS = 1;
+	
 	static final public Random generator = new Random();
 	
-	// Class variables
-	static private double[] iSqrt;
-	
 	public static void main(String[] args) {
-		new Benchmark();
+		new Benchmarker();
 	}
 
-	public Benchmark() {
-		this.iSqrt = new double[MAX_SUPPORT_DIM];
+	public Benchmarker() {
+		int dimensions = 30;
+//		int boundaryCondition = 0;
+//		int algorithm = 0;
 		
-		for (int i = 0 ; i < MAX_SUPPORT_DIM ; i ++) {
-			double z = Math.sqrt( ((double) i) + 1.0 );
-			this.iSqrt[i] = z;
+		Func function = new F01_ShiftedSphere(dimensions, -450);
+		BoundaryCondition boundary = new InvisibleBoundary();
+		Run statsTracker = new Run(dimensions);
+		PSO algorithm = new GlobalPSO(function, boundary, dimensions, statsTracker);
+		System.out.println(algorithm.run());
+		
+//		runExperiment(dimensions, boundaryCondition, algorithm);
+	}
+	
+	private void runExperiment(int dimensions, int boundaryIndex, int algorithmIndex) {
+		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
+		
+		for (int functionIndex=0; functionIndex < NUM_FUNCTIONS; functionIndex++) {
+			Func function = getFunction(functionIndex, dimensions, biases[functionIndex]);
+			int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : dimensions;
+			Run statsTracker = new Run(NUM_RUNS);
+			double sum = 0.0;
+			for (int i=0; i < NUM_RUNS; i++) {
+				PSO algorithm = getAlgorithm(algorithmIndex, function, boundary, functionDimensions, statsTracker);
+				sum += function.evaluate(algorithm.run());
+				System.out.println("Loop:" + i + " / Average: " + (sum/(i+1)));
+			}
+			statsTracker.printResults(function.name());
 		}
 	}
 	
-	static final Class[] test_func_arg_types = { int.class, double.class };
-	public Func testFunctionFactory(int func_num, int dimension) {
-		Func function = null;
-		try {
-			function = (Func)
-				loader.loadClass(FUNCTION_CLASS_NAMES[func_num-1])
-					.getConstructor(test_func_arg_types)
-					.newInstance(
-						new Object[] {
-							new Integer(dimension),
-							new Double(biases[func_num-1])
-						}
-					);
+	// *** PARAMETERS *** //
+	
+		private BoundaryCondition getBoundaryCondition(int index) {
+			switch(index) {
+				case 0:  return new InvisibleBoundary();
+				case 1:  return new ReflectingBoundary();
+			}
+			return null;
 		}
-		catch (Exception e) {
-			e.printStackTrace();
-			System.exit(-1);
+		
+		private static final int TWO_DIMENSIONS = 2;
+		private static final int TEN_DIMENSIONS = 10;
+		
+		private Func getFunction(int index, int dimensions, double bias) {
+			switch(index) {
+				case 0:  return new Sphere(dimensions, bias);
+				case 1:  return new Rosenbrock(dimensions, bias);
+				case 2:  return new Ackley(dimensions, bias);
+				case 3:  return new Griewank(dimensions, bias);
+				case 4:  return new Rastrigin(dimensions, bias);
+				case 5:  return new Schaffer2D(TWO_DIMENSIONS, bias);
+				case 6:  return new Griewank10D(TEN_DIMENSIONS, bias);
+				case 7:  return new F01_ShiftedSphere(dimensions, bias);
+				case 8:  return new F02_ShiftedSchwefel(dimensions, bias);
+				case 9:  return new F03_ShiftedRotatedElliptic(dimensions, bias);
+				case 10:  return new F04_ShiftedSchwefelNoise(dimensions, bias);
+				case 11:  return new F05_ShiftedSchwefelGlobalOptBound(dimensions, bias);
+				case 12:  return new F06_ShiftedRosenbrock(dimensions, bias);
+			}
+			return null;
 		}
-		return function;
-	}
+		
+		private PSO getAlgorithm(int index, Func function, BoundaryCondition boundary, int dimensions, Run statsTracker) {
+			switch(index) {
+				case 0:  return new GlobalPSO(function, boundary, dimensions, statsTracker);
+				case 1:  return new SPSO(function, boundary, dimensions);
+			}
+			return null;
+		}
 	
 	// Random Problem Space Vector
 	public static double[] randomProblemSpaceVector(double max, double min, int dimensions) {
@@ -201,7 +230,7 @@ public class Benchmark {
 		}
 
 		// Noise
-		sum *= (1.0 + 0.1 * Math.abs(Benchmark.generator.nextGaussian()));
+		sum *= (1.0 + 0.1 * Math.abs(Benchmarker.generator.nextGaussian()));
 
 		return sum;
 	}
@@ -227,7 +256,7 @@ public class Benchmark {
 	static public double rosenbrock(double[] x) {
 		double sum = 0.0;
 
-		for (int i = 0 ; i < (x.length-1) ; i ++) {
+		for (int i=0; i < x.length-1; i ++) {
 			double temp1 = (x[i] * x[i]) - x[i+1];
 			double temp2 = x[i] - 1.0;
 			sum += (100.0 * temp1 * temp1) + (temp2 * temp2);
@@ -238,7 +267,6 @@ public class Benchmark {
 	
 	// Griewank's function
 	static public double griewank(double[] x) {
-
 		double sum = 0.0;
 		double product = 1.0;
 
@@ -247,20 +275,24 @@ public class Benchmark {
 			product *= Math.cos(x[i] / Math.sqrt(i+1));
 		}
 
-		return (sum - product + 1.0);
+		return sum - product + 1.0;
 	}
 	
 	// Ackley's function
 	static public double ackley(double[] x) {
+		double A = 20;
+		double B = 0.2;
+		double C = 2*Math.PI;
+		
 		double sum1 = 0.0;
 		double sum2 = 0.0;
 
 		for (int i = 0 ; i < x.length ; i ++) {
 			sum1 += x[i]*x[i];
-			sum2 += Math.cos(2*Math.PI*x[i]);
+			sum2 += Math.cos(C*x[i]);
 		}
 
-		return (-20.0 * Math.exp(-0.2 * Math.sqrt(sum1 /(double) x.length))) - Math.exp(sum2 /(double) x.length) + 20.0 + Math.E;
+		return (-A * Math.exp(-B * Math.sqrt(sum1 /(double) x.length))) - Math.exp(sum2 /(double) x.length) + A + Math.E;
 	}
 	
 	// Rastrigin's function
@@ -427,5 +459,46 @@ public class Benchmark {
 			sumF += hc.w[i] *(fit + hc.biases[i]);
 		}
 		return sumF;
+	}
+	
+	// *** LOAD DATA FUNCTIONS *** //
+	
+	static public void loadRowVectorFromFile(String file, int columns, double[] row) {
+		try {
+			BufferedReader brSrc = new BufferedReader(new FileReader(file));
+			loadRowVector(brSrc, columns, row);
+			brSrc.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+
+	static public void loadRowVector(BufferedReader brSrc, int columns, double[] row) throws Exception {
+		String stToken;
+		StringTokenizer stTokenizer = new StringTokenizer(brSrc.readLine());
+		for (int i = 0 ; i < columns ; i ++) {
+			stToken = stTokenizer.nextToken();
+			row[i] = Double.parseDouble(stToken);
+		}
+	}
+	
+	static public void loadMatrixFromFile(String file, int rows, int columns, double[][] matrix) {
+		try {
+			BufferedReader brSrc = new BufferedReader(new FileReader(file));
+			loadMatrix(brSrc, rows, columns, matrix);
+			brSrc.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+
+	static public void loadMatrix(BufferedReader brSrc, int rows, int columns, double[][] matrix) throws Exception {
+		for (int i = 0 ; i < rows ; i ++) {
+			loadRowVector(brSrc, columns, matrix[i]);
+		}
 	}
 }

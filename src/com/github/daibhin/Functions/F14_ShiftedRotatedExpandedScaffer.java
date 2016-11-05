@@ -1,6 +1,6 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F14_ShiftedRotatedExpandedScaffer extends Func {
@@ -32,9 +32,9 @@ public class F14_ShiftedRotatedExpandedScaffer extends Func {
 		double[] x = position.getValues();
 		double result = 0.0;
 
-		Benchmark.shift(z, x, o);
-		Benchmark.rotate(zM, z, matrix);
-		result = Benchmark.ExpandedScaffer(zM);
+		Benchmarker.shift(z, x, o);
+		Benchmarker.rotate(zM, z, matrix);
+		result = Benchmarker.ExpandedScaffer(zM);
 		
 		return result + bias;
 	}

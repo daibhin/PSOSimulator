@@ -1,7 +1,9 @@
 package com.github.daibhin;
 
+import java.util.ArrayList;
 import java.util.Random;
 
+import com.github.daibhin.Functions.Func;
 import com.github.daibhin.Functions.Function;
 
 public class SPSO extends PSO {
@@ -14,15 +16,16 @@ public class SPSO extends PSO {
 	private double C_2 = 2.05;
 	private Random generator;
 	
-	private Function function;
+	private Func function;
 	private Particle[] particles;
 	private Position globalBest;
 	private BoundaryCondition boundary;
 	
-	public SPSO(Function function, BoundaryCondition boundary) {
+	public SPSO(Func function, BoundaryCondition boundary, int dimensions) {
 		this.function = function;
 		this.generator = new Random();
 		this.boundary = boundary;
+		this.DIMENSIONS = dimensions;
 		initializeSwarm();
 		setupNeighbourhoods();
 	}
@@ -114,23 +117,23 @@ public class SPSO extends PSO {
 	
 	private void setupNeighbourhoods() {
 		for(int index=0; index < SWARM_SIZE; index++) {
-			Particle[] neighbourhoodParticles = new Particle[3]; // ring topology
+			ArrayList<Particle> neighbourhoodParticles = new ArrayList<Particle>(); // ring topology
 			if (index == 0) { // first particle
-				neighbourhoodParticles[0] = this.particles[SWARM_SIZE - 1]; // last
-				neighbourhoodParticles[1] = this.particles[1]; // second
-				neighbourhoodParticles[2] = this.particles[0]; // itself (first)
+				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 1]); // last
+				neighbourhoodParticles.add(this.particles[1]); // second
+				neighbourhoodParticles.add(this.particles[0]); // itself (first)
 			} else if (index == (SWARM_SIZE - 1)) { // last particle
-				neighbourhoodParticles[0] = this.particles[SWARM_SIZE - 2]; // second last
-				neighbourhoodParticles[1] = this.particles[0]; // first
-				neighbourhoodParticles[2] = this.particles[SWARM_SIZE - 1]; // itself (last)
+				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 2]); // second last
+				neighbourhoodParticles.add(this.particles[0]); // first
+				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 1]); // itself (last)
 			} else { // other particles
-				neighbourhoodParticles[0] = this.particles[index + 1]; // before
-				neighbourhoodParticles[1] = this.particles[index - 1]; //after
-				neighbourhoodParticles[2] = this.particles[index]; // itself
+				neighbourhoodParticles.add(this.particles[index + 1]); // before
+				neighbourhoodParticles.add(this.particles[index - 1]); //after
+				neighbourhoodParticles.add(this.particles[index]); // itself
 			}
 			
 			Particle particle = this.particles[index];
-			
+
 			particle.setNeighbourhood(neighbourhoodParticles, this.function, this.particles);
 		}
 	}
@@ -158,10 +161,10 @@ public class SPSO extends PSO {
 			Position nBest = p.getNeighbourhood().getNeighbourhoodBest();
 			double bestFitness = function.evaluate(nBest);
 			System.out.println("N" + s + ": " + bestFitness + " @ " + nBest);
-			Particle[] pars = particles[s].getNeighbourhood().getParticles();
+			ArrayList<Particle> pars = particles[s].getNeighbourhood().getParticles();
 			System.out.print(findPosition(particles[s]) + "Particles: ");
 			for(int l=0; l < 3; l++) {
-				System.out.print(function.evaluate(pars[l].getPersonalBest()) + "   ");
+				System.out.print(function.evaluate(pars.get(l).getPersonalBest()) + "   ");
 			}
 			System.out.println("");
 			System.out.println("----");

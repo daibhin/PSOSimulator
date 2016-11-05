@@ -1,11 +1,13 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F05_ShiftedSchwefelGlobalOptBound extends Func {
 	
 	static final public String FUNCTION_NAME = "Schwefel's Problem 2.6 with Global Optimum on Bounds";
+	static final public String SHIFTED_OPTIMUM_POINTS = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/schwefel_206_data.txt";
+
 	
 	// Shifted global optimum
 	private double[] o;
@@ -24,11 +26,10 @@ public class F05_ShiftedSchwefelGlobalOptBound extends Func {
 		double[][] data = new double[dimensions+1][dimensions];
 		
 		// Load the shifted global optimum
-		this.o = Benchmark.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
-		//** NOT COMPLETE **//
-//		Benchmark.loadMatrixFromFile(file_data, dimensions+1, dimensions, data);
+//		this.o = Benchmarker.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
+		Benchmarker.loadMatrixFromFile(SHIFTED_OPTIMUM_POINTS, dimensions+1, dimensions, data);
 		
-		for (int i = 0 ; i < dimensions ; i ++) {
+		for (int i = 0; i < dimensions; i ++) {
 			if ((i+1) <= Math.ceil(dimensions / 4.0)) {
 				this.o[i] = -100.0;
 			}
@@ -39,6 +40,12 @@ public class F05_ShiftedSchwefelGlobalOptBound extends Func {
 				this.o[i] = data[0][i];
 			}
 		}
+		for (int i=0; i < dimensions; i ++) {
+			for (int j=0; j < dimensions; j ++) {
+				A[i][j] = data[i+1][j];
+			}
+		}
+		Benchmarker.Ax(B, A, o);
 	}
 
 	@Override
@@ -46,7 +53,7 @@ public class F05_ShiftedSchwefelGlobalOptBound extends Func {
 		double[] x = position.getValues();
 		double max = Double.NEGATIVE_INFINITY;
 
-		Benchmark.Ax(z, A, x);
+		Benchmarker.Ax(z, A, x);
 
 		for (int i = 0 ; i < dimensions ; i ++) {
 			double temp = Math.abs(z[i] - B[i]);

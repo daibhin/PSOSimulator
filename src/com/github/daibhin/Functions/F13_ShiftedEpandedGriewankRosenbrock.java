@@ -1,6 +1,6 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F13_ShiftedEpandedGriewankRosenbrock extends Func {
@@ -18,7 +18,7 @@ public class F13_ShiftedEpandedGriewankRosenbrock extends Func {
 		z = new double[dimensions];
 
 		// Load the shifted global optimum
-		this.o = Benchmark.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
+		this.o = Benchmarker.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
 //		Benchmark.loadRowVectorFromFile(file_data, dimensions, m_o);
 
 		// z = x - o + 1 = x - (o - 1)
@@ -32,8 +32,8 @@ public class F13_ShiftedEpandedGriewankRosenbrock extends Func {
 		double[] x = position.getValues();
 		double result = 0.0;
 
-		Benchmark.shift(z, x, o);
-		result = Benchmark.F8F2(z);
+		Benchmarker.shift(z, x, o);
+		result = Benchmarker.F8F2(z);
 		
 		return result + bias;
 	}

@@ -1,11 +1,13 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F03_ShiftedRotatedElliptic extends Func {
 	
 	static final public String FUNCTION_NAME = "Shifted Rotated High Conditioned Elliptic Function";
+	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/high_cond_elliptic_rot_data.txt";
+	static final public String MATRIX_VALUES_FILE_PREFIX = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/Elliptic_M_D";
 	
 	// Shifted global optimum
 	private double[] o;
@@ -13,8 +15,6 @@ public class F03_ShiftedRotatedElliptic extends Func {
 	private double[] z;
 	private double[] zM;
 	private	double constant;
-	
-	private static double bias = -450;
 	
 	public F03_ShiftedRotatedElliptic (int dimension, double bias) {
 		super(dimension, bias, FUNCTION_NAME);
@@ -25,26 +25,31 @@ public class F03_ShiftedRotatedElliptic extends Func {
 		z = new double[dimensions];
 		zM = new double[dimensions];
 		
-		this.o = Benchmark.randomProblemSpaceVector(this.getUpperBound(), this.getLowerBound(), dimensions);
+		this.o = Benchmarker.randomProblemSpaceVector(this.getUpperBound(), this.getLowerBound(), dimensions);
+		// Load the shifted global optimum
+		Benchmarker.loadRowVectorFromFile(OPTIMUM_VALUES_FILE, dimensions, o);
+		// Load the matrix
+		String matrixFile = MATRIX_VALUES_FILE_PREFIX + dimensions + DEFAULT_FILE_SUFFIX;
+		Benchmarker.loadMatrixFromFile(matrixFile, dimensions, dimensions, matrixM);
 		
-		constant = Math.pow(1.0e6, (1.0/(dimensions - 1.0)) );
+		constant = Math.pow(1.0e6, 1.0/(dimensions-1.0));
 	}
 
 	@Override
 	public double evaluate(Position position) {
 		double[] x = position.getValues();
-		double result = 0;
+		double sum = 0.0;
 		
-		Benchmark.shift(z, x, o);
-		Benchmark.rotate(zM, z, matrixM);
+		Benchmarker.shift(z, x, o);
+		Benchmarker.rotate(zM, z, matrixM);
 		
-		for (int i = 0 ; i < dimensions ; i ++) {
-			result += Math.pow(constant, i) * (zM[i] * zM[i]);
+		for (int i = 0 ; i < dimensions ; i++) {
+			sum += Math.pow(constant, i) * (zM[i] * zM[i]);
 		}
 		
 //		Benchmark.elliptic(x);
-
-		return result + bias;
+		
+		return sum + bias;
 	}
 
 	@Override

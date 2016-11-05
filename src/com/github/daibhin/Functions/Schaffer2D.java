@@ -1,11 +1,15 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Functions.Function;
 import com.github.daibhin.Position;
 
-public class Schaffer2DFunction implements Function {
+public class Schaffer2D extends Func {
 
-	static int DIMENSION_SIZE = 2;
+	private static final String FUNCTION_NAME = "Schaffer2D Function";
+	private static final int DIMENSION_SIZE = 2;
+	
+	public Schaffer2D(int dimension, double bias) {
+		super(dimension, bias, FUNCTION_NAME);
+	}
 	
 	@Override
 	public double evaluate(Position position) {
@@ -45,5 +49,9 @@ public class Schaffer2DFunction implements Function {
 	public boolean isFitter(Position position, Position other) {
 		return this.evaluate(position) < this.evaluate(other);
 	}
-
+	
+	@Override
+	public boolean hasDefinedDimensions() {
+		return true;
+	}
 }

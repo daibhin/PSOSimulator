@@ -1,6 +1,6 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F22_RotatedHybridCompositionHighConditionNumMatrix_3 extends Func {
@@ -45,7 +45,7 @@ public class F22_RotatedHybridCompositionHighConditionNumMatrix_3 extends Func {
 		double[] x = position.getValues();
 		double result = 0.0;
 
-		result = Benchmark.hybridComposition(x, hc);
+		result = Benchmarker.hybridComposition(x, hc);
 		
 		return result + bias;
 	}
@@ -90,23 +90,23 @@ public class F22_RotatedHybridCompositionHighConditionNumMatrix_3 extends Func {
 			switch(func_no) {
 				case 0:
 				case 1:
-					result = Benchmark.ExpandedScaffer(x);
+					result = Benchmarker.ExpandedScaffer(x);
 					break;
 				case 2:
 				case 3:
-					result = Benchmark.rastrigin(x);
+					result = Benchmarker.rastrigin(x);
 					break;
 				case 4:
 				case 5:
-					result = Benchmark.F8F2(x);
+					result = Benchmarker.F8F2(x);
 					break;
 				case 6:
 				case 7:
-					result = Benchmark.weierstrass(x);
+					result = Benchmarker.weierstrass(x);
 					break;
 				case 8:
 				case 9:
-					result = Benchmark.griewank(x);
+					result = Benchmarker.griewank(x);
 					break;
 				default:
 					System.err.println("func_no is out of range.");
@@ -124,7 +124,7 @@ public class F22_RotatedHybridCompositionHighConditionNumMatrix_3 extends Func {
 				for (int j = 0 ; j < num_dim; j ++) {
 					testPoint[j] = (5.0 / this.lambda[i]);
 				}
-				Benchmark.rotate(testPointM, testPoint, this.M[i]);
+				Benchmarker.rotate(testPointM, testPoint, this.M[i]);
 				fmax[i] = Math.abs(this.basicFunction(i, testPointM));
 			}
 			this.fmax = fmax;

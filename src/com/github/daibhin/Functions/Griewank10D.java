@@ -1,16 +1,22 @@
 package com.github.daibhin.Functions;
 
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class Griewank10DFunction implements Function {
+public class Griewank10D extends Func {
 	
-	static int DIMENSION_SIZE = 10;
+	private static final String FUNCTION_NAME = "Griewank10D Function";
+	private static final int DIMENSION_SIZE = 10;
+	
+	public Griewank10D(int dimension, double bias) {
+		super(dimension, bias, FUNCTION_NAME);
+	}
 	
 	@Override
 	public double evaluate(Position position) {
+		double[] x = position.getValues();
 		
-		double[] values = position.getValues();
-		if(values.length != DIMENSION_SIZE) {
+		if(x.length != DIMENSION_SIZE) {
 			//write test for this
 			try {
 				throw new Exception("Not a valid dimension size");
@@ -20,15 +26,7 @@ public class Griewank10DFunction implements Function {
 			}
 		}
 		
-		double sum = 0;
-		double product = 1;
-		
-		for (int i=0; i < values.length; i++) {
-			double xi = values[i];
-			sum += Math.pow(xi, 2)/4000;
-			product *= Math.cos(xi/Math.sqrt(i+1));
-		}
-		return sum - product + 1;
+		return Benchmarker.griewank(x);
 	}
 
 	@Override
@@ -44,5 +42,10 @@ public class Griewank10DFunction implements Function {
 	@Override
 	public boolean isFitter(Position position, Position other) {
 		return this.evaluate(position) < this.evaluate(other);
+	}
+	
+	@Override
+	public boolean hasDefinedDimensions() {
+		return true;
 	}
 }

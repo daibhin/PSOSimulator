@@ -1,6 +1,6 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F18_RotatedHybridComposition_2 extends Func {
@@ -48,7 +48,7 @@ public class F18_RotatedHybridComposition_2 extends Func {
 		double[] x = position.getValues();
 		double result = 0.0;
 
-		result = Benchmark.hybridComposition(x, hc);
+		result = Benchmarker.hybridComposition(x, hc);
 		
 		return result + bias;
 	}
@@ -92,23 +92,23 @@ public class F18_RotatedHybridComposition_2 extends Func {
 			switch(func_no) {
 				case 0:
 				case 1:
-					result = Benchmark.ackley(x);
+					result = Benchmarker.ackley(x);
 					break;
 				case 2:
 				case 3:
-					result = Benchmark.rastrigin(x);
+					result = Benchmarker.rastrigin(x);
 					break;
 				case 4:
 				case 5:
-					result = Benchmark.sphere(x);
+					result = Benchmarker.sphere(x);
 					break;
 				case 6:
 				case 7:
-					result = Benchmark.weierstrass(x);
+					result = Benchmarker.weierstrass(x);
 					break;
 				case 8:
 				case 9:
-					result = Benchmark.griewank(x);
+					result = Benchmarker.griewank(x);
 					break;
 				default:
 					System.err.println("func_no is out of range.");
@@ -126,7 +126,7 @@ public class F18_RotatedHybridComposition_2 extends Func {
 				for (int j=0; j < dimensions; j ++) {
 					testPoint[j] = (5.0 / this.lambda[i]);
 				}
-				Benchmark.rotate(testPointM, testPoint, this.M[i]);
+				Benchmarker.rotate(testPointM, testPoint, this.M[i]);
 				fmax[i] = Math.abs(this.basicFunction(i, testPointM));
 			}
 			this.fmax = fmax;

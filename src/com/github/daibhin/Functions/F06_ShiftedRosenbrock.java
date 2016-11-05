@@ -1,6 +1,6 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F06_ShiftedRosenbrock extends Func {
@@ -33,9 +33,9 @@ public class F06_ShiftedRosenbrock extends Func {
 		double[] x = position.getValues();
 		double result = 0.0;
 
-		Benchmark.shift(z, x, o);
+		Benchmarker.shift(z, x, o);
 
-		result = Benchmark.rosenbrock(z);
+		result = Benchmarker.rosenbrock(z);
 
 		return result + bias;
 	}

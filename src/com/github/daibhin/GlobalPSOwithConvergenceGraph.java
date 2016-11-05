@@ -11,6 +11,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import com.github.daibhin.Functions.Func;
 import com.github.daibhin.Functions.Function;
 
 public class GlobalPSOwithConvergenceGraph {
@@ -24,12 +25,12 @@ public class GlobalPSOwithConvergenceGraph {
 	private Random generator;
 	
 	private Position globalBest;
-	private Function function;
+	private Func function;
 	private Particle[] particles;
 	
 	private XYSeries series;
 
-	public GlobalPSOwithConvergenceGraph(Function function) {
+	public GlobalPSOwithConvergenceGraph(Func function) {
 		this.function = function;
 		this.generator = new Random();
 		this.series = new XYSeries("Convergence");

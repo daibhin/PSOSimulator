@@ -1,6 +1,6 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F11_ShiftedRotatedWeierstrass extends Func {
@@ -22,7 +22,7 @@ public class F11_ShiftedRotatedWeierstrass extends Func {
 		z = new double[dimensions];
 		zM = new double[dimensions];
 		
-		this.o = Benchmark.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
+		this.o = Benchmarker.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
 		// Load the matrix
 //		Benchmark.loadMatrixFromFile(file_m, dimensions, dimensions, matrix);
 	}
@@ -32,9 +32,9 @@ public class F11_ShiftedRotatedWeierstrass extends Func {
 		double[] x = position.getValues();
 		double result = 0.0;
 
-		Benchmark.shift(z, x, o);
-		Benchmark.xA(zM, z, matrix);
-		result = Benchmark.weierstrass(zM);
+		Benchmarker.shift(z, x, o);
+		Benchmarker.xA(zM, z, matrix);
+		result = Benchmarker.weierstrass(zM);
 
 		return result + bias;
 	}

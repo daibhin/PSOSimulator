@@ -1,20 +1,20 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Functions.Function;
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class RastriginFunction implements Function {
+public class Rastrigin extends Func {
+	
+	private static final String FUNCTION_NAME = "Rastrigin Function";
+
+	public Rastrigin(int dimension, double bias) {
+		super(dimension, bias, FUNCTION_NAME);
+	}
 
 	@Override
 	public double evaluate(Position position) {
-		double[] values = position.getValues();
-		int dimensions = values.length;
-		double sum = 0.0;
-		for (int i=0; i < dimensions; i++) {
-			double xi = values[i];
-			sum += Math.pow(xi, 2) - 10*Math.cos(2*Math.PI*xi);
-		}
-		return 10*dimensions + sum;
+		double[] x = position.getValues();
+		return Benchmarker.rastrigin(x);
 	}
 
 	@Override

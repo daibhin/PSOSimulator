@@ -16,7 +16,7 @@ public class Simulator {
 //		Func function1 = new Benchmark().testFunctionFactory(0, 30);
 		
 		
-		System.out.println(Benchmark.round(-5.65));
+		System.out.println(Benchmarker.round(-5.65));
 		
 //		PSO algorithm = new SPSO(function, boundary);
 //		Position soln = new Position(((ShiftedRosenbrockFunction) function).globalOptimum);

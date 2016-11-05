@@ -1,6 +1,5 @@
 package com.github.daibhin.Functions;
 
-import com.github.daibhin.Benchmark;
 import com.github.daibhin.Position;
 
 public class F12_Schwefel extends Func {
