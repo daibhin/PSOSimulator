@@ -10,8 +10,8 @@ public class F03_ShiftedRotatedElliptic extends Func {
 	static final public String MATRIX_VALUES_FILE_PREFIX = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/Elliptic_M_D";
 	
 	// Shifted global optimum
-	private double[] o;
-	private double[][] matrixM;
+	private final double[] o;
+	private final double[][] matrixM;
 	private double[] z;
 	private double[] zM;
 	private	double constant;
@@ -25,7 +25,7 @@ public class F03_ShiftedRotatedElliptic extends Func {
 		z = new double[dimensions];
 		zM = new double[dimensions];
 		
-		this.o = Benchmarker.randomProblemSpaceVector(this.getUpperBound(), this.getLowerBound(), dimensions);
+//		this.o = Benchmarker.randomProblemSpaceVector(this.getUpperBound(), this.getLowerBound(), dimensions);
 		// Load the shifted global optimum
 		Benchmarker.loadRowVectorFromFile(OPTIMUM_VALUES_FILE, dimensions, o);
 		// Load the matrix
@@ -38,16 +38,17 @@ public class F03_ShiftedRotatedElliptic extends Func {
 	@Override
 	public double evaluate(Position position) {
 		double[] x = position.getValues();
-		double sum = 0.0;
 		
 		Benchmarker.shift(z, x, o);
 		Benchmarker.rotate(zM, z, matrixM);
+		
+		double sum = 0.0;
 		
 		for (int i = 0 ; i < dimensions ; i++) {
 			sum += Math.pow(constant, i) * (zM[i] * zM[i]);
 		}
 		
-//		Benchmark.elliptic(x);
+//		return Benchmarker.elliptic(x) + bias;
 		
 		return sum + bias;
 	}
@@ -60,6 +61,10 @@ public class F03_ShiftedRotatedElliptic extends Func {
 	@Override
 	public double getUpperBound() {
 		return 100;
+	}
+	
+	public double[] getOptimumPosition() {
+		return this.o;
 	}
 
 	@Override

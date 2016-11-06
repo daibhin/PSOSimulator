@@ -2,6 +2,8 @@ package com.github.daibhin;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -12,6 +14,15 @@ import com.github.daibhin.Functions.F03_ShiftedRotatedElliptic;
 import com.github.daibhin.Functions.F04_ShiftedSchwefelNoise;
 import com.github.daibhin.Functions.F05_ShiftedSchwefelGlobalOptBound;
 import com.github.daibhin.Functions.F06_ShiftedRosenbrock;
+import com.github.daibhin.Functions.F07_ShiftedRotatedGriewank;
+import com.github.daibhin.Functions.F08_ShiftedRotatedAckleyGlobalOptBound;
+import com.github.daibhin.Functions.F09_ShiftedRastrigin;
+import com.github.daibhin.Functions.F10_ShiftedRotatedRastrigin;
+import com.github.daibhin.Functions.F11_ShiftedRotatedWeierstrass;
+import com.github.daibhin.Functions.F12_Schwefel;
+import com.github.daibhin.Functions.F13_ShiftedExpandedGriewankRosenbrock;
+import com.github.daibhin.Functions.F14_ShiftedRotatedExpandedScaffer;
+import com.github.daibhin.Functions.F15_HybridComposition_1;
 import com.github.daibhin.Functions.Func;
 import com.github.daibhin.Functions.Griewank;
 import com.github.daibhin.Functions.Griewank10D;
@@ -76,13 +87,20 @@ public class Benchmarker {
 //		int boundaryCondition = 0;
 //		int algorithm = 0;
 		
-		Func function = new F01_ShiftedSphere(dimensions, -450);
+		Func function = new F15_HybridComposition_1(dimensions, 120);
 		BoundaryCondition boundary = new InvisibleBoundary();
-		Run statsTracker = new Run(dimensions);
+		Run statsTracker = new Run(25);
+//		for(int run=0; run<25;run++) {
+//			PSO algorithm = new GlobalPSO(function, boundary, dimensions, statsTracker);
+//			System.out.println(algorithm.run());
+//		}
 		PSO algorithm = new GlobalPSO(function, boundary, dimensions, statsTracker);
 		System.out.println(algorithm.run());
-		
+//		System.out.println(Arrays.toString(((F15_HybridComposition_1)function).getOptimumPosition()));
+//		statsTracker.printResults("Test name");
 //		runExperiment(dimensions, boundaryCondition, algorithm);
+		
+//		runTest();
 	}
 	
 	private void runExperiment(int dimensions, int boundaryIndex, int algorithmIndex) {
@@ -501,4 +519,97 @@ public class Benchmarker {
 			loadRowVector(brSrc, columns, matrix[i]);
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	static final public DecimalFormat scientificFormatter = new DecimalFormat("0.0000000000000000E00");
+	static final public DecimalFormat numberFormatter = scientificFormatter;
+	
+	public void runTest() {
+
+			// Run the test function against the check points
+			int num_test_points = 10;
+			int test_dimension = 50;
+			
+			int func_num = 10;
+			double bias = this.biases[func_num + 4];
+			Func aFunc = new F10_ShiftedRotatedRastrigin(test_dimension, bias);
+
+			double[] test_f = new double[num_test_points];
+			double[][] test_x = new double[num_test_points][test_dimension];
+
+			String file_test = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/testData/test_data_func" + func_num + ".txt";
+			// Create the test function object
+
+			System.out.println("Run tests on function " + func_num +
+				" (" + aFunc.name() + "):");
+			System.out.println("  " +
+				num_test_points + " " +
+				aFunc.dimension() + "-dimension check points");
+
+			loadTestDataFromFile(file_test, num_test_points, test_dimension, test_x, test_f);
+
+			for (int i = 0 ; i < num_test_points ; i ++) {
+				// Execute the test function
+				// Collect and compare the results
+				double result = aFunc.evaluate(new Position(test_x[i]));
+				double diff = result - test_f[i];
+				double ratio = Math.abs(diff / test_f[i]);
+				System.out.println("    " +
+					numberFormatter.format(result) +
+						" - " +
+					numberFormatter.format(test_f[i]) +
+						" = " +
+					numberFormatter.format(diff));
+				System.out.print("    " + "    " +
+					"Difference ratio = " + numberFormatter.format(ratio));
+				if (ratio != 0.0) {
+					if (ratio <= 1e-12) {
+						System.out.println(" (<= 1E-12)");
+					}
+					else {
+						System.out.println(" (> 1E-12) *****");
+					}
+				}
+				else {
+					System.out.println();
+				}
+			}
+	}
+	//
+	// Utility functions for loading data from the given text file
+	//
+	static public void loadTestDataFromFile(String file, int num_test_points, int test_dimension, double[][] x, double[] f) {
+		try {
+			BufferedReader brSrc = new BufferedReader(new FileReader(file));
+			loadMatrix(brSrc, num_test_points, test_dimension, x);
+			loadColumnVector(brSrc, num_test_points, f);
+			brSrc.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+	static public void loadColumnVector(BufferedReader brSrc, int rows, double[] column) throws Exception {
+		String stToken;
+		for (int i = 0 ; i < rows ; i ++) {
+			StringTokenizer stTokenizer = new StringTokenizer(brSrc.readLine());
+			stToken = stTokenizer.nextToken();
+			column[i] = Double.parseDouble(stToken);
+		}
+	}
+	
+	
+	
+	
 }

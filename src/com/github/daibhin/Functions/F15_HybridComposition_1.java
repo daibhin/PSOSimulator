@@ -6,6 +6,7 @@ import com.github.daibhin.Position;
 public class F15_HybridComposition_1 extends Func {
 	
 	static final public String FUNCTION_NAME = "Hybrid Composition Function 1";
+	static final public String MATRIX_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/hybrid_func1_data.txt";
 	static final public int NUM_FUNC = 10;
 	
 	private final double[] sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
@@ -32,7 +33,8 @@ public class F15_HybridComposition_1 extends Func {
 		zM = new double[NUM_FUNC][dimensions];
 		
 		// Load the shifted global optimum
-//		Benchmark.loadMatrixFromFile(file_data, NUM_FUNC, dimensions, o);
+		Benchmarker.loadMatrixFromFile(MATRIX_VALUES_FILE, NUM_FUNC, dimensions, o);
+		
 		
 		// For matrix M
 		generateIdentityMatrix();
@@ -74,11 +76,14 @@ public class F15_HybridComposition_1 extends Func {
 	public double getLowerBound() {
 		return -5;
 	}
+	
+//	public double[] getOptimumPosition() {
+//		return this.o;
+//	}
 
 	@Override
 	public boolean isFitter(Position position, Position other) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.evaluate(position) < this.evaluate(other);
 	}
 	
 	public class F15 extends HybridComposition {

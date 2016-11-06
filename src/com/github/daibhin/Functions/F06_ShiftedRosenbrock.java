@@ -6,6 +6,7 @@ import com.github.daibhin.Position;
 public class F06_ShiftedRosenbrock extends Func {
 
 	static final public String FUNCTION_NAME = "Shifted Rosenbrock's Function";
+	static final public String SHIFTED_OPTIMUM_VALUES = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/rosenbrock_func_data.txt";
 	
 	// Shifted global optimum
 	private double[] o;
@@ -18,7 +19,9 @@ public class F06_ShiftedRosenbrock extends Func {
 		this.o = new double[dimensions];
 		this.z = new double[dimensions];
 		
-		this.o = Function.randomProblemSpaceVector(this.getUpperBound(), this.getLowerBound(), dimensions);
+//		this.o = Function.randomProblemSpaceVector(this.getUpperBound(), this.getLowerBound(), dimensions);
+		// Load the shifted global optimum
+		Benchmarker.loadRowVectorFromFile(SHIFTED_OPTIMUM_VALUES, dimensions, o);
 		
 		// z = x - o + 1 = x - (o - 1)
 		// Do the "(o - 1)" part first

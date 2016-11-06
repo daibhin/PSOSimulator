@@ -1,10 +1,12 @@
 package com.github.daibhin.Functions;
 
+import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
 public class F12_Schwefel extends Func {
 	
 	static final public String FUNCTION_NAME = "Schwefel's Problem 2.13";
+	static final public String FILE_DATA = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/schwefel_213_data.txt";
 	
 	// Shifted global optimum
 	private final double[] alpha;
@@ -29,9 +31,8 @@ public class F12_Schwefel extends Func {
 		//	3. alpha	1x100
 		double[][] data = new double[100+100+1][dimensions];
 
-		// Load the shifted global optimum
-		// *** NOT COMPLETE *** //
-//		Benchmark.loadMatrixFromFile(file_data, data.length, dimensions, data);
+		// Load the matrix
+		Benchmarker.loadMatrixFromFile(FILE_DATA, data.length, dimensions, data);
 		for (int i=0; i < dimensions; i ++) {
 			for (int j = 0 ; j < dimensions; j ++) {
 				a[i][j] = data[i][j];
@@ -39,13 +40,6 @@ public class F12_Schwefel extends Func {
 			}
 			alpha[i] = data[100+100][i];
 		}
-		
-//		alpha = Benchmark.randomProblemSpaceVector(Math.PI, -Math.PI, alpha.length);
-//		for (int i=0; i < dimensions; i++) {
-//			a[i] = Benchmark.randomProblemSpaceVector(100, -100, a.length);
-//			b[i] = Benchmark.randomProblemSpaceVector(100, -100, b.length);
-//		}
-
 		for (int i =0; i < dimensions; i ++) {
 			A[i] = 0.0;
 			for (int j=0; j < dimensions; j ++) {

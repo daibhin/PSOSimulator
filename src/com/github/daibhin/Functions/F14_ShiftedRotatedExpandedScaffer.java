@@ -6,6 +6,8 @@ import com.github.daibhin.Position;
 public class F14_ShiftedRotatedExpandedScaffer extends Func {
 	
 	static final public String FUNCTION_NAME = "Shifted Rotated Expanded Scaffer's F6 Function";
+	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/E_ScafferF6_func_data.txt";
+	static final public String MATRIX_VALUES_FILE_PREFIX = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/E_ScafferF6_M_D";
 	
 	// Shifted global optimum
 	private final double[] o;
@@ -21,10 +23,11 @@ public class F14_ShiftedRotatedExpandedScaffer extends Func {
 		z = new double[dimensions];
 		zM = new double[dimensions];
 		
-//		// Load the shifted global optimum
-//		benchmark.loadRowVectorFromFile(file_data, m_dimension, m_o);
-//		// Load the matrix
-//		benchmark.loadMatrixFromFile(file_m, m_dimension, m_dimension, m_matrix);
+		// Load the shifted global optimum
+		Benchmarker.loadRowVectorFromFile(OPTIMUM_VALUES_FILE, dimensions, o);
+		// Load the matrix
+		String matrixFile = MATRIX_VALUES_FILE_PREFIX + dimensions + DEFAULT_FILE_SUFFIX;
+		Benchmarker.loadMatrixFromFile(matrixFile, dimensions, dimensions, matrix);
 	}
 
 	@Override
@@ -47,6 +50,10 @@ public class F14_ShiftedRotatedExpandedScaffer extends Func {
 	@Override
 	public double getLowerBound() {
 		return -100;
+	}
+	
+	public double[] getOptimumPosition() {
+		return this.o;
 	}
 
 	@Override

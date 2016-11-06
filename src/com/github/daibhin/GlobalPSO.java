@@ -88,9 +88,9 @@ public class GlobalPSO extends PSO {
 			}
 
 			iteration++;
-			if (iteration % 10 == 0) {
+//			if (iteration % 10 == 0) {
 				System.out.println("Iteration: " + iteration + " / Fitness: " + function.evaluate(this.globalBest));
-			}
+//			}
 			
 			if (iteration == 1000 - 1) {
 				statsTracker.addThousand(function.evaluate(globalBest));

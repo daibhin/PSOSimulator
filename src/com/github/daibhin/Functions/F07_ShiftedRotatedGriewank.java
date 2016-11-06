@@ -6,6 +6,8 @@ import com.github.daibhin.Position;
 public class F07_ShiftedRotatedGriewank extends Func {
 	
 	static final public String FUNCTION_NAME = "Shifted Rotated Griewank's Function without Bounds";
+	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/griewank_func_data.txt";
+	static final public String MATRIX_VALUES_FILE_PREFIX = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/griewank_M_D";
 	
 	// Shifted global optimum
 	private double[] o;
@@ -21,9 +23,13 @@ public class F07_ShiftedRotatedGriewank extends Func {
 		z = new double[dimensions];
 		zM = new double[dimensions];
 		
-		this.o = Benchmarker.randomProblemSpaceVector(this.getLowerBound(), this.getUpperBound(), dimensions);
-//		NOT COMPLETE
-//		Benchmark.loadMatrixFromFile(file_m, m_dimension, m_dimension, m_matrix);
+//		this.o = Benchmarker.randomProblemSpaceVector(this.getLowerBound(), this.getUpperBound(), dimensions);
+
+		// Load the shifted global optimum
+		Benchmarker.loadRowVectorFromFile(OPTIMUM_VALUES_FILE, dimensions, o);
+		// Load the matrix
+		String matrixFile = MATRIX_VALUES_FILE_PREFIX + dimensions + DEFAULT_FILE_SUFFIX;
+		Benchmarker.loadMatrixFromFile(matrixFile, dimensions, dimensions, matrix);
 	}
 
 	@Override

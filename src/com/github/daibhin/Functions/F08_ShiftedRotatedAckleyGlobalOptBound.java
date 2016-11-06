@@ -6,7 +6,9 @@ import com.github.daibhin.Position;
 public class F08_ShiftedRotatedAckleyGlobalOptBound extends Func {
 	
 	static final public String FUNCTION_NAME = "Shifted Rotated Ackley's Function with Global Optimum on Bounds";
-
+	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/ackley_func_data.txt";
+	static final public String MATRIX_VALUES_FILE_PREFIX = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/ackley_M_D";
+	
 	// Shifted global optimum
 	private double[] o;
 	private double[][] matrix;
@@ -24,10 +26,12 @@ public class F08_ShiftedRotatedAckleyGlobalOptBound extends Func {
 		zM = new double[dimensions];
 		
 		// Load the shifted global optimum
-		this.o = Benchmarker.randomProblemSpaceVector(this.getLowerBound(), this.getUpperBound(), dimensions);
+//		this.o = Benchmarker.randomProblemSpaceVector(this.getLowerBound(), this.getUpperBound(), dimensions);
+		// Load the shifted global optimum
+		Benchmarker.loadRowVectorFromFile(OPTIMUM_VALUES_FILE, dimensions, o);
 		// Load the matrix
-		// NOT COMPLETE
-//		benchmark.loadMatrixFromFile(file_m, m_dimension, m_dimension, m_matrix);
+		String matrixFile = MATRIX_VALUES_FILE_PREFIX + dimensions + DEFAULT_FILE_SUFFIX;
+		Benchmarker.loadMatrixFromFile(matrixFile, dimensions, dimensions, matrix);
 
 		for (int i = 0 ; i < dimensions ; i += 2) {
 			this.o[i] = -32.0;

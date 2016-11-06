@@ -6,6 +6,7 @@ import com.github.daibhin.Position;
 public class F09_ShiftedRastrigin extends Func {
 
 	static final public String FUNCTION_NAME = "Shifted Rastrigin's Function";
+	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/rastrigin_func_data.txt";
 	
 	private final double[] o;
 	private double[] z;
@@ -18,7 +19,8 @@ public class F09_ShiftedRastrigin extends Func {
 		z = new double[dimensions];
 
 		// Load the shifted global optimum
-		Benchmarker.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
+//		Benchmarker.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
+		Benchmarker.loadRowVectorFromFile(OPTIMUM_VALUES_FILE, dimensions, o);
 	}
 	
 	@Override

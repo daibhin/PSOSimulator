@@ -3,23 +3,24 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F13_ShiftedEpandedGriewankRosenbrock extends Func {
+public class F13_ShiftedExpandedGriewankRosenbrock extends Func {
 	
 	static final public String FUNCTION_NAME = "Shifted Expanded Griewank's plus Rosenbrock's Function";
-	
+	static final public String OPTIMUM_VALUES = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/EF8F2_func_data.txt";
+
 	// Shifted global optimum
 	private double[] o;
 	private double[] z;
 
-	public F13_ShiftedEpandedGriewankRosenbrock(int dimension, double bias) {
+	public F13_ShiftedExpandedGriewankRosenbrock(int dimension, double bias) {
 		super(dimension, bias, FUNCTION_NAME);
 		
 		o = new double[dimensions];
 		z = new double[dimensions];
 
 		// Load the shifted global optimum
-		this.o = Benchmarker.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
-//		Benchmark.loadRowVectorFromFile(file_data, dimensions, m_o);
+//		this.o = Benchmarker.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
+		Benchmarker.loadRowVectorFromFile(OPTIMUM_VALUES, dimensions, this.o);
 
 		// z = x - o + 1 = x - (o - 1)
 		for (int i=0; i < dimensions; i ++) {
@@ -46,6 +47,10 @@ public class F13_ShiftedEpandedGriewankRosenbrock extends Func {
 	@Override
 	public double getLowerBound() {
 		return -5;
+	}
+	
+	public double[] getOptimumPosition() {
+		return this.o;
 	}
 
 	@Override
