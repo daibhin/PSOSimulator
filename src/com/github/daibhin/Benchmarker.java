@@ -6,6 +6,8 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.github.daibhin.Functions.Ackley;
 import com.github.daibhin.Functions.F01_ShiftedSphere;
@@ -90,7 +92,7 @@ public class Benchmarker {
 	static final public double PIx2 = Math.PI * 2.0;
 	
 	static final public int MAX_SUPPORT_DIM = 100;
-	static final public int NUM_TEST_FUNC = 32;
+	static final public int NUM_TEST_FUNC = 5;
 	
 	private static final int NUM_ITERATIONS = 10000;
 	private static final int BOUNDARY_INDEX = 0;
@@ -106,40 +108,45 @@ public class Benchmarker {
 	public Benchmarker() {
 		// functionIndex, algorithmIndex, boundaryIndex
 //		runSingleFunctionAndAlgorithm(0);
-		runSingleFunction(0, BOUNDARY_INDEX);
-//		runEntireExperiment();
+//		runSingleFunction(0, BOUNDARY_INDEX);
+		runEntireExperiment();
 //		runFunctionTest();
 	}
 	
 	private void runEntireExperiment() {
+		ExecutorService executor = Executors.newFixedThreadPool(2);
 		for (int functionIndex = 0; functionIndex < NUM_TEST_FUNC; functionIndex++) {
-			runSingleFunction(functionIndex, BOUNDARY_INDEX);
+			runSingleFunction(functionIndex, BOUNDARY_INDEX, executor);
 		}
+		executor.shutdown();
 	}
 	
-	public void runSingleFunction(int funcNum, int boundaryIndex) {
+	public void runSingleFunction(int funcNum, int boundaryIndex, ExecutorService executor) {
 		double bias = Benchmarker.BIASES[funcNum];
-		String funcName = Benchmarker.FUNCTION_CLASS_NAMES[funcNum];
 		boolean noBoundaries = Benchmarker.NO_BOUNDARIES[funcNum];
 		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
 		
 		Func function = getFunction(funcNum, DIMENSIONS, bias);
 		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
 		
-		Grapher grapher = new Grapher();
-		for(int algorithmIndex = 0; algorithmIndex <= 2; algorithmIndex++) {
-			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBoundaries, grapher);
-		}
-		grapher.plotGraph(funcName, "Iteration", "Fitness");
+		FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions);
+		executor.execute(fr);
+		
+//		Grapher grapher = new Grapher();
+//		for(int algorithmIndex = 0; algorithmIndex <= 2; algorithmIndex++) {
+//			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBoundaries, grapher, executor);
+//		}
+//		grapher.plotGraph(funcName, "Iteration", "Fitness");
 	}
 	
-	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher grapher) {	
+	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher grapher, ExecutorService executor) {	
 		StatsTracker stats = new StatsTracker(NUM_RUNS);
 		PSO algorithm = null;
 		for(int run=0; run < NUM_RUNS; run++) {
 			Run runStats = new Run(NUM_ITERATIONS);
 			algorithm = getAlgorithm(algorithmIndex, function, boundary, dimensions, runStats, noBoundaries);
-			algorithm.run();
+//			algorithm.start();
+//			algorithm.run();
 			stats.addRun(runStats);
 			if (run == 0) {
 				grapher.addSeries(algorithm.getName(), runStats.getConvergenceValues());
@@ -149,18 +156,18 @@ public class Benchmarker {
 		System.out.println("\n************************\n");
 	}
 	
-	public void runSingleFunctionAndAlgorithm(int functionIndex, int algorithmIndex, int boundaryIndex) {
-		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
-		double bias = Benchmarker.BIASES[functionIndex];
-		String funcName = Benchmarker.FUNCTION_CLASS_NAMES[functionIndex];
-		boolean noBoundaries = Benchmarker.NO_BOUNDARIES[functionIndex];
-		Func function = getFunction(functionIndex, DIMENSIONS, bias);
-		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
-
-		Grapher grapher = new Grapher();
-		runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBoundaries, grapher);
-		grapher.plotGraph(funcName, "Iteration", "Fitness");
-	}
+//	public void runSingleFunctionAndAlgorithm(int functionIndex, int algorithmIndex, int boundaryIndex) {
+//		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
+//		double bias = Benchmarker.BIASES[functionIndex];
+//		String funcName = Benchmarker.FUNCTION_CLASS_NAMES[functionIndex];
+//		boolean noBoundaries = Benchmarker.NO_BOUNDARIES[functionIndex];
+//		Func function = getFunction(functionIndex, DIMENSIONS, bias);
+//		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
+//
+//		Grapher grapher = new Grapher();
+//		runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBoundaries, grapher);
+//		grapher.plotGraph(funcName, "Iteration", "Fitness");
+//	}
 	
 	// *** PARAMETERS *** //
 	
