@@ -49,9 +49,4 @@ public class F01_ShiftedSphere extends Func {
 	public double getUpperBound() {
 		return 100;
 	}
-
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
 }

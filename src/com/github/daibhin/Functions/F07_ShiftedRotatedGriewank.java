@@ -24,7 +24,6 @@ public class F07_ShiftedRotatedGriewank extends Func {
 		zM = new double[dimensions];
 		
 //		this.o = Benchmarker.randomProblemSpaceVector(this.getLowerBound(), this.getUpperBound(), dimensions);
-
 		// Load the shifted global optimum
 		Benchmarker.loadRowVectorFromFile(OPTIMUM_VALUES_FILE, dimensions, o);
 		// Load the matrix
@@ -53,6 +52,11 @@ public class F07_ShiftedRotatedGriewank extends Func {
 	@Override
 	public double getLowerBound() {
 		return 0;
+	}
+	
+	@Override
+	public boolean isOptimumOutsideBounds() {
+		return true;
 	}
 
 	@Override

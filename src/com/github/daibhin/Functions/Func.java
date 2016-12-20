@@ -13,12 +13,22 @@ public abstract class Func {
 	public abstract double evaluate(Position position);
 	public abstract double getUpperBound();
 	public abstract double getLowerBound();
-	public abstract boolean isFitter(Position position, Position other);
 	
 	public Func(int dimensions, double bias, String name) {
 		this.dimensions = dimensions;
 		this.bias = bias;
 		this.funcName = name;
+	}
+	
+	public boolean isFitter(Position position, Position other) {
+		double posnValue = this.evaluate(position);
+		double otherValue = this.evaluate(other);
+		return Double.compare(posnValue, otherValue) == -1.0;
+//		return this.evaluate(position) < this.evaluate(other);
+	}
+	
+	public boolean isFitter(double position, double other) {
+		return position < other;
 	}
 	
 	// Property functions common for all child classes
@@ -28,6 +38,10 @@ public abstract class Func {
 	
 	public double getOptimum() {
 		return 0;
+	}
+	
+	public boolean isOptimumOutsideBounds() {
+		return false;
 	}
 
 	public double bias() {

@@ -1,7 +1,6 @@
 package com.github.daibhin;
 
 import com.github.daibhin.Functions.Func;
-import com.github.daibhin.Functions.Function;
 import java.util.Random;
 
 public class GlobalPSO extends PSO {
@@ -14,19 +13,22 @@ public class GlobalPSO extends PSO {
 	private double C_2 = 2.05;
 	private Random generator;
 	private BoundaryCondition boundary;
-
-	private Position globalBest;
+	private boolean ignoreBoundaries = false;
 	private Func function;
 	private Particle[] particles;
+
+	private Position globalBest;
+	private double globalFitness;
 	
 	private Run statsTracker;
 	
-	public GlobalPSO(Func function, BoundaryCondition boundary, int dimensions, Run statsTracker) {
+	public GlobalPSO(Func function, BoundaryCondition boundary, int dimensions, Run statsTracker, boolean noBounds) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
 		this.generator = new Random();
 		this.statsTracker = statsTracker;
+		this.ignoreBoundaries = noBounds;
 		initializeSwarm();
 	}
 
@@ -62,23 +64,34 @@ public class GlobalPSO extends PSO {
 				particle.setLocation(new Position(newLocation));
 
 				// BOUNDARY CHECK //
-				if (particle.withinBounds(function)) {
+				if (ignoreBoundaries || particle.withinBounds(function)) {
 
 					// EVALUATE CONVERGENCE //
-					if (function.evaluate(particle.getLocation()) == function.getOptimum()) {
-						System.out.println("Solution found at iteration " + (iteration));
-						System.out.println("Position: " + this.globalBest);
-						return particle.getLocation();
-					}
+//					if (function.evaluate(particle.getLocation()) == function.getOptimum()) {
+////						System.out.println("Solution found at iteration " + (iteration));
+////						System.out.println("Position: " + this.globalBest);
+//						return particle.getLocation();
+//					}
+					double currentFitness = function.evaluate(particle.getLocation());
 
 					// UPDATE PERSONAL BEST //
-					if (function.isFitter(particle.getLocation(), particle.getPersonalBest())) {
-						particle.setPersonalBest(particle.getLocation());
+					if (function.isFitter(currentFitness, particle.getBestFitness())) {
+						particle.setPersonalBest(currentFitness);
 					}
 
 					// UPDATE GLOBAL BEST //
-					if (iteration == 0 || function.isFitter(particle.getLocation(), this.globalBest)) {
+//					boolean thisFitness = function.isFitter(currentFitness, this.globalFitness);
+//					double current = function.evaluate(particle.getLocation());
+//					double other = function.evaluate(this.globalBest);
+//					boolean equalizer = currentFitness < this.globalFitness;
+//					if (thisFitness != equalizer) {
+//						double value = Double.compare(current, other);
+//						boolean returned = function.isFitter(currentFitness, this.globalFitness);
+//						System.out.println(returned);
+//					}
+					if (function.isFitter(currentFitness, this.globalFitness)) {
 						this.globalBest = particle.getLocation();
+						this.globalFitness = currentFitness;
 					}
 
 				} else {
@@ -88,20 +101,20 @@ public class GlobalPSO extends PSO {
 			}
 
 			iteration++;
-//			if (iteration % 10 == 0) {
-				System.out.println("Iteration: " + iteration + " / Fitness: " + function.evaluate(this.globalBest));
-//			}
+			if (iteration % 10 == 0) {
+				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
+			}
 			
 			if (iteration == 1000 - 1) {
-				statsTracker.addThousand(function.evaluate(globalBest));
+				statsTracker.addThousand(this.globalFitness);
 			}
 			if (iteration == 10000 - 1) {
-				statsTracker.addTenThousand(function.evaluate(globalBest));
+				statsTracker.addTenThousand(this.globalFitness);
 			}
 		}
-		System.out.println("Particles exited the boundary: " + boundaryExits);
-		System.out.println("Solution found after max iterations of " + iteration + " / Final fitness: "
-				+ function.evaluate(this.globalBest));
+//		System.out.println("Particles exited the boundary: " + boundaryExits);
+//		System.out.println("Solution found after max iterations of " + iteration + " / Final fitness: "
+//				+ this.globalFitness);
 		return this.globalBest;
 	}
 
@@ -123,9 +136,11 @@ public class GlobalPSO extends PSO {
 			particles[i] = particle;
 
 			// SET PERSONAL & GLOBAL BESTS //
-			particle.setPersonalBest(particle.getLocation());
-			if (i == 0 || function.isFitter(particle.getLocation(), this.globalBest)) {
+			double currentFitness = function.evaluate(particle.getLocation());
+			particle.setPersonalBest(currentFitness);
+			if (i == 0 || function.isFitter(currentFitness, this.globalFitness)) {
 				this.globalBest = particle.getLocation();
+				this.globalFitness = currentFitness;
 			}
 		}
 	}

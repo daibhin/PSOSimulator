@@ -6,6 +6,10 @@ import com.github.daibhin.Position;
 public class F25_RotatedHybridCompositionWithoutBounds_4 extends Func {
 	
 	static final public String FUNCTION_NAME = "Rotated Hybrid Composition Function 4 without bounds";
+	
+	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/hybrid_func4_data.txt";
+	static final public String MATRIX_VALUES_FILE_PREFIX = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/hybrid_func4_M_D";
+	
 	static final public int NUM_FUNC = 10;
 	
 	private final double[] sigma = {2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0};
@@ -31,10 +35,11 @@ public class F25_RotatedHybridCompositionWithoutBounds_4 extends Func {
 		z = new double[NUM_FUNC][dimensions];
 		zM = new double[NUM_FUNC][dimensions];
 		
-//		// Load the shifted global optimum
-//		Benchmark.loadMatrixFromFile(file_data, NUM_FUNC, dimensions, o);
-//		// Load the matrix
-//		Benchmark.loadNMatrixFromFile(file_m, NUM_FUNC, dimensions, dimensions, M);
+		// Load the shifted global optimum
+		Benchmarker.loadMatrixFromFile(OPTIMUM_VALUES_FILE, NUM_FUNC, dimensions, o);
+		// Load the matrix
+		String matrixFile = MATRIX_VALUES_FILE_PREFIX + dimensions + DEFAULT_FILE_SUFFIX;
+		Benchmarker.loadNMatrixFromFile(matrixFile, NUM_FUNC, dimensions, dimensions, M);
 		
 		hc = new F25(NUM_FUNC, dimensions, lambda, biases, sigma, o, z, M, w, zM);
 		hc.calculateFunctionMaximums();
@@ -59,11 +64,15 @@ public class F25_RotatedHybridCompositionWithoutBounds_4 extends Func {
 	public double getLowerBound() {
 		return 2;
 	}
+	
+	@Override
+	public boolean isOptimumOutsideBounds() {
+		return true;
+	}
 
 	@Override
 	public boolean isFitter(Position position, Position other) {
-		// TODO Auto-generated method stub
-		return false;
+		return this.evaluate(position) < this.evaluate(other);
 	}
 	
 	private class F25 extends HybridComposition {

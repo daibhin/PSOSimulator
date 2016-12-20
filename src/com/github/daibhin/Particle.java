@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import com.github.daibhin.Functions.Func;
-import com.github.daibhin.Functions.Function;
 
 public class Particle {
 	
@@ -12,6 +11,7 @@ public class Particle {
 	private double[] velocity;
 	private Position personalBest;
 	private Neighbourhood neighbourhood;
+	private double bestFitness;
 	
 	public Position getLocation() {
 		return this.location;
@@ -29,12 +29,17 @@ public class Particle {
 		this.velocity = velocity;
 	}
 	
-	public void setPersonalBest(Position position) {
-		this.personalBest = position;
+	public void setPersonalBest(double fitness) {
+		this.personalBest = this.getLocation();
+		this.bestFitness = fitness;
 	}
 	
 	public Position getPersonalBest() {
 		return this.personalBest;
+	}
+	
+	public double getBestFitness() {
+		return this.bestFitness;
 	}
 	
 	public Neighbourhood getNeighbourhood() {

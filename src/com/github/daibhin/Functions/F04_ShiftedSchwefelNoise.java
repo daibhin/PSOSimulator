@@ -31,7 +31,7 @@ public class F04_ShiftedSchwefelNoise extends Func {
 		
 		Benchmarker.shift(z, x, o);
 		result = Benchmarker.schwefel_102(z);
-		
+		// noise
 		result *= (1.0 + 0.4 * Math.abs(Benchmarker.generator.nextGaussian()));
 		
 		return result + bias;
@@ -46,10 +46,4 @@ public class F04_ShiftedSchwefelNoise extends Func {
 	public double getUpperBound() {
 		return 100;
 	}
-
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
-
 }

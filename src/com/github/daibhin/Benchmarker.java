@@ -23,6 +23,8 @@ import com.github.daibhin.Functions.F12_Schwefel;
 import com.github.daibhin.Functions.F13_ShiftedExpandedGriewankRosenbrock;
 import com.github.daibhin.Functions.F14_ShiftedRotatedExpandedScaffer;
 import com.github.daibhin.Functions.F15_HybridComposition_1;
+import com.github.daibhin.Functions.F16_RotatedHybridComposition_1;
+import com.github.daibhin.Functions.F25_RotatedHybridCompositionWithoutBounds_4;
 import com.github.daibhin.Functions.Func;
 import com.github.daibhin.Functions.Griewank;
 import com.github.daibhin.Functions.Griewank10D;
@@ -38,6 +40,12 @@ public class Benchmarker {
 	
 	static final public String[] FUNCTION_CLASS_NAMES = {
 			"Sphere",
+			"Rosenbrock",
+			"Ackley",
+			"Griewank",
+			"Rastrigin",
+			"Schaffer2D",
+			"Griewank10D",
 			"F01_ShiftedSphere",
 			"F02_ShiftedSchwefel",
 			"F03_ShiftedRotatedElliptic",
@@ -65,10 +73,13 @@ public class Benchmarker {
 			"F25_RotatedHybridCompositionWithoutBounds_4"
 		};
 	
-	static final public double[] biases = {0, 0, 0, 0, 0, -450, -450, -450, -450, -310,
+	static final public double[] BIASES = {0, 0, 0, 0, 0, 0, 0, -450, -450, -450, -450, -310,
 										   390, -180, -140, -330, -330, 90, -460, -130,
 										   -300, 120, 120, 120, 10, 10, 10, 360, 360,
 										   360, 260, 260};
+	
+	// precomputed values
+	static final public double PIx2 = Math.PI * 2.0;
 	
 	static final public int MAX_SUPPORT_DIM = 100;
 	static final public int NUM_TEST_FUNC = 30;
@@ -79,27 +90,64 @@ public class Benchmarker {
 	static final public Random generator = new Random();
 	
 	public static void main(String[] args) {
-		new Benchmarker();
+//		new Benchmarker();
+		
+		int dimensions = 30;
+		Func function = new Sphere(dimensions, -450);
+////		Position psn = new Position(((F03_ShiftedRotatedElliptic)function).getOptimumPosition());
+		BoundaryCondition boundary = new InvisibleBoundary();
+		Run statsTracker = new Run(1);
+		PSO algorithm = new GlobalPSO(function, boundary, dimensions, statsTracker, true);
+		Position best = algorithm.run();
+		System.out.println(best);
 	}
 
 	public Benchmarker() {
 		int dimensions = 30;
-//		int boundaryCondition = 0;
-//		int algorithm = 0;
+		int runs = 25;
 		
-		Func function = new F15_HybridComposition_1(dimensions, 120);
-		BoundaryCondition boundary = new InvisibleBoundary();
-		Run statsTracker = new Run(25);
-//		for(int run=0; run<25;run++) {
-//			PSO algorithm = new GlobalPSO(function, boundary, dimensions, statsTracker);
-//			System.out.println(algorithm.run());
-//		}
-		PSO algorithm = new GlobalPSO(function, boundary, dimensions, statsTracker);
-		System.out.println(algorithm.run());
-//		System.out.println(Arrays.toString(((F15_HybridComposition_1)function).getOptimumPosition()));
-//		statsTracker.printResults("Test name");
+		// **** Change funcNum & function & noBounds *** //
+		int funcNum = 31;
+		boolean noBounds = true;
+		double bias = Benchmarker.BIASES[funcNum];
+		String funcName = Benchmarker.FUNCTION_CLASS_NAMES[funcNum];
+		double[] results = new double[runs];
+		
+		// GLOBAL
+		for(int run=0; run < runs; run++) {
+			BoundaryCondition boundary = new InvisibleBoundary();
+			Func function = new F25_RotatedHybridCompositionWithoutBounds_4(dimensions, bias);
+			Run statsTracker = new Run(runs);
+			PSO algorithm = new GlobalPSO(function, boundary, dimensions, statsTracker, noBounds);
+			Position best = algorithm.run();
+			results[run] = function.evaluate(best);
+			System.out.println(results[run]);
+		}
+		Run.documentResults(funcName + " / GlobalPSO", results);
+		System.out.println("\n************************\n");
+		// SPSO
+		for(int run=0; run<runs;run++) {
+			BoundaryCondition boundary = new InvisibleBoundary();
+			Func function = new F25_RotatedHybridCompositionWithoutBounds_4(dimensions, bias);
+			PSO algorithm = new SPSO(function, boundary, dimensions, noBounds);
+			Position best = algorithm.run();
+			results[run] = function.evaluate(best);
+			System.out.println(results[run]);
+		}
+		Run.documentResults(funcName + " / SPSO", results);
+		System.out.println("\n************************\n");
+		// GIDN
+		for(int run=0; run<runs;run++) {
+			BoundaryCondition boundary = new InvisibleBoundary();
+			Func function = new F25_RotatedHybridCompositionWithoutBounds_4(dimensions, bias);
+			PSO algorithm = new GIDN(function, boundary, dimensions, noBounds);
+			Position best = algorithm.run();
+			results[run] = function.evaluate(best);
+			System.out.println(results[run]);
+		}
+		Run.documentResults(funcName + " / GIDN PSO", results);
+		
 //		runExperiment(dimensions, boundaryCondition, algorithm);
-		
 //		runTest();
 	}
 	
@@ -107,12 +155,13 @@ public class Benchmarker {
 		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
 		
 		for (int functionIndex=0; functionIndex < NUM_FUNCTIONS; functionIndex++) {
-			Func function = getFunction(functionIndex, dimensions, biases[functionIndex]);
+			Func function = getFunction(functionIndex, dimensions, Benchmarker.BIASES[functionIndex]);
 			int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : dimensions;
+			boolean noBounds = function.isOptimumOutsideBounds();
 			Run statsTracker = new Run(NUM_RUNS);
 			double sum = 0.0;
 			for (int i=0; i < NUM_RUNS; i++) {
-				PSO algorithm = getAlgorithm(algorithmIndex, function, boundary, functionDimensions, statsTracker);
+				PSO algorithm = getAlgorithm(algorithmIndex, function, boundary, functionDimensions, statsTracker, noBounds);
 				sum += function.evaluate(algorithm.run());
 				System.out.println("Loop:" + i + " / Average: " + (sum/(i+1)));
 			}
@@ -148,14 +197,26 @@ public class Benchmarker {
 				case 10:  return new F04_ShiftedSchwefelNoise(dimensions, bias);
 				case 11:  return new F05_ShiftedSchwefelGlobalOptBound(dimensions, bias);
 				case 12:  return new F06_ShiftedRosenbrock(dimensions, bias);
+				case 13:  return new F07_ShiftedRotatedGriewank(dimensions, bias);
+				case 14:  return new F08_ShiftedRotatedAckleyGlobalOptBound(dimensions, bias);
+				case 15:  return new F09_ShiftedRastrigin(dimensions, bias);
+				case 16:  return new F11_ShiftedRotatedWeierstrass(dimensions, bias);
+				case 17:  return new F12_Schwefel(dimensions, bias);
+				case 18:  return new F13_ShiftedExpandedGriewankRosenbrock(dimensions, bias);
+				case 19:  return new F14_ShiftedRotatedExpandedScaffer(dimensions, bias);
+				case 20:  return new F15_HybridComposition_1(dimensions, bias);
+				case 21:  return new F16_RotatedHybridComposition_1(dimensions, bias);
+//				case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
+//				case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
+//				case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
 			}
 			return null;
 		}
 		
-		private PSO getAlgorithm(int index, Func function, BoundaryCondition boundary, int dimensions, Run statsTracker) {
+		private PSO getAlgorithm(int index, Func function, BoundaryCondition boundary, int dimensions, Run statsTracker, boolean noBounds) {
 			switch(index) {
-				case 0:  return new GlobalPSO(function, boundary, dimensions, statsTracker);
-				case 1:  return new SPSO(function, boundary, dimensions);
+				case 0:  return new GlobalPSO(function, boundary, dimensions, statsTracker, noBounds);
+				case 1:  return new SPSO(function, boundary, dimensions, noBounds);
 			}
 			return null;
 		}
@@ -331,28 +392,33 @@ public class Benchmarker {
 
 		for (int i = 0 ; i < x.length ; i ++) {
 			yi = round(x[i]);
-			sum += (yi * yi) - (10.0 * Math.cos(2* Math.PI * yi)) + 10.0;
+			sum += (yi * yi) - (10.0 * Math.cos(PIx2 * yi)) + 10.0;
 		}
 
 		return sum;
 	}
 	
 	// Weierstrass function
+	static final public double a = 0.5;
+	static final public double b = 3.0;
+	static final public int k = 20;
+	static final public double a2k = Math.pow(a, k);
+	static final public double b2k = Math.pow(b, k);
 	static public double weierstrass(double[] x) {
-		return (weierstrass(x, 0.5, 3.0, 20));
+		return (weierstrass(x, a, b, k));
 	}
-
+	
 	static public double weierstrass(double[] x, double a, double b, int Kmax) {
 		double sum1 = 0.0;
 		for (int i=0; i < x.length; i ++) {
 			for (int k=0; k <= Kmax; k ++) {
-				sum1 += Math.pow(a, k) * Math.cos(2 * Math.PI * Math.pow(b, k) * (x[i] + 0.5));
+				sum1 += a2k * Math.cos(PIx2 * b2k * (x[i] + 0.5));
 			}
 		}
 
 		double sum2 = 0.0;
 		for (int k=0; k <= Kmax; k ++) {
-			sum2 += Math.pow(a, k) * Math.cos(2 * Math.PI * Math.pow(b, k) * 0.5);
+			sum2 += a2k * Math.cos(PIx2 * b2k * 0.5);
 		}
 
 		return sum1 - (sum2*((double) x.length));
@@ -423,10 +489,9 @@ public class Benchmarker {
 	// Elliptic
 	static public double elliptic(double[] x) {
 		double sum = 0.0;
-		double a = 1e6;
 
 		for (int i = 0 ; i < x.length ; i ++) {
-			sum += Math.pow(a, (double) i/((double) (x.length - 1)) ) * (x[i] * x[i]);
+			sum += Math.pow(1e6, (double) i/((double) (x.length - 1)) ) * (x[i] * x[i]);
 		}
 
 		return sum;
@@ -502,6 +567,20 @@ public class Benchmarker {
 		}
 	}
 	
+	static public void loadNMatrixFromFile(String file, int N, int rows, int columns, double[][][] matrix) {
+		try {
+			BufferedReader brSrc = new BufferedReader(new FileReader(file));
+			for (int i = 0 ; i < N ; i ++) {
+				loadMatrix(brSrc, rows, columns, matrix[i]);
+			}
+			brSrc.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+	
 	static public void loadMatrixFromFile(String file, int rows, int columns, double[][] matrix) {
 		try {
 			BufferedReader brSrc = new BufferedReader(new FileReader(file));
@@ -538,11 +617,11 @@ public class Benchmarker {
 
 			// Run the test function against the check points
 			int num_test_points = 10;
-			int test_dimension = 50;
+			int test_dimension = 30;
 			
-			int func_num = 10;
-			double bias = this.biases[func_num + 4];
-			Func aFunc = new F10_ShiftedRotatedRastrigin(test_dimension, bias);
+			int func_num = 3;
+			double bias = Benchmarker.BIASES[func_num + 4];
+			Func aFunc = new F03_ShiftedRotatedElliptic(test_dimension, bias);
 
 			double[] test_f = new double[num_test_points];
 			double[][] test_x = new double[num_test_points][test_dimension];

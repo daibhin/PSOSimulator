@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.github.daibhin.Functions.Func;
-import com.github.daibhin.Functions.Function;
 
 public class SPSO extends PSO {
 	
@@ -16,16 +15,20 @@ public class SPSO extends PSO {
 	private double C_2 = 2.05;
 	private Random generator;
 	
+	private Position globalBest;
+	private double globalFitness;
+	
 	private Func function;
 	private Particle[] particles;
-	private Position globalBest;
 	private BoundaryCondition boundary;
+	private boolean ignoreBoundaries = false;
 	
-	public SPSO(Func function, BoundaryCondition boundary, int dimensions) {
+	public SPSO(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds) {
 		this.function = function;
 		this.generator = new Random();
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
+		this.ignoreBoundaries = noBounds;
 		initializeSwarm();
 		setupNeighbourhoods();
 	}
@@ -36,9 +39,9 @@ public class SPSO extends PSO {
 		while(iteration < MAX_ITERATIONS) {
 			
 			// EVALUATE CONVERGENCE //
-			if (function.evaluate(this.globalBest) == function.getOptimum()) {
-				return this.globalBest;
-			}
+//			if (function.evaluate(this.globalBest) == function.getOptimum()) {
+//				return this.globalBest;
+//			}
 			
 			for (int index=0; index < SWARM_SIZE; index++) {
 				Particle particle = this.particles[index];
@@ -64,16 +67,19 @@ public class SPSO extends PSO {
 				particle.setLocation(new Position(newLocation));
 				
 				// BOUNDARY CHECK //
-				if(particle.withinBounds(function)) {
+				if(ignoreBoundaries || particle.withinBounds(function)) {
+					
+					double currentFitness = function.evaluate(particle.getLocation());
 					
 					// UPDATE PERSONAL BEST //
-					if (function.isFitter(particle.getLocation(), particle.getPersonalBest())) {
-						particle.setPersonalBest(particle.getLocation());
+					if (function.isFitter(currentFitness, particle.getBestFitness())) {
+						particle.setPersonalBest(currentFitness);
 					}
 					
 					// UPDATE GLOBAL BEST //
-					if (function.isFitter(particle.getLocation(), this.globalBest)) {
+					if (function.isFitter(currentFitness, this.globalFitness)) {
 						this.globalBest = particle.getLocation();
+						this.globalFitness = currentFitness;
 					}
 				} else {
 					boundary.handleParticle(particle, function);
@@ -82,10 +88,10 @@ public class SPSO extends PSO {
 				// UPDATE NEIGHBOURHOOD BEST //
 				particle.getNeighbourhood().updateBestPosition(function);
 			}
-			
-			if (iteration % 10 == 0) {
-				System.out.println("Iteration: " + iteration + " / Fitness: " + function.evaluate(this.globalBest));
-			}
+//			
+//			if (iteration % 10 == 0) {
+//				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
+//			}
 			
 			iteration++;
 		}
@@ -108,9 +114,11 @@ public class SPSO extends PSO {
 			this.particles[index] = particle;
 			
 			// SET PERSONAL AND GLOBAL BEST //
-			particle.setPersonalBest(particle.getLocation());
-			if(index == 0 || function.isFitter(particle.getLocation(), this.globalBest)) {
+			double currentFitness = function.evaluate(particle.getLocation());
+			particle.setPersonalBest(currentFitness);
+			if(index == 0 || function.isFitter(currentFitness, this.globalFitness)) {
 				this.globalBest = particle.getLocation();
+				this.globalFitness = currentFitness;
 			}
 		}
 	}

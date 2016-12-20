@@ -11,7 +11,8 @@ public class F03_ShiftedRotatedElliptic extends Func {
 	
 	// Shifted global optimum
 	private final double[] o;
-	private final double[][] matrixM;
+	private final double[][] matrix;
+
 	private double[] z;
 	private double[] zM;
 	private	double constant;
@@ -21,7 +22,7 @@ public class F03_ShiftedRotatedElliptic extends Func {
 		
 		// Note: dimension starts from 0
 		o = new double[dimensions];
-		matrixM = new double[dimensions][dimensions];
+		matrix = new double[dimensions][dimensions];
 		z = new double[dimensions];
 		zM = new double[dimensions];
 		
@@ -30,7 +31,7 @@ public class F03_ShiftedRotatedElliptic extends Func {
 		Benchmarker.loadRowVectorFromFile(OPTIMUM_VALUES_FILE, dimensions, o);
 		// Load the matrix
 		String matrixFile = MATRIX_VALUES_FILE_PREFIX + dimensions + DEFAULT_FILE_SUFFIX;
-		Benchmarker.loadMatrixFromFile(matrixFile, dimensions, dimensions, matrixM);
+		Benchmarker.loadMatrixFromFile(matrixFile, dimensions, dimensions, matrix);
 		
 		constant = Math.pow(1.0e6, 1.0/(dimensions-1.0));
 	}
@@ -40,17 +41,17 @@ public class F03_ShiftedRotatedElliptic extends Func {
 		double[] x = position.getValues();
 		
 		Benchmarker.shift(z, x, o);
-		Benchmarker.rotate(zM, z, matrixM);
+		Benchmarker.rotate(zM, z, matrix);
 		
 		double sum = 0.0;
-		
-		for (int i = 0 ; i < dimensions ; i++) {
-			sum += Math.pow(constant, i) * (zM[i] * zM[i]);
+
+		for (int i = 0 ; i < dimensions; i ++) {
+			sum += Math.pow(constant, i) * zM[i] * zM[i];
 		}
 		
-//		return Benchmarker.elliptic(x) + bias;
-		
 		return sum + bias;
+//		double result = Benchmarker.elliptic(zM);
+//		return result + bias;
 	}
 
 	@Override
@@ -66,10 +67,14 @@ public class F03_ShiftedRotatedElliptic extends Func {
 	public double[] getOptimumPosition() {
 		return this.o;
 	}
-
+	
 	@Override
 	public boolean isFitter(Position position, Position other) {
 		return this.evaluate(position) < this.evaluate(other);
 	}
-
+	
+	@Override
+	public boolean isFitter(double position, double other) {
+		return position < other;
+	}
 }

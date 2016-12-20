@@ -7,6 +7,7 @@ import com.github.daibhin.Functions.Func;
 public class Neighbourhood {
 	private ArrayList<Particle> particles;
 	private Position neighbourhoodBest;
+	private double bestFitness;
 	
 	
 	public Neighbourhood(ArrayList<Particle> particles, Func function, Particle[] allParticles) {
@@ -28,15 +29,17 @@ public class Neighbourhood {
 	public void setInitialBestPosition(Func function) {
 		if (particles.size() > 0) {
 			this.neighbourhoodBest = particles.get(0).getLocation();
+			this.bestFitness = particles.get(0).getBestFitness();
 			this.updateBestPosition(function);
 		}
 	}
 	
 	public void updateBestPosition(Func function) {
 		for(int i=0; i< particles.size(); i++) {
-			Position particleBest = particles.get(i).getPersonalBest();
-			if (function.isFitter(particleBest, this.neighbourhoodBest)) {
-				this.neighbourhoodBest = particleBest;
+			double particleBest = particles.get(i).getBestFitness();
+			if (function.isFitter(particleBest, this.bestFitness)) {
+				this.neighbourhoodBest = particles.get(i).getPersonalBest();
+				this.bestFitness = particleBest;
 			}
 		}
 	}

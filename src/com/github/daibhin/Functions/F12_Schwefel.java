@@ -12,6 +12,7 @@ public class F12_Schwefel extends Func {
 	private final double[] alpha;
 	private final double[][] a;
 	private final double[][] b;
+
 	private double[] A;
 	private double[] B;
 
@@ -22,6 +23,7 @@ public class F12_Schwefel extends Func {
 		alpha = new double[dimensions];
 		a = new double[dimensions][dimensions];
 		b = new double[dimensions][dimensions];
+
 		A = new double[dimensions];
 		B = new double[dimensions];
 		
@@ -53,13 +55,13 @@ public class F12_Schwefel extends Func {
 		double[] x = position.getValues();
 		double sum = 0.0;
 
-		for (int i=0; i < dimensions; i ++) {
+		for (int i=0; i < dimensions; i++) {
 			B[i] = 0.0;
 			for (int j=0; j < dimensions; j ++) {
 				B[i] += a[i][j] * Math.sin(x[j]) + b[i][j] * Math.cos(x[j]);
 			}
-			double subtractedMatricesEvaluations = A[i] - B[i];
-			sum += subtractedMatricesEvaluations * subtractedMatricesEvaluations;
+			double subtraction = A[i] - B[i];
+			sum += subtraction * subtraction;
 		}
 
 		return sum + bias;
@@ -79,5 +81,4 @@ public class F12_Schwefel extends Func {
 	public boolean isFitter(Position position, Position other) {
 		return this.evaluate(position) < this.evaluate(other);
 	}
-
 }

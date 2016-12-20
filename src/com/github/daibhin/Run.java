@@ -3,6 +3,13 @@ package com.github.daibhin;
 import java.util.Arrays;
 
 public class Run {
+	
+//	private double[] clusteringValues;
+	private double[] convergenceValues;
+	private double oneThousandValue;
+	private double tenThousandValue;
+	 
+	
 
 	private int numRuns;
 	private double[] oneThousands;
@@ -16,6 +23,13 @@ public class Run {
 		oneHundredThousands = new double[numRuns];
 	}
 
+	public void setOneThousandValue(double fitness) {
+		this.oneThousandValue = fitness;
+	}
+	public void setTenThousandValue(double fitness) {
+		this.tenThousandValue = fitness;
+	}
+	
 	public void addThousand(double fitness) {
 		for (int i=0; i < oneThousands.length; i++) {
 			if (oneThousands[i] == 0.0) {
@@ -34,7 +48,7 @@ public class Run {
 		}
 	}
 	
-	public void printResults(String funcName) {
+	public static void printResults(String funcName) {
 		System.out.println("\n" + funcName);
 		
 		System.out.println("\n1000 iterations");
@@ -44,7 +58,17 @@ public class Run {
 		printQuartileResults(tenThousands);
 	}
 	
-	private void printQuartileResults(double[] values) {
+	public static void documentResults(String title, double[] values) {
+		System.out.println("\n" + title);
+		
+		System.out.println("\n1000 iterations");
+		printQuartileResults(values);
+		
+		System.out.println("\n10,000 iterations");
+		printQuartileResults(values);
+	}
+	
+	private static void printQuartileResults(double[] values) {
 		Arrays.sort(values);
 		System.out.println("1st (Best): " + values[0]);
 		
@@ -62,7 +86,7 @@ public class Run {
 		System.out.println("Standard Deviation: " + calculateStandardDeviation(mean, values) + "\n");
 	}
 	
-	private double calculateMean(double[] values) {
+	private static double calculateMean(double[] values) {
 		double sum = 0.0;
 		for (int i=0; i < values.length; i++) {
 			sum += values[i];
@@ -70,7 +94,7 @@ public class Run {
 		return sum/values.length;
 	}
 	
-	private double calculateStandardDeviation(double mean, double[] values) {
+	private static double calculateStandardDeviation(double mean, double[] values) {
 		double sum = 0.0;
 		for (int i=0; i < values.length; i++) {
 			sum += Math.pow((values[i] - mean), 2);

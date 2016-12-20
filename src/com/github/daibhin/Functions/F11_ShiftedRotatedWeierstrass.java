@@ -24,7 +24,7 @@ public class F11_ShiftedRotatedWeierstrass extends Func {
 		z = new double[dimensions];
 		zM = new double[dimensions];
 		
-		this.o = Benchmarker.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
+//		this.o = Benchmarker.randomProblemSpaceVector(getUpperBound(), getLowerBound(), dimensions);
 		// Load the shifted global optimum
 		Benchmarker.loadRowVectorFromFile(OPTIMUM_VALUES_FILE, dimensions, o);
 		// Load the matrix

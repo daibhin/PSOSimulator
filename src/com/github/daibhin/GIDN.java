@@ -17,16 +17,19 @@ public class GIDN extends PSO {
 	private double C_2 = 2.05;
 	private Random generator;
 	private BoundaryCondition boundary;
+	private boolean ignoreBoundaries = false;
 	
 	private Position globalBest;
+	private double globalFitness;
 	
 	private int iteration;
 	private double gamma = 2.0;
 	private double INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT = 2;
 		
-	public GIDN(Func function, BoundaryCondition boundary, int dimensions) {
+	public GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds) {
 		this.function = function;
 		this.boundary = boundary;
+		this.ignoreBoundaries = noBounds;
 		this.DIMENSIONS = dimensions;
 		this.generator = new Random();
 		initializeSwarm();
@@ -38,9 +41,9 @@ public class GIDN extends PSO {
 		while (iteration < MAX_ITERATIONS) {
 			
 			// EVALUATE CONVERGENCE //
-			if (function.evaluate(this.globalBest) == function.getOptimum()) {
-				return this.globalBest;
-			}
+//			if (this.globalFitness == function.getOptimum()) {
+//				return this.globalBest;
+//			}
 			
 			for (int index = 0; index < SWARM_SIZE; index++) {
 				Particle particle = particles[index];
@@ -80,16 +83,19 @@ public class GIDN extends PSO {
 				particle.setLocation(new Position(newLocation));
 				
 				// BOUNDARY CHECK //
-				if(particle.withinBounds(function)) {
+				if(ignoreBoundaries || particle.withinBounds(function)) {
+					
+					double currentFitness = function.evaluate(particle.getLocation());
 					
 					// UPDATE PERSONAL BEST //
-					if (function.isFitter(particle.getLocation(), particle.getPersonalBest())) {
-						particle.setPersonalBest(particle.getLocation());
+					if (function.isFitter(currentFitness, particle.getBestFitness())) {
+						particle.setPersonalBest(currentFitness);
 					}
 					
 					// UPDATE GLOBAL BEST //
-					if (function.isFitter(particle.getLocation(), this.globalBest)) {
+					if (function.isFitter(currentFitness, this.globalFitness)) {
 						this.globalBest = particle.getLocation();
+						this.globalFitness = currentFitness;
 					}
 				} else {
 					boundary.handleParticle(particle, function);
@@ -102,9 +108,9 @@ public class GIDN extends PSO {
 			
 			
 //			System.out.println(neighbourhoodSizeForIteration());
-			if (iteration % 10 == 0) {
-				System.out.println("Iteration: " + iteration + " / Fitness: " + function.evaluate(this.globalBest));
-			}
+//			if (iteration % 10 == 0) {
+//				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness));
+//			}
 			iteration++;
 		}
 		return this.globalBest;
@@ -160,9 +166,11 @@ public class GIDN extends PSO {
 			particles[i] = particle;
 
 			// SET PERSONAL & GLOBAL BESTS //
-			particle.setPersonalBest(particle.getLocation());
-			if (i == 0 || function.isFitter(particle.getLocation(), this.globalBest)) {
+			double currentFitness = function.evaluate(particle.getLocation());
+			particle.setPersonalBest(currentFitness);
+			if (i == 0 || function.isFitter(currentFitness, this.globalFitness)) {
 				this.globalBest = particle.getLocation();
+				this.globalFitness = currentFitness;
 			}
 			
 			// INITIALIZE NEIGHBOURHOOD //
