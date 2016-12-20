@@ -19,16 +19,17 @@ public class GlobalPSO extends PSO {
 
 	private Position globalBest;
 	private double globalFitness;
-	
-	private Run statsTracker;
-	
-	public GlobalPSO(Func function, BoundaryCondition boundary, int dimensions, Run statsTracker, boolean noBounds) {
+
+	private Run runTracker;
+
+	public GlobalPSO(Func function, BoundaryCondition boundary, int dimensions, Run runTracker, boolean noBounds, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
 		this.generator = new Random();
-		this.statsTracker = statsTracker;
+		this.runTracker = runTracker;
 		this.ignoreBoundaries = noBounds;
+		this.MAX_ITERATIONS = numIter;
 		initializeSwarm();
 	}
 
@@ -80,15 +81,6 @@ public class GlobalPSO extends PSO {
 					}
 
 					// UPDATE GLOBAL BEST //
-//					boolean thisFitness = function.isFitter(currentFitness, this.globalFitness);
-//					double current = function.evaluate(particle.getLocation());
-//					double other = function.evaluate(this.globalBest);
-//					boolean equalizer = currentFitness < this.globalFitness;
-//					if (thisFitness != equalizer) {
-//						double value = Double.compare(current, other);
-//						boolean returned = function.isFitter(currentFitness, this.globalFitness);
-//						System.out.println(returned);
-//					}
 					if (function.isFitter(currentFitness, this.globalFitness)) {
 						this.globalBest = particle.getLocation();
 						this.globalFitness = currentFitness;
@@ -99,18 +91,19 @@ public class GlobalPSO extends PSO {
 					boundaryExits++;
 				}
 			}
-
-			iteration++;
-			if (iteration % 10 == 0) {
-				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
-			}
 			
+			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
 			if (iteration == 1000 - 1) {
-				statsTracker.addThousand(this.globalFitness);
+				this.runTracker.setOneThousandValue(this.globalFitness);
 			}
 			if (iteration == 10000 - 1) {
-				statsTracker.addTenThousand(this.globalFitness);
+				this.runTracker.setTenThousandValue(this.globalFitness);
 			}
+			if (iteration % 10 == 0) {
+//				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
+			}
+
+			iteration++;
 		}
 //		System.out.println("Particles exited the boundary: " + boundaryExits);
 //		System.out.println("Solution found after max iterations of " + iteration + " / Final fitness: "
@@ -166,5 +159,10 @@ public class GlobalPSO extends PSO {
 			values[i] = ans;
 		}
 		return values;
+	}
+	
+	@Override
+	public String getName() {
+		return "GlobalPSO";
 	}
 }

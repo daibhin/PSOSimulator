@@ -25,12 +25,16 @@ public class GIDN extends PSO {
 	private int iteration;
 	private double gamma = 2.0;
 	private double INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT = 2;
+	
+	private Run runTracker;
 		
-	public GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds) {
+	public GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
-		this.ignoreBoundaries = noBounds;
 		this.DIMENSIONS = dimensions;
+		this.ignoreBoundaries = noBounds;
+		this.runTracker = runStats;
+		this.MAX_ITERATIONS = numIter;
 		this.generator = new Random();
 		initializeSwarm();
 		this.iteration = 0;
@@ -111,6 +115,14 @@ public class GIDN extends PSO {
 //			if (iteration % 10 == 0) {
 //				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness));
 //			}
+			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
+			if (iteration == 1000 - 1) {
+				this.runTracker.setOneThousandValue(this.globalFitness);
+			}
+			if (iteration == 10000 - 1) {
+				this.runTracker.setTenThousandValue(this.globalFitness);
+			}
+			
 			iteration++;
 		}
 		return this.globalBest;
@@ -203,5 +215,10 @@ public class GIDN extends PSO {
 	
 	private void updateNeighbourhood(Particle particle) {
 		
+	}
+	
+	@Override
+	public String getName() {
+		return "GIDNPSO";
 	}
 }

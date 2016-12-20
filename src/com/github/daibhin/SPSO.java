@@ -23,12 +23,16 @@ public class SPSO extends PSO {
 	private BoundaryCondition boundary;
 	private boolean ignoreBoundaries = false;
 	
-	public SPSO(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds) {
+	private Run runTracker;
+	
+	public SPSO(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.generator = new Random();
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
 		this.ignoreBoundaries = noBounds;
+		this.runTracker = runStats;
+		this.MAX_ITERATIONS = numIter;
 		initializeSwarm();
 		setupNeighbourhoods();
 	}
@@ -92,6 +96,14 @@ public class SPSO extends PSO {
 //			if (iteration % 10 == 0) {
 //				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
 //			}
+			
+			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
+			if (iteration == 1000 - 1) {
+				this.runTracker.setOneThousandValue(this.globalFitness);
+			}
+			if (iteration == 10000 - 1) {
+				this.runTracker.setTenThousandValue(this.globalFitness);
+			}
 			
 			iteration++;
 		}
@@ -210,5 +222,10 @@ public class SPSO extends PSO {
 			values[i] = ans;
 		}
 		return values;
+	}
+
+	@Override
+	public String getName() {
+		return "SPSO";
 	}
 }

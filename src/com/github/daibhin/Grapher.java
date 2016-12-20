@@ -15,34 +15,32 @@ import com.github.daibhin.Functions.Func;
 
 public class Grapher {
 	
-	private XYSeries series;
+	XYSeriesCollection dataset;
 
-	public Grapher(double[] yValues) {
-		double[] xValues = new double[yValues.length];
-		for(int i=1; i <= xValues.length; i++) {
-			xValues[i] = i;
-		}
-		setupGrapher(xValues, yValues);
+	public Grapher() {
+		dataset = new XYSeriesCollection();
 	}
 	
-	private void setupGrapher(double[] xValues, double[] yValues) {
-		this.series = new XYSeries("Convergence");
+	public void addSeries(String seriesTitle, double[] yValues) {
+		XYSeries series = new XYSeries(seriesTitle);
+		for(int i=0; i < yValues.length; i++) {
+			series.add(i+1, yValues[i]);
+		}
+		dataset.addSeries(series);
+	}
+	public void addSeries(String seriesTitle, double[] xValues, double[] yValues) {
+		XYSeries series = new XYSeries(seriesTitle);
 		if (xValues.length != yValues.length) {
 			System.out.println("Cannot plot series of different lengths");
 		}
-		for(int i=0; i<xValues.length; i++) {
-			this.series.add(xValues[i], yValues[i]);
+		for(int i=0; i < xValues.length; i++) {
+			series.add(xValues[i], yValues[i]);
 		}
-	}
-
-	public Grapher(double[] xValues, double[] yValues) {
-		setupGrapher(xValues, yValues);
-	}
-
-	private void plotConvergence(XYSeries series) {
-		XYSeriesCollection dataset = new XYSeriesCollection();
 		dataset.addSeries(series);
-		JFreeChart chart = ChartFactory.createXYLineChart("Convergence", "Iteration", "Fitness", dataset);
+	}
+
+	public void plotGraph(String seriesTitle, String xLabel, String yLabel) {
+		JFreeChart chart = ChartFactory.createXYLineChart(seriesTitle, xLabel, yLabel, dataset);
 		ChartPanel chartPanel = new ChartPanel(chart);
 		
 		JFrame frame = new JFrame("Convergence Chart");

@@ -12,5 +12,6 @@ public abstract class PSO {
 	Random generator;
 	
 	public abstract Position run();
+	public abstract String getName();
 	
 }

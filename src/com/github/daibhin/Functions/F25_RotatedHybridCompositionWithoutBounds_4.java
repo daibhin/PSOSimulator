@@ -75,6 +75,11 @@ public class F25_RotatedHybridCompositionWithoutBounds_4 extends Func {
 		return this.evaluate(position) < this.evaluate(other);
 	}
 	
+	@Override
+	public boolean hasDefinedDimensions() {
+		return true;
+	}
+	
 	private class F25 extends HybridComposition {
 		
 		public F25(int numFunc, int dimensions, double[] lambda, double[] biases, double[] sigma, double[][] o, double[][] z, double[][][] M, double[] w, double[][] zM) {

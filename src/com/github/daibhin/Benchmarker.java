@@ -73,153 +73,147 @@ public class Benchmarker {
 			"F25_RotatedHybridCompositionWithoutBounds_4"
 		};
 	
-	static final public double[] BIASES = {0, 0, 0, 0, 0, 0, 0, -450, -450, -450, -450, -310,
-										   390, -180, -140, -330, -330, 90, -460, -130,
-										   -300, 120, 120, 120, 10, 10, 10, 360, 360,
-										   360, 260, 260};
+	static final public double[] BIASES = {
+			0, 0, 0, 0, 0, 0, 0, -450, -450, -450,
+			-450, -310, 390, -180, -140, -330, -330, 90, -460, -130,
+			-300, 120, 120, 120, 10, 10, 10, 360, 360, 360,
+			260, 260
+	};
+	static final public boolean[] NO_BOUNDARIES = {
+			false, false, false, false, false, false, false, false, false, false,
+			false, false, false, true, false, false, false, false, false, false,
+			false, false, false, false, false, false, false, false, false,false,
+			false, true
+	};
 	
 	// precomputed values
 	static final public double PIx2 = Math.PI * 2.0;
 	
 	static final public int MAX_SUPPORT_DIM = 100;
-	static final public int NUM_TEST_FUNC = 30;
+	static final public int NUM_TEST_FUNC = 32;
 	
-	private static final int NUM_RUNS = 5;
-	private static final int NUM_FUNCTIONS = 1;
+	private static final int NUM_ITERATIONS = 10000;
+	private static final int BOUNDARY_INDEX = 0;
+	private static final int DIMENSIONS = 30;
+	private static final int NUM_RUNS = 25;
 	
 	static final public Random generator = new Random();
 	
 	public static void main(String[] args) {
-//		new Benchmarker();
-		
-		int dimensions = 30;
-		Func function = new Sphere(dimensions, -450);
-////		Position psn = new Position(((F03_ShiftedRotatedElliptic)function).getOptimumPosition());
-		BoundaryCondition boundary = new InvisibleBoundary();
-		Run statsTracker = new Run(1);
-		PSO algorithm = new GlobalPSO(function, boundary, dimensions, statsTracker, true);
-		Position best = algorithm.run();
-		System.out.println(best);
+		new Benchmarker();
 	}
 
 	public Benchmarker() {
-		int dimensions = 30;
-		int runs = 25;
-		
-		// **** Change funcNum & function & noBounds *** //
-		int funcNum = 31;
-		boolean noBounds = true;
-		double bias = Benchmarker.BIASES[funcNum];
-		String funcName = Benchmarker.FUNCTION_CLASS_NAMES[funcNum];
-		double[] results = new double[runs];
-		
-		// GLOBAL
-		for(int run=0; run < runs; run++) {
-			BoundaryCondition boundary = new InvisibleBoundary();
-			Func function = new F25_RotatedHybridCompositionWithoutBounds_4(dimensions, bias);
-			Run statsTracker = new Run(runs);
-			PSO algorithm = new GlobalPSO(function, boundary, dimensions, statsTracker, noBounds);
-			Position best = algorithm.run();
-			results[run] = function.evaluate(best);
-			System.out.println(results[run]);
-		}
-		Run.documentResults(funcName + " / GlobalPSO", results);
-		System.out.println("\n************************\n");
-		// SPSO
-		for(int run=0; run<runs;run++) {
-			BoundaryCondition boundary = new InvisibleBoundary();
-			Func function = new F25_RotatedHybridCompositionWithoutBounds_4(dimensions, bias);
-			PSO algorithm = new SPSO(function, boundary, dimensions, noBounds);
-			Position best = algorithm.run();
-			results[run] = function.evaluate(best);
-			System.out.println(results[run]);
-		}
-		Run.documentResults(funcName + " / SPSO", results);
-		System.out.println("\n************************\n");
-		// GIDN
-		for(int run=0; run<runs;run++) {
-			BoundaryCondition boundary = new InvisibleBoundary();
-			Func function = new F25_RotatedHybridCompositionWithoutBounds_4(dimensions, bias);
-			PSO algorithm = new GIDN(function, boundary, dimensions, noBounds);
-			Position best = algorithm.run();
-			results[run] = function.evaluate(best);
-			System.out.println(results[run]);
-		}
-		Run.documentResults(funcName + " / GIDN PSO", results);
-		
-//		runExperiment(dimensions, boundaryCondition, algorithm);
-//		runTest();
+		// functionIndex, algorithmIndex, boundaryIndex
+//		runSingleFunctionAndAlgorithm(0);
+		runSingleFunction(0, BOUNDARY_INDEX);
+//		runEntireExperiment();
+//		runFunctionTest();
 	}
 	
-	private void runExperiment(int dimensions, int boundaryIndex, int algorithmIndex) {
+	private void runEntireExperiment() {
+		for (int functionIndex = 0; functionIndex < NUM_TEST_FUNC; functionIndex++) {
+			runSingleFunction(functionIndex, BOUNDARY_INDEX);
+		}
+	}
+	
+	public void runSingleFunction(int funcNum, int boundaryIndex) {
+		double bias = Benchmarker.BIASES[funcNum];
+		String funcName = Benchmarker.FUNCTION_CLASS_NAMES[funcNum];
+		boolean noBoundaries = Benchmarker.NO_BOUNDARIES[funcNum];
 		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
 		
-		for (int functionIndex=0; functionIndex < NUM_FUNCTIONS; functionIndex++) {
-			Func function = getFunction(functionIndex, dimensions, Benchmarker.BIASES[functionIndex]);
-			int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : dimensions;
-			boolean noBounds = function.isOptimumOutsideBounds();
-			Run statsTracker = new Run(NUM_RUNS);
-			double sum = 0.0;
-			for (int i=0; i < NUM_RUNS; i++) {
-				PSO algorithm = getAlgorithm(algorithmIndex, function, boundary, functionDimensions, statsTracker, noBounds);
-				sum += function.evaluate(algorithm.run());
-				System.out.println("Loop:" + i + " / Average: " + (sum/(i+1)));
-			}
-			statsTracker.printResults(function.name());
+		Func function = getFunction(funcNum, DIMENSIONS, bias);
+		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
+		
+		Grapher grapher = new Grapher();
+		for(int algorithmIndex = 0; algorithmIndex <= 2; algorithmIndex++) {
+			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBoundaries, grapher);
 		}
+		grapher.plotGraph(funcName, "Iteration", "Fitness");
+	}
+	
+	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher grapher) {	
+		StatsTracker stats = new StatsTracker(NUM_RUNS);
+		PSO algorithm = null;
+		for(int run=0; run < NUM_RUNS; run++) {
+			Run runStats = new Run(NUM_ITERATIONS);
+			algorithm = getAlgorithm(algorithmIndex, function, boundary, dimensions, runStats, noBoundaries);
+			algorithm.run();
+			stats.addRun(runStats);
+			if (run == 0) {
+				grapher.addSeries(algorithm.getName(), runStats.getConvergenceValues());
+			}
+		}
+		stats.printResults(function.name() + "_" + algorithm.getName());
+		System.out.println("\n************************\n");
+	}
+	
+	public void runSingleFunctionAndAlgorithm(int functionIndex, int algorithmIndex, int boundaryIndex) {
+		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
+		double bias = Benchmarker.BIASES[functionIndex];
+		String funcName = Benchmarker.FUNCTION_CLASS_NAMES[functionIndex];
+		boolean noBoundaries = Benchmarker.NO_BOUNDARIES[functionIndex];
+		Func function = getFunction(functionIndex, DIMENSIONS, bias);
+		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
+
+		Grapher grapher = new Grapher();
+		runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBoundaries, grapher);
+		grapher.plotGraph(funcName, "Iteration", "Fitness");
 	}
 	
 	// *** PARAMETERS *** //
 	
-		private BoundaryCondition getBoundaryCondition(int index) {
-			switch(index) {
-				case 0:  return new InvisibleBoundary();
-				case 1:  return new ReflectingBoundary();
-			}
-			return null;
+	private BoundaryCondition getBoundaryCondition(int index) {
+		switch(index) {
+			case 0:  return new InvisibleBoundary();
+			case 1:  return new ReflectingBoundary();
 		}
-		
-		private static final int TWO_DIMENSIONS = 2;
-		private static final int TEN_DIMENSIONS = 10;
-		
-		private Func getFunction(int index, int dimensions, double bias) {
-			switch(index) {
-				case 0:  return new Sphere(dimensions, bias);
-				case 1:  return new Rosenbrock(dimensions, bias);
-				case 2:  return new Ackley(dimensions, bias);
-				case 3:  return new Griewank(dimensions, bias);
-				case 4:  return new Rastrigin(dimensions, bias);
-				case 5:  return new Schaffer2D(TWO_DIMENSIONS, bias);
-				case 6:  return new Griewank10D(TEN_DIMENSIONS, bias);
-				case 7:  return new F01_ShiftedSphere(dimensions, bias);
-				case 8:  return new F02_ShiftedSchwefel(dimensions, bias);
-				case 9:  return new F03_ShiftedRotatedElliptic(dimensions, bias);
-				case 10:  return new F04_ShiftedSchwefelNoise(dimensions, bias);
-				case 11:  return new F05_ShiftedSchwefelGlobalOptBound(dimensions, bias);
-				case 12:  return new F06_ShiftedRosenbrock(dimensions, bias);
-				case 13:  return new F07_ShiftedRotatedGriewank(dimensions, bias);
-				case 14:  return new F08_ShiftedRotatedAckleyGlobalOptBound(dimensions, bias);
-				case 15:  return new F09_ShiftedRastrigin(dimensions, bias);
-				case 16:  return new F11_ShiftedRotatedWeierstrass(dimensions, bias);
-				case 17:  return new F12_Schwefel(dimensions, bias);
-				case 18:  return new F13_ShiftedExpandedGriewankRosenbrock(dimensions, bias);
-				case 19:  return new F14_ShiftedRotatedExpandedScaffer(dimensions, bias);
-				case 20:  return new F15_HybridComposition_1(dimensions, bias);
-				case 21:  return new F16_RotatedHybridComposition_1(dimensions, bias);
-//				case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
-//				case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
-//				case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
-			}
-			return null;
+		return null;
+	}
+	
+	private static final int TWO_DIMENSIONS = 2;
+	private static final int TEN_DIMENSIONS = 10;
+	
+	private Func getFunction(int index, int dimensions, double bias) {
+		switch(index) {
+			case 0:  return new Sphere(dimensions, bias);
+			case 1:  return new Rosenbrock(dimensions, bias);
+			case 2:  return new Ackley(dimensions, bias);
+			case 3:  return new Griewank(dimensions, bias);
+			case 4:  return new Rastrigin(dimensions, bias);
+			case 5:  return new Schaffer2D(TWO_DIMENSIONS, bias);
+			case 6:  return new Griewank10D(TEN_DIMENSIONS, bias);
+			case 7:  return new F01_ShiftedSphere(dimensions, bias);
+			case 8:  return new F02_ShiftedSchwefel(dimensions, bias);
+			case 9:  return new F03_ShiftedRotatedElliptic(dimensions, bias);
+			case 10:  return new F04_ShiftedSchwefelNoise(dimensions, bias);
+			case 11:  return new F05_ShiftedSchwefelGlobalOptBound(dimensions, bias);
+			case 12:  return new F06_ShiftedRosenbrock(dimensions, bias);
+			case 13:  return new F07_ShiftedRotatedGriewank(dimensions, bias);
+			case 14:  return new F08_ShiftedRotatedAckleyGlobalOptBound(dimensions, bias);
+			case 15:  return new F09_ShiftedRastrigin(dimensions, bias);
+			case 16:  return new F11_ShiftedRotatedWeierstrass(dimensions, bias);
+			case 17:  return new F12_Schwefel(dimensions, bias);
+			case 18:  return new F13_ShiftedExpandedGriewankRosenbrock(dimensions, bias);
+			case 19:  return new F14_ShiftedRotatedExpandedScaffer(dimensions, bias);
+			case 20:  return new F15_HybridComposition_1(dimensions, bias);
+			case 21:  return new F16_RotatedHybridComposition_1(dimensions, bias);
+//			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
+//			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
+//			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
 		}
-		
-		private PSO getAlgorithm(int index, Func function, BoundaryCondition boundary, int dimensions, Run statsTracker, boolean noBounds) {
-			switch(index) {
-				case 0:  return new GlobalPSO(function, boundary, dimensions, statsTracker, noBounds);
-				case 1:  return new SPSO(function, boundary, dimensions, noBounds);
-			}
-			return null;
+		return null;
+	}
+	
+	private PSO getAlgorithm(int index, Func function, BoundaryCondition boundary, int dimensions, Run statsTracker, boolean noBounds) {
+		switch(index) {
+			case 0:  return new GlobalPSO(function, boundary, dimensions, statsTracker, noBounds, NUM_ITERATIONS);
+			case 1:  return new SPSO(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 2:  return new GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 		}
+		return null;
+	}
 	
 	// Random Problem Space Vector
 	public static double[] randomProblemSpaceVector(double max, double min, int dimensions) {
@@ -613,7 +607,7 @@ public class Benchmarker {
 	static final public DecimalFormat scientificFormatter = new DecimalFormat("0.0000000000000000E00");
 	static final public DecimalFormat numberFormatter = scientificFormatter;
 	
-	public void runTest() {
+	public void runFunctionTest() {
 
 			// Run the test function against the check points
 			int num_test_points = 10;
