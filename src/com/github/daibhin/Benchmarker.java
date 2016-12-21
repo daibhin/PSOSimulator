@@ -159,6 +159,7 @@ public class Benchmarker {
 			case 20:  return new F14_ShiftedRotatedExpandedScaffer(dimensions, bias);
 			case 21:  return new F15_HybridComposition_1(dimensions, bias);
 			case 22:  return new F16_RotatedHybridComposition_1(dimensions, bias);
+<<<<<<< HEAD
 			case 23:  return new F17_RotatedHybridCompositionNoise_1(dimensions, bias);
 			case 24:  return new F18_RotatedHybridComposition_2(dimensions, bias);
 			case 25:  return new F19_RotatedHybridCompositionNarrowBasinGlobalOpt_2(dimensions, bias);
@@ -168,6 +169,11 @@ public class Benchmarker {
 			case 29:  return new F23_NoncontinuousRotatedHybridComposition_3(dimensions, bias);
 			case 30:  return new F24_RotatedHybridComposition_4(dimensions, bias);
 			case 31:  return new F25_RotatedHybridCompositionWithoutBounds_4(dimensions, bias);
+=======
+//			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
+//			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
+//			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
+>>>>>>> 83ccccb... Add clustering based off minimum encomposing sphere radius
 		}
 		return null;
 	}
