@@ -1,7 +1,5 @@
 package com.github.daibhin;
 
-import java.util.concurrent.ExecutorService;
-
 import com.github.daibhin.Functions.Func;
 
 public class FunctionRunner implements Runnable {

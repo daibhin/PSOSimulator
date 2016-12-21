@@ -93,11 +93,8 @@ public class Benchmarker {
 	
 	static final public int MAX_SUPPORT_DIM = 100;
 	static final public int NUM_TEST_FUNC = 5;
-	
-	private static final int NUM_ITERATIONS = 10000;
 	private static final int BOUNDARY_INDEX = 0;
 	private static final int DIMENSIONS = 30;
-	private static final int NUM_RUNS = 25;
 	
 	static final public Random generator = new Random();
 	
@@ -106,8 +103,6 @@ public class Benchmarker {
 	}
 
 	public Benchmarker() {
-		// functionIndex, algorithmIndex, boundaryIndex
-//		runSingleFunctionAndAlgorithm(0);
 //		runSingleFunction(0, BOUNDARY_INDEX);
 		runEntireExperiment();
 //		runFunctionTest();
@@ -131,43 +126,7 @@ public class Benchmarker {
 		
 		FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions);
 		executor.execute(fr);
-		
-//		Grapher grapher = new Grapher();
-//		for(int algorithmIndex = 0; algorithmIndex <= 2; algorithmIndex++) {
-//			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBoundaries, grapher, executor);
-//		}
-//		grapher.plotGraph(funcName, "Iteration", "Fitness");
 	}
-	
-	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher grapher, ExecutorService executor) {	
-		StatsTracker stats = new StatsTracker(NUM_RUNS);
-		PSO algorithm = null;
-		for(int run=0; run < NUM_RUNS; run++) {
-			Run runStats = new Run(NUM_ITERATIONS);
-			algorithm = getAlgorithm(algorithmIndex, function, boundary, dimensions, runStats, noBoundaries);
-//			algorithm.start();
-//			algorithm.run();
-			stats.addRun(runStats);
-			if (run == 0) {
-				grapher.addSeries(algorithm.getName(), runStats.getConvergenceValues());
-			}
-		}
-		stats.printResults(function.name() + "_" + algorithm.getName());
-		System.out.println("\n************************\n");
-	}
-	
-//	public void runSingleFunctionAndAlgorithm(int functionIndex, int algorithmIndex, int boundaryIndex) {
-//		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
-//		double bias = Benchmarker.BIASES[functionIndex];
-//		String funcName = Benchmarker.FUNCTION_CLASS_NAMES[functionIndex];
-//		boolean noBoundaries = Benchmarker.NO_BOUNDARIES[functionIndex];
-//		Func function = getFunction(functionIndex, DIMENSIONS, bias);
-//		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
-//
-//		Grapher grapher = new Grapher();
-//		runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBoundaries, grapher);
-//		grapher.plotGraph(funcName, "Iteration", "Fitness");
-//	}
 	
 	// *** PARAMETERS *** //
 	
@@ -209,15 +168,6 @@ public class Benchmarker {
 //			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
 //			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
 //			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
-		}
-		return null;
-	}
-	
-	private PSO getAlgorithm(int index, Func function, BoundaryCondition boundary, int dimensions, Run statsTracker, boolean noBounds) {
-		switch(index) {
-			case 0:  return new GlobalPSO(function, boundary, dimensions, statsTracker, noBounds, NUM_ITERATIONS);
-			case 1:  return new SPSO(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 2:  return new GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 		}
 		return null;
 	}
