@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
+import com.dreizak.miniball.highdim.Miniball;
+import com.dreizak.miniball.model.ArrayPointSet;
 import com.github.daibhin.Functions.Func;
 
 public class GIDN extends PSO {
@@ -116,6 +118,7 @@ public class GIDN extends PSO {
 //				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness));
 //			}
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
+			this.runTracker.setClusteringValue(iteration, calculateEnclosingRadius());
 			if (iteration == 1000 - 1) {
 				this.runTracker.setOneThousandValue(this.globalFitness);
 			}
@@ -126,6 +129,17 @@ public class GIDN extends PSO {
 			iteration++;
 		}
 		return this.globalBest;
+	}
+	
+	private double calculateEnclosingRadius() {
+		ArrayPointSet ps = new ArrayPointSet(DIMENSIONS, SWARM_SIZE);
+		for (int i = 0; i < SWARM_SIZE; ++i) {
+			for (int j = 0; j < DIMENSIONS; ++j) {
+				ps.set(i, j, particles[i].getLocation().getValues()[j]);
+			}
+		}
+		Miniball miniball = new Miniball(ps);
+		return miniball.radius();
 	}
 	
 	private void printNeighbourhood(Particle particle, ArrayList<Particle> neighbourhoodParticles) {

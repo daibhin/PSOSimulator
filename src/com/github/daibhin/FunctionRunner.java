@@ -21,14 +21,16 @@ public class FunctionRunner implements Runnable {
 
 	public void run() {
 		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : dimensions;
-		Grapher grapher = new Grapher();
+		Grapher convergenceGraph = new Grapher();
+		Grapher clusteringGraph = new Grapher();
 		for(int algorithmIndex = 0; algorithmIndex <= 2; algorithmIndex++) {
-			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBounds, grapher);
+			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBounds, convergenceGraph, clusteringGraph);
 		}
-		grapher.plotGraph(function.name(), "Iteration", "Fitness");
+		convergenceGraph.plotGraph("Convergence Chart", function.name(), "Iteration", "Fitness");
+		clusteringGraph.plotGraph("Clustering Chart", function.name(), "Iteration", "Enclosing Radius");
 	}
 	
-	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher grapher) {	
+	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher clusteringGraph) {	
 		StatsTracker stats = new StatsTracker(NUM_RUNS);
 		PSO algorithm = null;
 		for(int run=0; run < NUM_RUNS; run++) {
@@ -37,7 +39,8 @@ public class FunctionRunner implements Runnable {
 			algorithm.run();
 			stats.addRun(runStats);
 			if (run == 0) {
-				grapher.addSeries(algorithm.getName(), runStats.getConvergenceValues());
+				convergenceGraph.addSeries(algorithm.getName(), runStats.getConvergenceValues());
+				clusteringGraph.addSeries(algorithm.getName(), runStats.getClusteringValues());
 			}
 		}
 		stats.printResults(function.name() + "_" + algorithm.getName());

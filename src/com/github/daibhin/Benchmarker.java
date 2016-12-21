@@ -3,7 +3,6 @@ package com.github.daibhin;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
@@ -78,7 +77,7 @@ public class Benchmarker {
 	}
 
 	public Benchmarker() {
-//		runSingleFunction(21);
+		runSingleFunction(21);
 //		runEntireExperiment(7);
 //		runEntireExperiment();
 //		runFunctionTest();
@@ -91,7 +90,7 @@ public class Benchmarker {
 		Func function = getFunction(funcNum, 30, bias);
 		System.out.print(function.evaluate(new Position(posnValues)));
 	}
-	
+
 	private void runEntireExperiment(int functionIndex) {
 		ExecutorService executor = Executors.newFixedThreadPool(8);
 		for (int index = functionIndex; index < NUM_TEST_FUNC; index++) {
@@ -99,7 +98,7 @@ public class Benchmarker {
 		}
 		executor.shutdown();
 	}
-	
+
 	private void runEntireExperiment() {
 		runEntireExperiment(0);
 	}
@@ -114,10 +113,10 @@ public class Benchmarker {
 		double bias = Benchmarker.BIASES[funcNum];
 		boolean noBoundaries = Benchmarker.NO_BOUNDARIES[funcNum];
 		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
-		
+
 		Func function = getFunction(funcNum, DIMENSIONS, bias);
 		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
-		
+
 		FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions);
 		executor.execute(fr);
 	}

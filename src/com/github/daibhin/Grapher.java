@@ -39,11 +39,11 @@ public class Grapher {
 		dataset.addSeries(series);
 	}
 
-	public void plotGraph(String seriesTitle, String xLabel, String yLabel) {
-		JFreeChart chart = ChartFactory.createXYLineChart(seriesTitle, xLabel, yLabel, dataset);
+	public void plotGraph(String windowTitle, String chartTitle, String xLabel, String yLabel) {
+		JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, xLabel, yLabel, dataset);
 		ChartPanel chartPanel = new ChartPanel(chart);
 		
-		JFrame frame = new JFrame("Convergence Chart");
+		JFrame frame = new JFrame(windowTitle);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(chartPanel, BorderLayout.CENTER);
 		frame.pack();
