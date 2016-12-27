@@ -6,10 +6,9 @@ import com.github.daibhin.Position;
 public class F25_RotatedHybridCompositionWithoutBounds_4 extends Func {
 	
 	static final public String FUNCTION_NAME = "Rotated Hybrid Composition Function 4 without bounds";
-	
-	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/hybrid_func4_data.txt";
-	static final public String MATRIX_VALUES_FILE_PREFIX = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/hybrid_func4_M_D";
-	
+
+	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func4_data.txt";
+	static final public String MATRIX_VALUES_FILE_PREFIX = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func4_M_D";
 	static final public int NUM_FUNC = 10;
 	
 	private final double[] sigma = {2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0};
@@ -70,11 +69,6 @@ public class F25_RotatedHybridCompositionWithoutBounds_4 extends Func {
 		return true;
 	}
 
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
-	
 	@Override
 	public boolean hasDefinedDimensions() {
 		return true;

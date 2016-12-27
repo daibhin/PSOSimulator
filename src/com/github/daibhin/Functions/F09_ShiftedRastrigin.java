@@ -6,7 +6,7 @@ import com.github.daibhin.Position;
 public class F09_ShiftedRastrigin extends Func {
 
 	static final public String FUNCTION_NAME = "Shifted Rastrigin's Function";
-	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/rastrigin_func_data.txt";
+	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/rastrigin_func_data.txt";
 	
 	private final double[] o;
 	private double[] z;
@@ -43,11 +43,6 @@ public class F09_ShiftedRastrigin extends Func {
 	@Override
 	public double getUpperBound() {
 		return 5;
-	}
-
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
 	}
 
 }

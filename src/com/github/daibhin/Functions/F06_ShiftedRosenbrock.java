@@ -6,7 +6,7 @@ import com.github.daibhin.Position;
 public class F06_ShiftedRosenbrock extends Func {
 
 	static final public String FUNCTION_NAME = "Shifted Rosenbrock's Function";
-	static final public String SHIFTED_OPTIMUM_VALUES = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/rosenbrock_func_data.txt";
+	static final public String SHIFTED_OPTIMUM_VALUES = applicationDirectory + "/Java-ypchen-050309/supportData/rosenbrock_func_data.txt";
 	
 	// Shifted global optimum
 	private double[] o;

@@ -6,7 +6,7 @@ import com.github.daibhin.Position;
 public class F05_ShiftedSchwefelGlobalOptBound extends Func {
 	
 	static final public String FUNCTION_NAME = "Schwefel's Problem 2.6 with Global Optimum on Bounds";
-	static final public String SHIFTED_OPTIMUM_POINTS = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/schwefel_206_data.txt";
+	static final public String SHIFTED_OPTIMUM_POINTS = applicationDirectory + "/Java-ypchen-050309/supportData/schwefel_206_data.txt";
 
 	
 	// Shifted global optimum
@@ -72,11 +72,6 @@ public class F05_ShiftedSchwefelGlobalOptBound extends Func {
 	@Override
 	public double getUpperBound() {
 		return 100;
-	}
-
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
 	}
 
 }

@@ -6,7 +6,7 @@ import com.github.daibhin.Position;
 public class F12_Schwefel extends Func {
 	
 	static final public String FUNCTION_NAME = "Schwefel's Problem 2.13";
-	static final public String FILE_DATA = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/schwefel_213_data.txt";
+	static final public String FILE_DATA = applicationDirectory + "/Java-ypchen-050309/supportData/schwefel_213_data.txt";
 	
 	// Shifted global optimum
 	private final double[] alpha;
@@ -77,8 +77,4 @@ public class F12_Schwefel extends Func {
 		return - Math.PI;
 	}
 
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
 }

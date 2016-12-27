@@ -27,9 +27,4 @@ public class Ackley extends Func {
 		return 32;
 	}
 
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
-
 }

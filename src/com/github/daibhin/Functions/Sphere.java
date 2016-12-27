@@ -27,9 +27,4 @@ public class Sphere extends Func {
 		return -5.12;
 	}
 
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
-
 }

@@ -40,11 +40,6 @@ public class Griewank10D extends Func {
 	}
 
 	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
-	
-	@Override
 	public boolean hasDefinedDimensions() {
 		return true;
 	}

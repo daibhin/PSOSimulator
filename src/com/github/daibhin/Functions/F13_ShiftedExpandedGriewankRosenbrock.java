@@ -6,7 +6,7 @@ import com.github.daibhin.Position;
 public class F13_ShiftedExpandedGriewankRosenbrock extends Func {
 	
 	static final public String FUNCTION_NAME = "Shifted Expanded Griewank's plus Rosenbrock's Function";
-	static final public String OPTIMUM_VALUES = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/EF8F2_func_data.txt";
+	static final public String OPTIMUM_VALUES = applicationDirectory + "/Java-ypchen-050309/supportData/EF8F2_func_data.txt";
 
 	// Shifted global optimum
 	private double[] o;
@@ -51,11 +51,6 @@ public class F13_ShiftedExpandedGriewankRosenbrock extends Func {
 	
 	public double[] getOptimumPosition() {
 		return this.o;
-	}
-
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
 	}
 
 }

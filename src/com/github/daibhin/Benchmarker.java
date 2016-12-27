@@ -9,32 +9,7 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.github.daibhin.Functions.Ackley;
-import com.github.daibhin.Functions.F01_ShiftedSphere;
-import com.github.daibhin.Functions.F02_ShiftedSchwefel;
-import com.github.daibhin.Functions.F03_ShiftedRotatedElliptic;
-import com.github.daibhin.Functions.F04_ShiftedSchwefelNoise;
-import com.github.daibhin.Functions.F05_ShiftedSchwefelGlobalOptBound;
-import com.github.daibhin.Functions.F06_ShiftedRosenbrock;
-import com.github.daibhin.Functions.F07_ShiftedRotatedGriewank;
-import com.github.daibhin.Functions.F08_ShiftedRotatedAckleyGlobalOptBound;
-import com.github.daibhin.Functions.F09_ShiftedRastrigin;
-import com.github.daibhin.Functions.F10_ShiftedRotatedRastrigin;
-import com.github.daibhin.Functions.F11_ShiftedRotatedWeierstrass;
-import com.github.daibhin.Functions.F12_Schwefel;
-import com.github.daibhin.Functions.F13_ShiftedExpandedGriewankRosenbrock;
-import com.github.daibhin.Functions.F14_ShiftedRotatedExpandedScaffer;
-import com.github.daibhin.Functions.F15_HybridComposition_1;
-import com.github.daibhin.Functions.F16_RotatedHybridComposition_1;
-import com.github.daibhin.Functions.F25_RotatedHybridCompositionWithoutBounds_4;
-import com.github.daibhin.Functions.Func;
-import com.github.daibhin.Functions.Griewank;
-import com.github.daibhin.Functions.Griewank10D;
-import com.github.daibhin.Functions.HybridComposition;
-import com.github.daibhin.Functions.Rastrigin;
-import com.github.daibhin.Functions.Rosenbrock;
-import com.github.daibhin.Functions.Schaffer2D;
-import com.github.daibhin.Functions.Sphere;
+import com.github.daibhin.Functions.*;
 
 public class Benchmarker {
 
@@ -92,7 +67,7 @@ public class Benchmarker {
 	static final public double PIx2 = Math.PI * 2.0;
 	
 	static final public int MAX_SUPPORT_DIM = 100;
-	static final public int NUM_TEST_FUNC = 5;
+	static final public int NUM_TEST_FUNC = 32;
 	private static final int BOUNDARY_INDEX = 0;
 	private static final int DIMENSIONS = 30;
 	
@@ -103,14 +78,14 @@ public class Benchmarker {
 	}
 
 	public Benchmarker() {
-//		runSingleFunction(0, BOUNDARY_INDEX);
-		runEntireExperiment(7);
+		runSingleFunction(11);
+//		runEntireExperiment(7);
 //		runEntireExperiment();
 //		runFunctionTest();
 	}
 	
 	private void runEntireExperiment(int functionIndex) {
-		ExecutorService executor = Executors.newFixedThreadPool(2);
+		ExecutorService executor = Executors.newFixedThreadPool(8);
 		for (int index = functionIndex; index < NUM_TEST_FUNC; index++) {
 			runSingleFunction(index, BOUNDARY_INDEX, executor);
 		}
@@ -120,7 +95,13 @@ public class Benchmarker {
 	private void runEntireExperiment() {
 		runEntireExperiment(0);
 	}
-	
+
+	public void runSingleFunction(int funcNum) {
+		ExecutorService executor = Executors.newFixedThreadPool(4);
+		runSingleFunction(11, BOUNDARY_INDEX, executor);
+		executor.shutdown();
+	}
+
 	public void runSingleFunction(int funcNum, int boundaryIndex, ExecutorService executor) {
 		double bias = Benchmarker.BIASES[funcNum];
 		boolean noBoundaries = Benchmarker.NO_BOUNDARIES[funcNum];
@@ -164,15 +145,22 @@ public class Benchmarker {
 			case 13:  return new F07_ShiftedRotatedGriewank(dimensions, bias);
 			case 14:  return new F08_ShiftedRotatedAckleyGlobalOptBound(dimensions, bias);
 			case 15:  return new F09_ShiftedRastrigin(dimensions, bias);
-			case 16:  return new F11_ShiftedRotatedWeierstrass(dimensions, bias);
-			case 17:  return new F12_Schwefel(dimensions, bias);
-			case 18:  return new F13_ShiftedExpandedGriewankRosenbrock(dimensions, bias);
-			case 19:  return new F14_ShiftedRotatedExpandedScaffer(dimensions, bias);
-			case 20:  return new F15_HybridComposition_1(dimensions, bias);
-			case 21:  return new F16_RotatedHybridComposition_1(dimensions, bias);
-//			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
-//			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
-//			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
+			case 16:  return new F10_ShiftedRotatedRastrigin(dimensions, bias);
+			case 17:  return new F11_ShiftedRotatedWeierstrass(dimensions, bias);
+			case 18:  return new F12_Schwefel(dimensions, bias);
+			case 19:  return new F13_ShiftedExpandedGriewankRosenbrock(dimensions, bias);
+			case 20:  return new F14_ShiftedRotatedExpandedScaffer(dimensions, bias);
+			case 21:  return new F15_HybridComposition_1(dimensions, bias);
+			case 22:  return new F16_RotatedHybridComposition_1(dimensions, bias);
+			case 23:  return new F17_RotatedHybridCompositionNoise_1(dimensions, bias);
+			case 24:  return new F18_RotatedHybridComposition_2(dimensions, bias);
+			case 25:  return new F19_RotatedHybridCompositionNarrowBasinGlobalOpt_2(dimensions, bias);
+			case 26:  return new F20_RotatedHybridCompositionGlobalOptBound_2(dimensions, bias);
+			case 27:  return new F21_RotatedHybridComposition_3(dimensions, bias);
+			case 28:  return new F22_RotatedHybridCompositionHighConditionNumMatrix_3(dimensions, bias);
+			case 29:  return new F23_NoncontinuousRotatedHybridComposition_3(dimensions, bias);
+			case 30:  return new F24_RotatedHybridComposition_4(dimensions, bias);
+			case 31:  return new F25_RotatedHybridCompositionWithoutBounds_4(dimensions, bias);
 		}
 		return null;
 	}

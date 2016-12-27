@@ -7,8 +7,8 @@ import com.github.daibhin.Functions.F15_HybridComposition_1.F15;
 public class F16_RotatedHybridComposition_1 extends Func {
 	
 	static final public String FUNCTION_NAME = "Rotated Hybrid Composition Function 1";
-	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/hybrid_func1_data.txt";
-	static final public String MATRIX_VALUES_FILE_PREFIX = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/hybrid_func1_M_D";
+	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func1_data.txt";
+	static final public String MATRIX_VALUES_FILE_PREFIX = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func1_M_D";
 	static final public int NUM_FUNC = 10;
 	
 	private final double[] sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
@@ -64,11 +64,6 @@ public class F16_RotatedHybridComposition_1 extends Func {
 		return -5;
 	}
 
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
-	
 	private class F16 extends HybridComposition {
 		
 		public F16(int numFunc, int dimensions, double[] lambda, double[] biases, double[] sigma, double[][] o, double[][] z, double[][][] M, double[] w, double[][] zM) {

@@ -5,6 +5,7 @@ import com.github.daibhin.Position;
 public abstract class Func {
 	
 	static final public String DEFAULT_FILE_SUFFIX = ".txt";
+	static final public String applicationDirectory = System.getProperty("user.dir");
 	
 	protected int dimensions;
 	protected double bias;
@@ -21,10 +22,10 @@ public abstract class Func {
 	}
 	
 	public boolean isFitter(Position position, Position other) {
-		double posnValue = this.evaluate(position);
-		double otherValue = this.evaluate(other);
-		return Double.compare(posnValue, otherValue) == -1.0;
-//		return this.evaluate(position) < this.evaluate(other);
+//		double posnValue = this.evaluate(position);
+//		double otherValue = this.evaluate(other);
+//		return Double.compare(posnValue, otherValue) == -1.0;
+		return this.evaluate(position) < this.evaluate(other);
 	}
 	
 	public boolean isFitter(double position, double other) {

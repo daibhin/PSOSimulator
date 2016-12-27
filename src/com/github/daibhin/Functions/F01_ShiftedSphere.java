@@ -6,7 +6,7 @@ import com.github.daibhin.Position;
 public class F01_ShiftedSphere extends Func {
 	
 	static final public String FUNCTION_NAME = "Shifted Sphere Function";
-	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/sphere_func_data.txt";
+	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/sphere_func_data.txt";
 	
 	// Shifted global optimum
 	private double[] o;

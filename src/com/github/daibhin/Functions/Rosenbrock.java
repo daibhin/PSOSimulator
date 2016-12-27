@@ -27,9 +27,4 @@ public class Rosenbrock extends Func {
 		return 2.048;
 	}
 
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
-
 }

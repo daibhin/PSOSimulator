@@ -6,8 +6,8 @@ import com.github.daibhin.Position;
 public class F07_ShiftedRotatedGriewank extends Func {
 	
 	static final public String FUNCTION_NAME = "Shifted Rotated Griewank's Function without Bounds";
-	static final public String OPTIMUM_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/griewank_func_data.txt";
-	static final public String MATRIX_VALUES_FILE_PREFIX = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/griewank_M_D";
+	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/griewank_func_data.txt";
+	static final public String MATRIX_VALUES_FILE_PREFIX = applicationDirectory + "/Java-ypchen-050309/supportData/griewank_M_D";
 	
 	// Shifted global optimum
 	private double[] o;
@@ -59,13 +59,4 @@ public class F07_ShiftedRotatedGriewank extends Func {
 		return true;
 	}
 
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
-	
-	@Override
-	public boolean hasDefinedDimensions() {
-		return true;
-	}
 }

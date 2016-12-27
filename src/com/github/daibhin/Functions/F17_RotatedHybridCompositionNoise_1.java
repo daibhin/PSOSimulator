@@ -6,6 +6,8 @@ import com.github.daibhin.Position;
 public class F17_RotatedHybridCompositionNoise_1 extends Func {
 	
 	static final public String FUNCTION_NAME = "Rotated Hybrid Composition Function 1 with Noise in Fitness";
+	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func1_data.txt";
+	static final public String MATRIX_VALUES_FILE_PREFIX = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func1_M_D";
 	static final public int NUM_FUNC = 10;
 	
 	private final double[] sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
@@ -30,11 +32,12 @@ public class F17_RotatedHybridCompositionNoise_1 extends Func {
 		w = new double[NUM_FUNC];
 		z = new double[NUM_FUNC][dimensions];
 		zM = new double[NUM_FUNC][dimensions];
-		
-//		// Load the shifted global optimum
-//		Benchmark.loadMatrixFromFile(file_data, NUM_FUNC, dimensions, o);
-//		// Load the matrix
-//		Benchmark.loadNMatrixFromFile(file_m, NUM_FUNC, dimensions, dimensions, M);
+
+		// Load the shifted global optimum
+		Benchmarker.loadMatrixFromFile(OPTIMUM_VALUES_FILE, NUM_FUNC, dimensions, o);
+		// Load the matrix
+		String matrixFile = MATRIX_VALUES_FILE_PREFIX + dimensions + DEFAULT_FILE_SUFFIX;
+		Benchmarker.loadNMatrixFromFile(matrixFile, NUM_FUNC, dimensions, dimensions, M);
 		
 		hc = new F17(NUM_FUNC, dimensions, sigma, o, z, biases, lambda, M, w, zM);
 		hc.calculateFunctionMaximums();
@@ -64,12 +67,6 @@ public class F17_RotatedHybridCompositionNoise_1 extends Func {
 		return -5;
 	}
 
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 	private class F17 extends HybridComposition {
 		
 		public F17(int numFunc, int dimensions, double[] sigma, double[][] o, double[][] z, double[] biases, double[] lambda, double[][][] M, double[] w, double[][] zM) {

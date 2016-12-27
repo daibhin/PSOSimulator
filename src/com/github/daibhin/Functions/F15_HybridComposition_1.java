@@ -6,7 +6,7 @@ import com.github.daibhin.Position;
 public class F15_HybridComposition_1 extends Func {
 	
 	static final public String FUNCTION_NAME = "Hybrid Composition Function 1";
-	static final public String MATRIX_VALUES_FILE = "/Users/David/Documents/College/Final Year Project/Java-ypchen-050309/supportData/hybrid_func1_data.txt";
+	static final public String MATRIX_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func1_data.txt";
 	static final public int NUM_FUNC = 10;
 	
 	private final double[] sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
@@ -81,11 +81,6 @@ public class F15_HybridComposition_1 extends Func {
 //		return this.o;
 //	}
 
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		return this.evaluate(position) < this.evaluate(other);
-	}
-	
 	public class F15 extends HybridComposition {
 				
 		public F15(int num_func, int dimensions, double[] lambda, double[] biases, double[] sigma, double[][] o, double[][][] M, double[] w, double[][] z, double[][] zM) {

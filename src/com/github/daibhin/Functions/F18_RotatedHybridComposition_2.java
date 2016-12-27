@@ -6,6 +6,8 @@ import com.github.daibhin.Position;
 public class F18_RotatedHybridComposition_2 extends Func {
 
 	public static final String FUNCTION_NAME = "Rotated Hybrid Composition Function 2";
+	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func2_data.txt";
+	static final public String MATRIX_VALUES_FILE_PREFIX = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func2_M_D";
 	public static final int NUM_FUNC = 10;
 	
 	private final double[] sigma = {1.0, 2.0, 1.5, 1.5, 1.0, 1.0, 1.5, 1.5, 2.0, 2.0};
@@ -31,13 +33,14 @@ public class F18_RotatedHybridComposition_2 extends Func {
 		z = new double[NUM_FUNC][dimensions];
 		zM = new double[NUM_FUNC][dimensions];
 		
-//		// Load the shifted global optimum
-//		Benchmark.loadMatrixFromFile(file_data, NUM_FUNC, dimensions, o);
-//		for (int i=0; i < dimensions; i ++) {
-//			o[9][i] = 0.0;
-//		}
+		// Load the shifted global optimum
+		Benchmarker.loadMatrixFromFile(OPTIMUM_VALUES_FILE, NUM_FUNC, dimensions, o);
+		for (int i=0; i < dimensions; i ++) {
+			o[9][i] = 0.0;
+		}
 //		// Load the matrix
-//		Benchmark.loadNMatrixFromFile(file_m, NUM_FUNC, dimensions, dimensions, M);
+		String matrixFile = MATRIX_VALUES_FILE_PREFIX + dimensions + DEFAULT_FILE_SUFFIX;
+		Benchmarker.loadNMatrixFromFile(matrixFile, NUM_FUNC, dimensions, dimensions, M);
 		
 		hc = new F18(NUM_FUNC, dimensions, lambda, biases, sigma, o, z, M, w, zM);
 		hc.calculateFunctionMaximums();
@@ -63,12 +66,6 @@ public class F18_RotatedHybridComposition_2 extends Func {
 		return -5;
 	}
 
-	@Override
-	public boolean isFitter(Position position, Position other) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 	private class F18 extends HybridComposition {
 		
 		public F18(int numFunc, int dimensions, double[] lambda, double[] biases, double[] sigma, double[][] o, double[][] z, double[][][] M, double[] w, double[][] zM) {
