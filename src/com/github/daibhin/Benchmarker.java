@@ -104,16 +104,21 @@ public class Benchmarker {
 
 	public Benchmarker() {
 //		runSingleFunction(0, BOUNDARY_INDEX);
-		runEntireExperiment();
+		runEntireExperiment(7);
+//		runEntireExperiment();
 //		runFunctionTest();
 	}
 	
-	private void runEntireExperiment() {
+	private void runEntireExperiment(int functionIndex) {
 		ExecutorService executor = Executors.newFixedThreadPool(2);
-		for (int functionIndex = 0; functionIndex < NUM_TEST_FUNC; functionIndex++) {
-			runSingleFunction(functionIndex, BOUNDARY_INDEX, executor);
+		for (int index = functionIndex; index < NUM_TEST_FUNC; index++) {
+			runSingleFunction(index, BOUNDARY_INDEX, executor);
 		}
 		executor.shutdown();
+	}
+	
+	private void runEntireExperiment() {
+		runEntireExperiment(0);
 	}
 	
 	public void runSingleFunction(int funcNum, int boundaryIndex, ExecutorService executor) {
