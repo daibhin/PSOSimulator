@@ -78,10 +78,19 @@ public class Benchmarker {
 	}
 
 	public Benchmarker() {
-		runSingleFunction(11);
+//		runSingleFunction(21);
 //		runEntireExperiment(7);
 //		runEntireExperiment();
 //		runFunctionTest();
+		testHybridFunction();
+	}
+
+	private void testHybridFunction() {
+		int funcNum = 30;
+		double[] posnValues = {-3.7426816821351503, -3.1517680337692378, 1.4019930525031743, 1.879781084925467, -4.370985040522219, -4.188630585350585, 4.371525369064557, -2.387668410066135, -1.0898241089235294, -2.1781563222501052, 1.5917810727743884, -3.6003932372257106, 2.257975593892178, 2.4205654994895145, 3.7144870099410277, -0.8035991874502066, -0.7636841759429425, 2.280011609803948, -2.067018762340247, -3.2654292301055188, -0.11325409646270845, -3.425196005827619, 4.952321927012219, 4.244996184098271, -0.872799483691491, 2.997205464685498, 4.656882088941659, 4.966818996938915, 3.249618782943248, 3.2847767019554794};
+		double bias = Benchmarker.BIASES[funcNum];
+		Func function = getFunction(funcNum, 30, bias);
+		System.out.print(function.evaluate(new Position(posnValues)));
 	}
 	
 	private void runEntireExperiment(int functionIndex) {
@@ -98,7 +107,7 @@ public class Benchmarker {
 
 	public void runSingleFunction(int funcNum) {
 		ExecutorService executor = Executors.newFixedThreadPool(4);
-		runSingleFunction(11, BOUNDARY_INDEX, executor);
+		runSingleFunction(funcNum, BOUNDARY_INDEX, executor);
 		executor.shutdown();
 	}
 
@@ -303,16 +312,15 @@ public class Benchmarker {
 	
 	// Ackley's function
 	static public double ackley(double[] x) {
-		double A = 20;
+		double A = 20.0;
 		double B = 0.2;
-		double C = 2*Math.PI;
 		
 		double sum1 = 0.0;
 		double sum2 = 0.0;
 
 		for (int i = 0 ; i < x.length ; i ++) {
 			sum1 += x[i]*x[i];
-			sum2 += Math.cos(C*x[i]);
+			sum2 += Math.cos(PIx2 * x[i]);
 		}
 
 		return (-A * Math.exp(-B * Math.sqrt(sum1 /(double) x.length))) - Math.exp(sum2 /(double) x.length) + A + Math.E;
@@ -346,8 +354,6 @@ public class Benchmarker {
 	static final public double a = 0.5;
 	static final public double b = 3.0;
 	static final public int k = 20;
-	static final public double a2k = Math.pow(a, k);
-	static final public double b2k = Math.pow(b, k);
 	static public double weierstrass(double[] x) {
 		return (weierstrass(x, a, b, k));
 	}
@@ -356,13 +362,13 @@ public class Benchmarker {
 		double sum1 = 0.0;
 		for (int i=0; i < x.length; i ++) {
 			for (int k=0; k <= Kmax; k ++) {
-				sum1 += a2k * Math.cos(PIx2 * b2k * (x[i] + 0.5));
+				sum1 += Math.pow(a, k) * Math.cos(PIx2 * Math.pow(b, k) * (x[i] + 0.5));
 			}
 		}
 
 		double sum2 = 0.0;
 		for (int k=0; k <= Kmax; k ++) {
-			sum2 += a2k * Math.cos(PIx2 * b2k * 0.5);
+			sum2 += Math.pow(a, k) * Math.cos(PIx2 * Math.pow(b, k) * (0.5));
 		}
 
 		return sum1 - (sum2*((double) x.length));
@@ -456,7 +462,7 @@ public class Benchmarker {
 				sumSquared += (hc.z[i][j] * hc.z[i][j]);
 			}
 			double denom = 2.0 * num_dim * hc.sigma[i] * hc.sigma[i];
-			hc.w[i] = Math.exp(-1.0 * (sumSquared/denom) );
+			hc.w[i] = Math.exp(-1.0 * sumSquared / denom);
 			if (maxW < hc.w[i])
 				maxW = hc.w[i];
 		}
@@ -482,8 +488,8 @@ public class Benchmarker {
 				hc.z[i][j] /= hc.lambda[i];
 			}
 			rotate(hc.zM[i], hc.z[i], hc.M[i]);
-			double fit = hc.C * hc.basicFunction(i, hc.zM[i]) / hc.fmax[i];
-			sumF += hc.w[i] *(fit + hc.biases[i]);
+			double fit = hc.C * hc.basicFunction(i, hc.zM[i]) / hc.fmax[i] + hc.biases[i];
+			sumF += hc.w[i] * fit;
 		}
 		return sumF;
 	}

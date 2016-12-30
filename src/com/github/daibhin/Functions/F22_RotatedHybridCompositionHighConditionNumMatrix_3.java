@@ -7,7 +7,7 @@ public class F22_RotatedHybridCompositionHighConditionNumMatrix_3 extends Func {
 	
 	static final public String FUNCTION_NAME = "Rotated Hybrid Composition Function 3 with High Condition Number Matrix";
 	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func3_data.txt";
-	static final public String MATRIX_VALUES_FILE_PREFIX = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func3_M_D";
+	static final public String MATRIX_VALUES_FILE_PREFIX = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func3_HM_D";
 	static final public int NUM_FUNC = 10;
 	
 	private final double[] sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0};

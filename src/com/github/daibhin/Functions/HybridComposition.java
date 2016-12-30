@@ -23,6 +23,10 @@ public abstract class HybridComposition {
 	public double[][] z;
 	public double[][] zM;
 
+	public HybridComposition() {
+		// This class is just a place holder.
+	}
+
 	public abstract double basicFunction(int func_no, double[] x);
 
 	public abstract void calculateFunctionMaximums();
