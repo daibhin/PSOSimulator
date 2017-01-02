@@ -77,7 +77,7 @@ public class Benchmarker {
 	}
 
 	public Benchmarker() {
-		runSingleFunction(21);
+		runSingleFunction(0);
 //		runEntireExperiment(7);
 //		runEntireExperiment();
 //		runFunctionTest();

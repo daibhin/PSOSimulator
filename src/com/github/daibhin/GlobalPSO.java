@@ -108,7 +108,7 @@ public class GlobalPSO extends PSO {
 			if (iteration % 100 == 0) {
 //				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
 			}
-			System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
+//			System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
 			iteration++;
 		}
 //		System.out.println("Particles exited the boundary: " + boundaryExits);
