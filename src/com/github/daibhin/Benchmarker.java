@@ -79,16 +79,31 @@ public class Benchmarker {
 	public Benchmarker() {
 		runSingleFunction(0);
 //		runEntireExperiment(7);
+//		runSingleAlgorithm(0);
 //		runEntireExperiment();
 //		runFunctionTest();
 //		testHybridFunction(9);
 	}
-
 	private void testHybridFunction(int funcNum) {
 		double[] posnValues = {-3.7426816821351503, -3.1517680337692378, 1.4019930525031743, 1.879781084925467, -4.370985040522219, -4.188630585350585, 4.371525369064557, -2.387668410066135, -1.0898241089235294, -2.1781563222501052, 1.5917810727743884, -3.6003932372257106, 2.257975593892178, 2.4205654994895145, 3.7144870099410277, -0.8035991874502066, -0.7636841759429425, 2.280011609803948, -2.067018762340247, -3.2654292301055188, -0.11325409646270845, -3.425196005827619, 4.952321927012219, 4.244996184098271, -0.872799483691491, 2.997205464685498, 4.656882088941659, 4.966818996938915, 3.249618782943248, 3.2847767019554794};
 		double bias = Benchmarker.BIASES[funcNum];
 		Func function = getFunction(funcNum, 30, bias);
 		System.out.print(function.evaluate(new Position(posnValues)));
+	}
+	
+	private void runSingleAlgorithm(int algorithmIndex) {
+		ExecutorService executor = Executors.newFixedThreadPool(2);
+		for(int functionIndex = 0; functionIndex < NUM_TEST_FUNC; functionIndex++) {
+			double bias = Benchmarker.BIASES[functionIndex];
+			boolean noBoundaries = Benchmarker.NO_BOUNDARIES[functionIndex];
+			BoundaryCondition boundary = getBoundaryCondition(BOUNDARY_INDEX);
+			
+			Func function = getFunction(functionIndex, DIMENSIONS, bias);
+			int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
+			FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions, algorithmIndex);
+			executor.execute(fr);
+		}
+		executor.shutdown();
 	}
 
 	private void runEntireExperiment(int functionIndex) {
@@ -116,8 +131,7 @@ public class Benchmarker {
 
 		Func function = getFunction(funcNum, DIMENSIONS, bias);
 		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
-
-		FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions);
+		FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions, -1);
 		executor.execute(fr);
 	}
 	
