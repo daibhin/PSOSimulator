@@ -19,7 +19,6 @@ public class FunctionRunner implements Runnable {
 		this.dimensions = dims;
 	}
 
-	@Override
 	public void run() {
 		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : dimensions;
 		Grapher grapher = new Grapher();

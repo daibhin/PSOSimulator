@@ -4,7 +4,6 @@ import com.github.daibhin.Functions.Func;
 
 public class ReflectingBoundary implements BoundaryCondition {
 
-	@Override
 	public void handleParticle(Particle particle, Func function) {
 		double[] positionValues = particle.getLocation().getValues();
 		double[] correctedPositionValues = new double[positionValues.length];
