@@ -12,6 +12,7 @@ public class FunctionRunner implements Runnable {
 	private boolean noBounds;
 	private int dimensions;
 	private int algorithmIndex;
+	private static int NUM_ALGORITHMS = 3;
 
 	public FunctionRunner(Func function, BoundaryCondition boundary, boolean boundaries, int dims, int algorithmIndex) {
 		this.function = function;
@@ -26,7 +27,7 @@ public class FunctionRunner implements Runnable {
 		Grapher convergenceGraph = new Grapher();
 		Grapher clusteringGraph = new Grapher();
 		if(algorithmIndex < 0) {
-			for(int algorithm = 0; algorithm <= 2; algorithm++) {
+			for(int algorithm = 0; algorithm <= NUM_ALGORITHMS - 1; algorithm++) {
 				runSingleAlgorithm(algorithm, function, boundary, functionDimensions, noBounds, convergenceGraph, clusteringGraph);
 			}
 		} else {
@@ -36,12 +37,12 @@ public class FunctionRunner implements Runnable {
 		clusteringGraph.plotGraph("Clustering Chart", function.name(), "Iteration", "Enclosing Radius");
 	}
 	
-	public void runSingleAlgorithm(int algoIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher clusteringGraph) {	
+	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher clusteringGraph) {
 		StatsTracker stats = new StatsTracker(NUM_RUNS);
 		PSO algorithm = null;
 		for(int run=0; run < NUM_RUNS; run++) {
 			Run runStats = new Run(NUM_ITERATIONS);
-			algorithm = getAlgorithm(algoIndex, function, boundary, dimensions, runStats, noBoundaries);
+			algorithm = getAlgorithm(algorithmIndex, function, boundary, dimensions, runStats, noBoundaries);
 			algorithm.run();
 			stats.addRun(runStats);
 			if (run == 0) {
