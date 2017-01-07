@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-import com.dreizak.miniball.highdim.Miniball;
-import com.dreizak.miniball.model.ArrayPointSet;
 import com.github.daibhin.Functions.Func;
 
 public class GIDN extends PSO {

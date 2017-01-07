@@ -1,8 +1,5 @@
 package com.github.daibhin;
 
-import com.dreizak.miniball.highdim.Miniball;
-import com.dreizak.miniball.model.ArrayPointSet;
-import com.dreizak.miniball.model.PointSet;
 import com.github.daibhin.Functions.Func;
 
 import java.util.Arrays;
