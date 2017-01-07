@@ -3,6 +3,8 @@ package com.github.daibhin;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.dreizak.miniball.highdim.Miniball;
+import com.dreizak.miniball.model.ArrayPointSet;
 import com.github.daibhin.Functions.Func;
 
 public class SPSO extends PSO {
