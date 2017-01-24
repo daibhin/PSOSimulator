@@ -4,6 +4,7 @@ public class Run {
 	
 	private double[] convergenceValues;
 	private double[] clusteringValues;
+	private double[] clusteringCoefficientValues;
 	private double oneThousandValue;
 	private double tenThousandValue;
 	
@@ -35,5 +36,11 @@ public class Run {
 	}
 	public void setClusteringValue(int i, double radius) {
 		clusteringValues[i] = radius;
+	}
+	public double[] getClusteringCoefficientValues() {
+		return clusteringCoefficientValues;
+	}
+	public void setClusteringCoefficientValue(int i, double value) {
+		clusteringCoefficientValues[i] = value;
 	}
 }

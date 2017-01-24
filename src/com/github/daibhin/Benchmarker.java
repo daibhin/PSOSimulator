@@ -77,9 +77,9 @@ public class Benchmarker {
 	}
 
 	public Benchmarker() {
-		runSingleFunction(0);
+//		runSingleFunction(0);
 //		runEntireExperiment(7);
-//		runSingleAlgorithm(0);
+		runSingleAlgorithm(2);
 //		runEntireExperiment();
 //		runFunctionTest();
 //		testHybridFunction(9);
@@ -92,7 +92,7 @@ public class Benchmarker {
 	}
 	
 	private void runSingleAlgorithm(int algorithmIndex) {
-		ExecutorService executor = Executors.newFixedThreadPool(2);
+		ExecutorService executor = Executors.newFixedThreadPool(1);
 		for(int functionIndex = 0; functionIndex < NUM_TEST_FUNC; functionIndex++) {
 			double bias = Benchmarker.BIASES[functionIndex];
 			boolean noBoundaries = Benchmarker.NO_BOUNDARIES[functionIndex];

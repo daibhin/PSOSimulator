@@ -60,6 +60,7 @@ public class GIDN extends PSO {
 					int particlesToAdd = neighbourhoodSizeForIteration() - neighbourhoodParticles.size();
 					ArrayList<Particle> copiedParticles = new ArrayList<Particle>(Arrays.asList(this.particles));
 					copiedParticles.removeAll(neighbourhoodParticles);
+					copiedParticles.remove(particle);
 					ArrayList<Particle> newParticles = randomlySelectedParticles(copiedParticles, particlesToAdd);
 					particle.getNeighbourhood().addToNeighbourhood(newParticles);
 				}
@@ -119,6 +120,7 @@ public class GIDN extends PSO {
 //			}
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
 			this.runTracker.setClusteringValue(iteration, calculateEnclosingRadius());
+			this.runTracker.setClusteringValue(iteration, calculateClusteringCoefficient());
 			if (iteration == 1000 - 1) {
 				this.runTracker.setOneThousandValue(this.globalFitness);
 			}
@@ -130,7 +132,30 @@ public class GIDN extends PSO {
 		}
 		return this.globalBest;
 	}
-	
+
+	private double calculateClusteringCoefficient() {
+		double sum = 0;
+		for (int i = 0; i < SWARM_SIZE; ++i) {
+			Particle particle = this.particles[i];
+			ArrayList<Particle> particlesNeighbours = (ArrayList<Particle>) particle.getNeighbourhood().getParticles().clone();
+			particlesNeighbours.remove(particle);
+
+			double count = 0;
+			for(Particle neighbour : particlesNeighbours) {
+				ArrayList<Particle> neighboursNeighbours = (ArrayList<Particle>) neighbour.getNeighbourhood().getParticles().clone();
+				neighboursNeighbours.remove(neighbour);
+				for(Particle neighboursNeighbour : neighboursNeighbours) {
+					// increment if a particles neighbour has one of the same neighbours as it
+					if(particlesNeighbours.contains(neighboursNeighbour)) {
+						count++;
+					}
+				}
+			}
+			sum += (count/(particlesNeighbours.size() * (particlesNeighbours.size() - 1.0)));
+		}
+		return sum/SWARM_SIZE;
+	}
+
 	private double calculateEnclosingRadius() {
 		ArrayPointSet ps = new ArrayPointSet(DIMENSIONS, SWARM_SIZE);
 		for (int i = 0; i < SWARM_SIZE; ++i) {
@@ -163,7 +188,8 @@ public class GIDN extends PSO {
 	private ArrayList<Particle> randomlySelectedParticles(ArrayList<Particle> copiedParticles, int particlesToAdd) {
 		ArrayList<Particle> selectedParticles = new ArrayList<Particle>();
 		Collections.shuffle(copiedParticles);
-		for (int i=0; i < particlesToAdd; i++) {
+		int maxPossible = Math.min(particlesToAdd, copiedParticles.size());
+		for (int i=0; i < maxPossible; i++) {
 			selectedParticles.add(copiedParticles.get(i));
 		}
 		return selectedParticles;
