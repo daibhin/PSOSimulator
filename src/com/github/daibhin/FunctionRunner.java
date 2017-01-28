@@ -26,20 +26,22 @@ public class FunctionRunner implements Runnable {
 		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : dimensions;
 		Grapher convergenceGraph = new Grapher();
 		Grapher clusteringGraph = new Grapher();
+		Grapher pathLengthGraph = new Grapher();
 		Grapher clusteringCoefficientGraph = new Grapher();
 		if(algorithmIndex < 0) {
 			for(int algorithm = 0; algorithm <= NUM_ALGORITHMS - 1; algorithm++) {
-				runSingleAlgorithm(algorithm, function, boundary, functionDimensions, noBounds, convergenceGraph, clusteringGraph, clusteringCoefficientGraph);
+				runSingleAlgorithm(algorithm, function, boundary, functionDimensions, noBounds, convergenceGraph, clusteringGraph, pathLengthGraph, clusteringCoefficientGraph);
 			}
 		} else {
-			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBounds, convergenceGraph, clusteringGraph, clusteringCoefficientGraph);
+			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBounds, convergenceGraph, clusteringGraph, pathLengthGraph, clusteringCoefficientGraph);
 		}
 		convergenceGraph.plotGraph("Convergence Chart", function.name(), "Iteration", "Fitness");
+		pathLengthGraph.plotGraph("Path Length Chart", function.name(), "Iteration", "Length");
 		clusteringGraph.plotGraph("Clustering Chart", function.name(), "Iteration", "Enclosing Radius");
 		clusteringCoefficientGraph.plotGraph("Clustering Coefficient Chart", function.name(), "Iteration", "Percentage");
 	}
-	
-	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher clusteringGraph, Grapher clusteringCoefficientGraph) {
+
+	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher clusteringGraph,Grapher pathLengthGraph, Grapher clusteringCoefficientGraph) {
 		StatsTracker stats = new StatsTracker(NUM_RUNS);
 		PSO algorithm = null;
 		for(int run=0; run < NUM_RUNS; run++) {
@@ -50,6 +52,7 @@ public class FunctionRunner implements Runnable {
 			if (run == 0) {
 				convergenceGraph.addSeries(algorithm.getName(), runStats.getConvergenceValues());
 				clusteringGraph.addSeries(algorithm.getName(), runStats.getClusteringValues());
+				pathLengthGraph.addSeries(algorithm.getName(), runStats.getAvgPathLength());
 				clusteringCoefficientGraph.addSeries(algorithm.getName(), runStats.getClusteringCoefficientValues());
 			}
 		}

@@ -4,6 +4,7 @@ public class Run {
 	
 	private double[] convergenceValues;
 	private double[] clusteringValues;
+	private double[] avgPathLength;
 	private double[] clusteringCoefficientValues;
 	private double oneThousandValue;
 	private double tenThousandValue;
@@ -11,6 +12,7 @@ public class Run {
 	public Run(int numIter) {
 		convergenceValues = new double[numIter];
 		clusteringValues = new double[numIter];
+		avgPathLength = new double[numIter];
 		clusteringCoefficientValues = new double[numIter];
 	}
 
@@ -37,6 +39,12 @@ public class Run {
 	}
 	public void setClusteringValue(int i, double radius) {
 		clusteringValues[i] = radius;
+	}
+	public double[] getAvgPathLength() {
+		return avgPathLength;
+	}
+	public void setAvgPathLength(int i, double apl) {
+		avgPathLength[i] = apl;
 	}
 	public double[] getClusteringCoefficientValues() {
 		return clusteringCoefficientValues;
