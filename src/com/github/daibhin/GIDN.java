@@ -120,7 +120,7 @@ public class GIDN extends PSO {
 //			}
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
 			this.runTracker.setClusteringValue(iteration, calculateEnclosingRadius());
-			this.runTracker.setClusteringValue(iteration, calculateClusteringCoefficient());
+			this.runTracker.setClusteringCoefficientValue(iteration, calculateClusteringCoefficient());
 			if (iteration == 1000 - 1) {
 				this.runTracker.setOneThousandValue(this.globalFitness);
 			}

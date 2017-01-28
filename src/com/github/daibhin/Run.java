@@ -11,6 +11,7 @@ public class Run {
 	public Run(int numIter) {
 		convergenceValues = new double[numIter];
 		clusteringValues = new double[numIter];
+		clusteringCoefficientValues = new double[numIter];
 	}
 
 	public double getOneThousandValue() {

@@ -50,7 +50,7 @@ public class FunctionRunner implements Runnable {
 			if (run == 0) {
 				convergenceGraph.addSeries(algorithm.getName(), runStats.getConvergenceValues());
 				clusteringGraph.addSeries(algorithm.getName(), runStats.getClusteringValues());
-				clusteringCoefficientGraph.addSeries(algorithm.getName(), runStats.getClusteringValues());
+				clusteringCoefficientGraph.addSeries(algorithm.getName(), runStats.getClusteringCoefficientValues());
 			}
 		}
 		stats.printResults(function.name() + "_" + algorithm.getName());
