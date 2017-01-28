@@ -9,8 +9,7 @@ public abstract class PSO {
 	Particle[] particles;
 	int maxIterations = 10000;
 	Func function;
-	Random generator;
-	
+
 	public abstract Position run();
 	public abstract String getName();
 	
