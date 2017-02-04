@@ -54,7 +54,6 @@ public class FunctionRunner implements Runnable {
 				clusteringGraph.addSeries(algorithm.getName(), runStats.getClusteringValues());
 				pathLengthGraph.addSeries(algorithm.getName(), runStats.getAvgPathLength());
 				clusteringCoefficientGraph.addSeries(algorithm.getName(), runStats.getClusteringCoefficientValues());
-				pathLengthGraph.plotGraph("Path Length Chart", function.name(), "Iteration", "Length");
 			}
 		}
 		stats.printResults(function.name() + "_" + algorithm.getName());
@@ -68,6 +67,7 @@ public class FunctionRunner implements Runnable {
 			case 2:  return new GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 3:  return new APL_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 4:  return new Linear_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 5:  return new Sigmoid_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 		}
 		return null;
 	}
