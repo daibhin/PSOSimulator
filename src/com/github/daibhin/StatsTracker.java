@@ -101,4 +101,33 @@ public class StatsTracker {
 		this.runs.add(run);
 	}
 
+	public void saveAveragedGraphs(String algorithmName, String functionName) {
+		double[] avgConvergenceValues = new double[runs.get(0).getConvergenceValues().length];
+		double[] avgPathLengthValues = new double[avgConvergenceValues.length];
+		double[] avgCluesteringCoefficientValues = new double[avgConvergenceValues.length];
+		for(Run run : runs) {
+			for (int i=0; i < run.getConvergenceValues().length; i++) {
+				avgConvergenceValues[i] += run.getConvergenceValues()[i];
+				avgPathLengthValues[i] += run.getAvgPathLengthValues()[i];
+				avgCluesteringCoefficientValues[i] += run.getClusteringCoefficientValues()[i];
+			}
+		}
+		for (int j=0; j < avgConvergenceValues.length; j++) {
+			avgConvergenceValues[j] /= runs.size();
+			avgPathLengthValues[j] /= runs.size();
+			avgCluesteringCoefficientValues[j] /= runs.size();
+		}
+
+		saveGraph(algorithmName, functionName, "Convergence Graph", "Iteration", "Best Fitness", "Convergence.png", avgConvergenceValues);
+		saveGraph(algorithmName, functionName, "Average Path Length Graph", "Iteration", "Average Path Length", "PathLength.png", avgPathLengthValues);
+		saveGraph(algorithmName, functionName, "Clustering Coefficient Graph", "Iteration", "Clustering Coefficient", "ClusteringCoefficient.png", avgCluesteringCoefficientValues);
+
+	}
+
+	private void saveGraph(String algorithmName, String functionName, String graphName, String xLabel, String yLabel, String filename, double[] values) {
+		Grapher graph = new Grapher();
+		graph.addSeries(algorithmName, values);
+		graph.createChart(functionName + " - " + graphName, xLabel, yLabel);
+		graph.saveChart("./Graphs/" + algorithmName + "/" + functionName + "/", filename);
+	}
 }

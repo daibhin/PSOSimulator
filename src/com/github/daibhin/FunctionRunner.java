@@ -25,38 +25,43 @@ public class FunctionRunner implements Runnable {
 	public void run() {
 		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : dimensions;
 		Grapher convergenceGraph = new Grapher();
-		Grapher clusteringGraph = new Grapher();
 		Grapher pathLengthGraph = new Grapher();
 		Grapher clusteringCoefficientGraph = new Grapher();
 		if(algorithmIndex < 0) {
 			for(int algorithm = 0; algorithm <= NUM_ALGORITHMS - 1; algorithm++) {
-				runSingleAlgorithm(algorithm, function, boundary, functionDimensions, noBounds, convergenceGraph, clusteringGraph, pathLengthGraph, clusteringCoefficientGraph);
+				runSingleAlgorithm(algorithm, function, boundary, functionDimensions, noBounds, convergenceGraph, pathLengthGraph, clusteringCoefficientGraph);
 			}
 		} else {
-			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBounds, convergenceGraph, clusteringGraph, pathLengthGraph, clusteringCoefficientGraph);
+			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBounds, convergenceGraph, pathLengthGraph, clusteringCoefficientGraph);
 		}
-		convergenceGraph.plotGraph("Convergence Chart", function.name(), "Iteration", "Fitness");
-		pathLengthGraph.plotGraph("Path Length Chart", function.name(), "Iteration", "Length");
-		clusteringGraph.plotGraph("Clustering Chart", function.name(), "Iteration", "Enclosing Radius");
-		clusteringCoefficientGraph.plotGraph("Clustering Coefficient Chart", function.name(), "Iteration", "Percentage");
 	}
 
-	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher clusteringGraph,Grapher pathLengthGraph, Grapher clusteringCoefficientGraph) {
+	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher pathLengthGraph, Grapher clusteringCoefficientGraph) {
 		StatsTracker stats = new StatsTracker(NUM_RUNS);
 		PSO algorithm = null;
-		for(int run=0; run < NUM_RUNS; run++) {
+		for(int run = 0; run < NUM_RUNS; run++) {
 			Run runStats = new Run(NUM_ITERATIONS);
 			algorithm = getAlgorithm(algorithmIndex, function, boundary, dimensions, runStats, noBoundaries);
 			algorithm.run();
 			stats.addRun(runStats);
-			if (run == 0) {
-				convergenceGraph.addSeries(algorithm.getName(), runStats.getConvergenceValues());
-				clusteringGraph.addSeries(algorithm.getName(), runStats.getClusteringValues());
-				pathLengthGraph.addSeries(algorithm.getName(), runStats.getAvgPathLength());
-				clusteringCoefficientGraph.addSeries(algorithm.getName(), runStats.getClusteringCoefficientValues());
-			}
+
+			convergenceGraph.addSeries(algorithm.getName(), runStats.getConvergenceValues());
+			convergenceGraph.createChart(function.name() + " - Convergence Graph", "Iteration", "Global Best");
+			convergenceGraph.saveChart("./Graphs/" + algorithm.getName() + "/" + function.name() + "/Convergence/", run + ".png");
+			convergenceGraph.clearSeries();
+
+			pathLengthGraph.addSeries(algorithm.getName(), runStats.getAvgPathLengthValues());
+			pathLengthGraph.createChart(function.name() + " - Average Path Length", "Iteration", "Path Length");
+			pathLengthGraph.saveChart("./Graphs/" + algorithm.getName() + "/" + function.name() + "/PathLength/", run + ".png");
+			pathLengthGraph.clearSeries();
+
+			clusteringCoefficientGraph.addSeries(algorithm.getName(), runStats.getClusteringCoefficientValues());
+			clusteringCoefficientGraph.createChart(function.name() + " - Clustering Coefficient", "Iteration", "Percentage");
+			clusteringCoefficientGraph.saveChart("./Graphs/" + algorithm.getName() + "/" + function.name() + "/ClusteringCoefficient/", run + ".png");
+			clusteringCoefficientGraph.clearSeries();
 		}
 		stats.printResults(function.name() + "_" + algorithm.getName());
+		stats.saveAveragedGraphs(algorithm.getName(), function.name());
 		System.out.println("\n************************\n");
 	}
 	

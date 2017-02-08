@@ -79,7 +79,7 @@ public class Benchmarker {
 	public Benchmarker() {
 //		runSingleFunction(0);
 //		runEntireExperiment(7);
-		runSingleAlgorithm(5);
+		runSingleAlgorithm(2);
 //		runEntireExperiment();
 //		runFunctionTest();
 //		testHybridFunction(9);

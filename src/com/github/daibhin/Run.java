@@ -40,7 +40,7 @@ public class Run {
 	public void setClusteringValue(int i, double radius) {
 		clusteringValues[i] = radius;
 	}
-	public double[] getAvgPathLength() {
+	public double[] getAvgPathLengthValues() {
 		return avgPathLength;
 	}
 	public void setAvgPathLength(int i, double apl) {
