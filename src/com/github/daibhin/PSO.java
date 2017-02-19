@@ -10,6 +10,9 @@ public abstract class PSO {
 	int maxIterations = 10000;
 	Func function;
 
+	private Position globalBest;
+	private double globalFitness;
+
 	public abstract Position run();
 	public abstract String getName();
 	

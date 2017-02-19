@@ -11,6 +11,11 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.LogAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -31,6 +36,22 @@ public class Grapher {
 			series.add(i+1, yValues[i]);
 		}
 		dataset.addSeries(series);
+	}
+	public void addDecibleSeries(String seriesTitle, double[] yValues, String xLabel, String yLabel) {
+		XYSeries series = new XYSeries(seriesTitle);
+		for(int i=0; i < yValues.length; i++) {
+			series.add(i+1, yValues[i]);
+		}
+		dataset.addSeries(series);
+
+
+		NumberAxis xAxis = new NumberAxis(xLabel);
+		xAxis.setAutoTickUnitSelection(true);
+		LogAxis yAxis = new LogAxis(yLabel);
+		yAxis.setBase(10);
+		yAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		XYPlot plot = new XYPlot(new XYSeriesCollection(series), xAxis, yAxis, new XYLineAndShapeRenderer(true, false));
+		chart = new JFreeChart(seriesTitle, JFreeChart.DEFAULT_TITLE_FONT, plot, false);
 	}
 	public void addSeries(String seriesTitle, double[] xValues, double[] yValues) {
 		XYSeries series = new XYSeries(seriesTitle);

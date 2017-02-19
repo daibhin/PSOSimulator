@@ -1,16 +1,16 @@
 package com.github.daibhin;
 
+import com.dreizak.miniball.highdim.Miniball;
+import com.dreizak.miniball.model.ArrayPointSet;
+import com.github.daibhin.Functions.Func;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-import com.dreizak.miniball.highdim.Miniball;
-import com.dreizak.miniball.model.ArrayPointSet;
-import com.github.daibhin.Functions.Func;
+public class Structured_GIDN extends PSO {
 
-public class GIDN extends PSO {
-	
 	private int SWARM_SIZE = 50;
 	private int DIMENSIONS = 30;
 	private double MAX_ITERATIONS = 10000.0;
@@ -20,17 +20,17 @@ public class GIDN extends PSO {
 	private Random generator;
 	private BoundaryCondition boundary;
 	private boolean ignoreBoundaries = false;
-	
+
 	private Position globalBest;
 	private double globalFitness;
-	
+
 	private int iteration;
 	private double gamma = 2.0;
 	private double INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT = 2;
-	
+
 	private Run runTracker;
-		
-	public GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
+
+	public Structured_GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
@@ -39,18 +39,14 @@ public class GIDN extends PSO {
 		this.MAX_ITERATIONS = numIter;
 		this.generator = new Random();
 		initializeSwarm();
+		setupNeighbourhoods();
 		this.iteration = 0;
 	}
 
 	@Override
 	public Position run() {
 		while (iteration < MAX_ITERATIONS) {
-			
-			// EVALUATE CONVERGENCE //
-//			if (this.globalFitness == function.getOptimum()) {
-//				return this.globalBest;
-//			}
-			
+
 			for (int index = 0; index < SWARM_SIZE; index++) {
 				Particle particle = particles[index];
 				
@@ -58,11 +54,7 @@ public class GIDN extends PSO {
 				ArrayList<Particle> neighbourhoodParticles = particle.getNeighbourhood().getParticles();
 				if(neighbourhoodSizeForIteration() > neighbourhoodParticles.size()) {
 					int particlesToAdd = neighbourhoodSizeForIteration() - neighbourhoodParticles.size();
-					ArrayList<Particle> copiedParticles = new ArrayList<Particle>(Arrays.asList(this.particles));
-					copiedParticles.removeAll(neighbourhoodParticles);
-					copiedParticles.remove(particle);
-					ArrayList<Particle> newParticles = randomlySelectedParticles(copiedParticles, particlesToAdd);
-					particle.getNeighbourhood().addToNeighbourhood(newParticles);
+					addNextParticles(particle, particlesToAdd);
 				}
 				if (iteration == 0) {
 					particle.getNeighbourhood().setInitialBestPosition(function);
@@ -79,7 +71,6 @@ public class GIDN extends PSO {
 					double currentVelocity = particle.getVelocity()[vel];
 					newVelocity[vel] = CONSTRICTION_FACTOR*(currentVelocity + personalContribution + socialContribution);
 				}
-//				printNeighbourhood(particle, particle.getNeighbourhood().getParticles());
 				particle.setVelocity(newVelocity);
 				
 				// UPDATE PARTICLE POSITION //
@@ -112,12 +103,7 @@ public class GIDN extends PSO {
 				particle.getNeighbourhood().updateBestPosition(function);
 				
 			}
-			
-			
-//			System.out.println(neighbourhoodSizeForIteration());
-//			if (iteration % 10 == 0) {
-//				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness));
-//			}
+
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
 			this.runTracker.setAvgPathLength(iteration, calculateAvgPathLength());
 			this.runTracker.setClusteringValue(iteration, calculateEnclosingRadius());
@@ -128,6 +114,7 @@ public class GIDN extends PSO {
 			if (iteration == 10000 - 1) {
 				this.runTracker.setTenThousandValue(this.globalFitness);
 			}
+			System.out.println(this.globalFitness);
 			iteration++;
 		}
 		return this.globalBest;
@@ -228,10 +215,63 @@ public class GIDN extends PSO {
 				this.globalBest = particle.getLocation();
 				this.globalFitness = currentFitness;
 			}
-			particle.setNeighbourhood(new ArrayList<Particle>(), this.function, this.particles);
 		}
 	}
 
+	private void addNextParticles(Particle p, int numToAdd) {
+		if ((numToAdd % 2) == 0) {
+			Neighbourhood neighbourhood = p.getNeighbourhood();
+			ArrayList<Particle> neighbourhoodParticles = neighbourhood.getParticles();
+			int neighbourhoodSize = neighbourhoodParticles.size();
+			int index = findPosition(p);
+			int numAddEitherSide = numToAdd/2;
+
+			ArrayList<Particle> newParticles = new ArrayList<>();
+
+			for (int i=0; i<numAddEitherSide; i++) {
+				int clockwiseIndex = index + (neighbourhoodSize-1)/2 + 1;
+				if (clockwiseIndex >= SWARM_SIZE) {
+					clockwiseIndex = clockwiseIndex - SWARM_SIZE;
+				}
+				Particle newAntiClockwiseParticle = this.particles[clockwiseIndex];
+				newParticles.add(newAntiClockwiseParticle);
+
+				int antiClockwiseIndex = index - (neighbourhoodSize-1)/2 - 1;
+				if (antiClockwiseIndex < 0) {
+					antiClockwiseIndex = SWARM_SIZE + antiClockwiseIndex;
+				}
+				Particle newClockwiseParticle = this.particles[antiClockwiseIndex];
+				newParticles.add(newClockwiseParticle);
+
+				neighbourhoodSize = neighbourhoodParticles.size();
+			}
+			neighbourhood.addToNeighbourhood(newParticles);
+		}
+	}
+
+	// sphere topology
+	private void setupNeighbourhoods() {
+		for(int index=0; index < SWARM_SIZE; index++) {
+			ArrayList<Particle> neighbourhoodParticles = new ArrayList<Particle>(); // ring topology
+			if (index == 0) { // first particle
+				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 1]); // last
+				neighbourhoodParticles.add(this.particles[1]); // second
+				neighbourhoodParticles.add(this.particles[0]); // itself (first)
+			} else if (index == (SWARM_SIZE - 1)) { // last particle
+				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 2]); // second last
+				neighbourhoodParticles.add(this.particles[0]); // first
+				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 1]); // itself (last)
+			} else { // other particles
+				neighbourhoodParticles.add(this.particles[index + 1]); // before
+				neighbourhoodParticles.add(this.particles[index - 1]); //after
+				neighbourhoodParticles.add(this.particles[index]); // itself
+			}
+
+			Particle particle = this.particles[index];
+			particle.setNeighbourhood(neighbourhoodParticles, this.function, this.particles);
+		}
+	}
+	
 	private double[] randomProblemSpacePosition() {
 		double[] values = new double[DIMENSIONS];
 		for (int i = 0; i < DIMENSIONS; i++) {

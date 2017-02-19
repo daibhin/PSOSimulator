@@ -132,7 +132,6 @@ public class Linear_GIDN extends PSO {
 			if (iteration == 10000 - 1) {
 				this.runTracker.setTenThousandValue(this.globalFitness);
 			}
-
 			iteration++;
 		}
 		return this.globalBest;

@@ -1,36 +1,37 @@
 package com.github.daibhin;
 
+import com.dreizak.miniball.highdim.Miniball;
+import com.dreizak.miniball.model.ArrayPointSet;
+import com.github.daibhin.Functions.Func;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-import com.dreizak.miniball.highdim.Miniball;
-import com.dreizak.miniball.model.ArrayPointSet;
-import com.github.daibhin.Functions.Func;
+public class EandE_GIDN extends PSO {
 
-public class GIDN extends PSO {
-	
+	private int iteration = 0;
 	private int SWARM_SIZE = 50;
 	private int DIMENSIONS = 30;
 	private double MAX_ITERATIONS = 10000.0;
 	private double CONSTRICTION_FACTOR = 0.72984;
 	private double C_1 = 2.05;
 	private double C_2 = 2.05;
-	private Random generator;
 	private BoundaryCondition boundary;
 	private boolean ignoreBoundaries = false;
-	
 	private Position globalBest;
 	private double globalFitness;
-	
-	private int iteration;
+
+	private Random generator;
+	private Run runTracker;
+
 	private double gamma = 2.0;
 	private double INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT = 2;
-	
-	private Run runTracker;
-		
-	public GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
+	private double avgPathLength;
+	private double startingAverage;
+
+	public EandE_GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
@@ -38,67 +39,67 @@ public class GIDN extends PSO {
 		this.runTracker = runStats;
 		this.MAX_ITERATIONS = numIter;
 		this.generator = new Random();
+
 		initializeSwarm();
-		this.iteration = 0;
+		setupNeighbourhoods();
+		this.startingAverage = calculateAvgPathLength();
 	}
 
 	@Override
 	public Position run() {
+		this.avgPathLength = calculateAvgPathLength();
 		while (iteration < MAX_ITERATIONS) {
-			
-			// EVALUATE CONVERGENCE //
-//			if (this.globalFitness == function.getOptimum()) {
-//				return this.globalBest;
-//			}
-			
+
+
 			for (int index = 0; index < SWARM_SIZE; index++) {
 				Particle particle = particles[index];
-				
+
 				// UPDATE NEIGHBOURHOOD //
 				ArrayList<Particle> neighbourhoodParticles = particle.getNeighbourhood().getParticles();
-				if(neighbourhoodSizeForIteration() > neighbourhoodParticles.size()) {
-					int particlesToAdd = neighbourhoodSizeForIteration() - neighbourhoodParticles.size();
+				double desiredAverage = averagePathLengthForIteration();
+				if (desiredAverage < this.avgPathLength && (neighbourhoodParticles.size() < SWARM_SIZE)) {
+					int particlesToAdd = 1;
 					ArrayList<Particle> copiedParticles = new ArrayList<Particle>(Arrays.asList(this.particles));
 					copiedParticles.removeAll(neighbourhoodParticles);
-					copiedParticles.remove(particle);
 					ArrayList<Particle> newParticles = randomlySelectedParticles(copiedParticles, particlesToAdd);
 					particle.getNeighbourhood().addToNeighbourhood(newParticles);
+					this.avgPathLength = calculateAvgPathLength();
 				}
 				if (iteration == 0) {
 					particle.getNeighbourhood().setInitialBestPosition(function);
 				}
-				
+
 				// GENERATE & UPDATE PARTICLE VELOCITY //
 				double[] newVelocity = new double[DIMENSIONS];
-				for(int vel=0; vel < DIMENSIONS; vel++) {
+				for (int vel = 0; vel < DIMENSIONS; vel++) {
 					double r1 = this.generator.nextDouble();
 					double r2 = this.generator.nextDouble();
-					double personalContribution = (C_1*r1)*(particle.getPersonalBest().getValues()[vel] - particle.getLocation().getValues()[vel]);
+					double personalContribution = (C_1 * r1) * (particle.getPersonalBest().getValues()[vel] - particle.getLocation().getValues()[vel]);
 					double neighbourhoodBest = particle.getNeighbourhood().getNeighbourhoodBest().getValues()[vel];
-					double socialContribution = (C_2*r2)*(neighbourhoodBest - particle.getLocation().getValues()[vel]);
+					double socialContribution = (C_2 * r2) * (neighbourhoodBest - particle.getLocation().getValues()[vel]);
 					double currentVelocity = particle.getVelocity()[vel];
-					newVelocity[vel] = CONSTRICTION_FACTOR*(currentVelocity + personalContribution + socialContribution);
+					newVelocity[vel] = CONSTRICTION_FACTOR * (currentVelocity + personalContribution + socialContribution);
 				}
 //				printNeighbourhood(particle, particle.getNeighbourhood().getParticles());
 				particle.setVelocity(newVelocity);
-				
+
 				// UPDATE PARTICLE POSITION //
 				double[] newLocation = new double[DIMENSIONS];
-				for (int dim=0; dim < DIMENSIONS; dim++) {
+				for (int dim = 0; dim < DIMENSIONS; dim++) {
 					newLocation[dim] = particle.getLocation().getValues()[dim] + newVelocity[dim];
 				}
 				particle.setLocation(new Position(newLocation));
-				
+
 				// BOUNDARY CHECK //
-				if(ignoreBoundaries || particle.withinBounds(function)) {
-					
+				if (ignoreBoundaries || particle.withinBounds(function)) {
+
 					double currentFitness = function.evaluate(particle.getLocation());
-					
+
 					// UPDATE PERSONAL BEST //
 					if (function.isFitter(currentFitness, particle.getBestFitness())) {
 						particle.setPersonalBest(currentFitness);
 					}
-					
+
 					// UPDATE GLOBAL BEST //
 					if (function.isFitter(currentFitness, this.globalFitness)) {
 						this.globalBest = particle.getLocation();
@@ -107,20 +108,15 @@ public class GIDN extends PSO {
 				} else {
 					boundary.handleParticle(particle, function);
 				}
-				
+
 				// UPDATE NEIGHBOURHOOD BEST //
 				particle.getNeighbourhood().updateBestPosition(function);
-				
+
 			}
-			
-			
-//			System.out.println(neighbourhoodSizeForIteration());
-//			if (iteration % 10 == 0) {
-//				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness));
-//			}
+
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
-			this.runTracker.setAvgPathLength(iteration, calculateAvgPathLength());
 			this.runTracker.setClusteringValue(iteration, calculateEnclosingRadius());
+			this.runTracker.setAvgPathLength(iteration, this.avgPathLength);
 			this.runTracker.setClusteringCoefficientValue(iteration, calculateClusteringCoefficient());
 			if (iteration == 1000 - 1) {
 				this.runTracker.setOneThousandValue(this.globalFitness);
@@ -128,6 +124,7 @@ public class GIDN extends PSO {
 			if (iteration == 10000 - 1) {
 				this.runTracker.setTenThousandValue(this.globalFitness);
 			}
+			System.out.println(this.globalFitness);
 			iteration++;
 		}
 		return this.globalBest;
@@ -137,27 +134,12 @@ public class GIDN extends PSO {
 		return GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
 	}
 
-	private double calculateClusteringCoefficient() {
-		double sum = 0;
-		for (int i = 0; i < SWARM_SIZE; ++i) {
-			Particle particle = this.particles[i];
-			ArrayList<Particle> particlesNeighbours = (ArrayList<Particle>) particle.getNeighbourhood().getParticles().clone();
-			particlesNeighbours.remove(particle);
+	private double averagePathLengthForIteration() {
+		return startingAverage - ((startingAverage - 1) * (this.iteration/MAX_ITERATIONS));
+	}
 
-			double count = 0;
-			for(Particle neighbour : particlesNeighbours) {
-				ArrayList<Particle> neighboursNeighbours = (ArrayList<Particle>) neighbour.getNeighbourhood().getParticles().clone();
-				neighboursNeighbours.remove(neighbour);
-				for(Particle neighboursNeighbour : neighboursNeighbours) {
-					// increment if a particles neighbour has one of the same neighbours as it
-					if(particlesNeighbours.contains(neighboursNeighbour)) {
-						count++;
-					}
-				}
-			}
-			sum += (count/(particlesNeighbours.size() * (particlesNeighbours.size() - 1.0)));
-		}
-		return sum/SWARM_SIZE;
+	private double calculateClusteringCoefficient() {
+		return GraphUtilities.clusteringCoefficient(SWARM_SIZE, this.particles);
 	}
 
 	private double calculateEnclosingRadius() {
@@ -170,7 +152,7 @@ public class GIDN extends PSO {
 		Miniball miniball = new Miniball(ps);
 		return miniball.radius();
 	}
-	
+
 	private void printNeighbourhood(Particle particle, ArrayList<Particle> neighbourhoodParticles) {
 		System.out.println("Particle: " + findPosition(particle));
 		String neighbourIndices = "";
@@ -188,12 +170,12 @@ public class GIDN extends PSO {
 		}
 		return -1;
 	}
-	
+
 	private ArrayList<Particle> randomlySelectedParticles(ArrayList<Particle> copiedParticles, int particlesToAdd) {
 		ArrayList<Particle> selectedParticles = new ArrayList<Particle>();
 		Collections.shuffle(copiedParticles);
-		int maxPossible = Math.min(particlesToAdd, copiedParticles.size());
-		for (int i=0; i < maxPossible; i++) {
+		int min = Math.min(copiedParticles.size(), particlesToAdd);
+		for (int i=0; i < min; i++) {
 			selectedParticles.add(copiedParticles.get(i));
 		}
 		return selectedParticles;
@@ -203,7 +185,11 @@ public class GIDN extends PSO {
 		double iterationIncrease = (Math.pow(this.iteration/MAX_ITERATIONS, this.gamma)*(SWARM_SIZE-1));
 		return (int) Math.floor(iterationIncrease + INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT);
 	}
-	
+	private int neighbourhoodSizeForIteration(int iteration) {
+		double iterationIncrease = (Math.pow(iteration/MAX_ITERATIONS, this.gamma)*(SWARM_SIZE-1));
+		return (int) Math.floor(iterationIncrease + INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT);
+	}
+
 	private void initializeSwarm() {
 		this.particles = new Particle[SWARM_SIZE];
 		Particle particle;
@@ -228,7 +214,29 @@ public class GIDN extends PSO {
 				this.globalBest = particle.getLocation();
 				this.globalFitness = currentFitness;
 			}
-			particle.setNeighbourhood(new ArrayList<Particle>(), this.function, this.particles);
+		}
+	}
+
+	private void setupNeighbourhoods() {
+		for(int index=0; index < SWARM_SIZE; index++) {
+			ArrayList<Particle> neighbourhoodParticles = new ArrayList<Particle>(); // ring topology
+			if (index == 0) { // first particle
+				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 1]); // last
+				neighbourhoodParticles.add(this.particles[1]); // second
+				neighbourhoodParticles.add(this.particles[0]); // itself (first)
+			} else if (index == (SWARM_SIZE - 1)) { // last particle
+				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 2]); // second last
+				neighbourhoodParticles.add(this.particles[0]); // first
+				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 1]); // itself (last)
+			} else { // other particles
+				neighbourhoodParticles.add(this.particles[index + 1]); // before
+				neighbourhoodParticles.add(this.particles[index - 1]); //after
+				neighbourhoodParticles.add(this.particles[index]); // itself
+			}
+
+			Particle particle = this.particles[index];
+
+			particle.setNeighbourhood(neighbourhoodParticles, this.function, this.particles);
 		}
 	}
 
@@ -257,6 +265,6 @@ public class GIDN extends PSO {
 
 	@Override
 	public String getName() {
-		return "GIDNPSO";
+		return "Linear_GIDN";
 	}
 }

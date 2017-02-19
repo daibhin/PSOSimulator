@@ -1,6 +1,7 @@
 package com.github.daibhin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by David on 28/01/2017.
@@ -9,7 +10,7 @@ public class GraphUtilities {
 
     public static double averagePathLength(int SWARM_SIZE, Particle[] particles) {
         int[][] graph = GraphUtilities.constructGraph(SWARM_SIZE, particles);
-        int sum = GraphUtilities.floydWarshall(graph, SWARM_SIZE);
+        double sum = GraphUtilities.floydWarshall(graph, SWARM_SIZE);
         return ((double) 1/(SWARM_SIZE*(SWARM_SIZE-1))) * sum;
     }
 
@@ -37,13 +38,13 @@ public class GraphUtilities {
         return graph;
     }
 
-    public static int floydWarshall(int[][] graph, int SWARM_SIZE) {
+    public static double floydWarshall(int[][] graph, int SWARM_SIZE) {
         int sum = 0;
         int dist[][] = new int[SWARM_SIZE][SWARM_SIZE];
         int i, j, k;
         for (i = 0; i < SWARM_SIZE; i++) {
             for (j = 0; j < SWARM_SIZE; j++) {
-                sum += graph[i][j];
+//                sum += graph[i][j];
                 dist[i][j] = graph[i][j];
             }
         }
@@ -52,14 +53,26 @@ public class GraphUtilities {
             for (i = 0; i < SWARM_SIZE; i++) {
                 for (j = 0; j < SWARM_SIZE; j++) {
                     if (dist[i][k] != Integer.MAX_VALUE && dist[k][j] != Integer.MAX_VALUE && dist[i][k] + dist[k][j] < dist[i][j]) {
-                        sum -= dist[i][j];
+//                        sum -= dist[i][j];
                         dist[i][j] = dist[i][k] + dist[k][j];
-                        sum += dist[i][j];
+//                        sum += dist[i][j];
                     }
                 }
             }
         }
-        return sum;
+
+        int otherSum = 0;
+        for (int p = 0; p < SWARM_SIZE; p++) {
+            for (int o = 0; o < SWARM_SIZE; o++) {
+                if (p != o) {
+                    if (dist[p][o] != Integer.MAX_VALUE && dist[p][o] != Integer.MAX_VALUE) {
+                        otherSum += dist[p][o];
+                    }
+                }
+            }
+        }
+
+        return otherSum;
     }
 
     public static double clusteringCoefficient(int SWARM_SIZE, Particle[] particles) {

@@ -130,11 +130,6 @@ public class APL_GIDN extends PSO {
 
 			}
 
-
-//			if (iteration % 10 == 0) {
-//				System.out.println("Iteration: " + iteration + " / Path Length: " + calculateAvgPathLength());
-//			}
-
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
 			this.runTracker.setClusteringValue(iteration, calculateEnclosingRadius());
 			this.runTracker.setAvgPathLength(iteration, this.avgPathLength);
@@ -148,7 +143,6 @@ public class APL_GIDN extends PSO {
 
 			iteration++;
 		}
-		System.out.println(function.evaluate(this.globalBest));
 		return this.globalBest;
 	}
 

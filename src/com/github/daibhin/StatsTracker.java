@@ -121,7 +121,6 @@ public class StatsTracker {
 		saveGraph(algorithmName, functionName, "Convergence Graph", "Iteration", "Best Fitness", "Convergence.png", avgConvergenceValues);
 		saveGraph(algorithmName, functionName, "Average Path Length Graph", "Iteration", "Average Path Length", "PathLength.png", avgPathLengthValues);
 		saveGraph(algorithmName, functionName, "Clustering Coefficient Graph", "Iteration", "Clustering Coefficient", "ClusteringCoefficient.png", avgCluesteringCoefficientValues);
-
 	}
 
 	private void saveGraph(String algorithmName, String functionName, String graphName, String xLabel, String yLabel, String filename, double[] values) {

@@ -45,20 +45,26 @@ public class FunctionRunner implements Runnable {
 			algorithm.run();
 			stats.addRun(runStats);
 
-			convergenceGraph.addSeries(algorithm.getName(), runStats.getConvergenceValues());
-			convergenceGraph.createChart(function.name() + " - Convergence Graph", "Iteration", "Global Best");
-			convergenceGraph.saveChart("./Graphs/" + algorithm.getName() + "/" + function.name() + "/Convergence/", run + ".png");
+			double[] convergenceValues = runStats.getConvergenceValues();
+			double lastVal = convergenceValues[NUM_ITERATIONS-1];
+			if (lastVal < 0) {
+				convergenceGraph.addSeries(algorithm.getName() + " - Convergence", convergenceValues);
+				convergenceGraph.createChart(function.name() + " - Convergence", "Iteration", "Fitness");
+			} else {
+				convergenceGraph.addDecibleSeries(algorithm.getName() + " - Convergence", convergenceValues, "Iteration", "Fitness (Log Scale)");
+			}
+			convergenceGraph.saveChart("./NewGraphs/" + algorithm.getName() + "/" + function.name() + "/Convergence/", run + ".png");
 			convergenceGraph.clearSeries();
 
-			pathLengthGraph.addSeries(algorithm.getName(), runStats.getAvgPathLengthValues());
+			pathLengthGraph.addSeries(algorithm.getName() + " - Path Length", runStats.getAvgPathLengthValues());
 			pathLengthGraph.createChart(function.name() + " - Average Path Length", "Iteration", "Path Length");
-			pathLengthGraph.saveChart("./Graphs/" + algorithm.getName() + "/" + function.name() + "/PathLength/", run + ".png");
+			pathLengthGraph.saveChart("./NewGraphs/" + algorithm.getName() + "/" + function.name() + "/PathLength/", run + ".png");
 			pathLengthGraph.clearSeries();
 
-			clusteringCoefficientGraph.addSeries(algorithm.getName(), runStats.getClusteringCoefficientValues());
-			clusteringCoefficientGraph.createChart(function.name() + " - Clustering Coefficient", "Iteration", "Percentage");
-			clusteringCoefficientGraph.saveChart("./Graphs/" + algorithm.getName() + "/" + function.name() + "/ClusteringCoefficient/", run + ".png");
-			clusteringCoefficientGraph.clearSeries();
+//			clusteringCoefficientGraph.addSeries(algorithm.getName() + " - Clustering Coefficient", runStats.getClusteringCoefficientValues());
+//			clusteringCoefficientGraph.createChart(function.name() + " - Clustering Coefficient", "Iteration", "Percentage");
+//			clusteringCoefficientGraph.saveChart("./NewGraphs/" + algorithm.getName() + "/" + function.name() + "/ClusteringCoefficient/", run + ".png");
+//			clusteringCoefficientGraph.clearSeries();
 		}
 		stats.printResults(function.name() + "_" + algorithm.getName());
 		stats.saveAveragedGraphs(algorithm.getName(), function.name());
@@ -73,6 +79,8 @@ public class FunctionRunner implements Runnable {
 			case 3:  return new APL_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 4:  return new Linear_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 5:  return new Sigmoid_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 6:  return new Structured_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 7:  return new EandE_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 		}
 		return null;
 	}
