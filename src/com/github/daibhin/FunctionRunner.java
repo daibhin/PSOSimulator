@@ -59,7 +59,8 @@ public class FunctionRunner implements Runnable {
 			pathLengthGraph.addSeries(algorithm.getName() + " - Path Length", runStats.getAvgPathLengthValues());
 			pathLengthGraph.createChart(function.name() + " - Average Path Length", "Iteration", "Path Length");
 			pathLengthGraph.saveChart("./NewGraphs/" + algorithm.getName() + "/" + function.name() + "/PathLength/", run + ".png");
-			pathLengthGraph.clearSeries();
+			pathLengthGraph.plotChart("Test");
+//			pathLengthGraph.clearSeries();
 
 //			clusteringCoefficientGraph.addSeries(algorithm.getName() + " - Clustering Coefficient", runStats.getClusteringCoefficientValues());
 //			clusteringCoefficientGraph.createChart(function.name() + " - Clustering Coefficient", "Iteration", "Percentage");
@@ -81,6 +82,7 @@ public class FunctionRunner implements Runnable {
 			case 5:  return new Sigmoid_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 6:  return new Structured_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 7:  return new EandE_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 8:  return new APLR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 		}
 		return null;
 	}
