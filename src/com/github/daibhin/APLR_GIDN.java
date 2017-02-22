@@ -296,6 +296,6 @@ public class APLR_GIDN extends PSO {
 
 	@Override
 	public String getName() {
-		return "APL_GIDN";
+		return "APLR_GIDN";
 	}
 }
