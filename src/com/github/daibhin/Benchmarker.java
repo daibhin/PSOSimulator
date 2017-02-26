@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import com.github.daibhin.Functions.*;
 
@@ -109,6 +110,11 @@ public class Benchmarker {
 			executor.execute(fr);
 		}
 		executor.shutdown();
+		try {
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void runEntireExperiment(int functionIndex) {
