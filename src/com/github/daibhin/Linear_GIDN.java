@@ -29,6 +29,7 @@ public class Linear_GIDN extends PSO {
 	private double gamma = 2.0;
 	private double INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT = 2;
 	private double avgPathLength;
+	private double avgNumberInfinitePaths;
 	private double startingAverage;
 	private int edgeAdditionIndex = 0;
 
@@ -123,8 +124,8 @@ public class Linear_GIDN extends PSO {
 //			}
 
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
-			this.runTracker.setClusteringValue(iteration, calculateEnclosingRadius());
 			this.runTracker.setAvgPathLength(iteration, this.avgPathLength);
+			this.runTracker.setAvgNumInfinitePaths(iteration, this.avgNumberInfinitePaths);
 			this.runTracker.setClusteringCoefficientValue(iteration, calculateClusteringCoefficient());
 			if (iteration == 1000 - 1) {
 				this.runTracker.setOneThousandValue(this.globalFitness);
@@ -146,7 +147,11 @@ public class Linear_GIDN extends PSO {
 	}
 
 	private double calculateAvgPathLength() {
-		return GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
+		double[] response = GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
+		double averagePathLength = response[0];
+		double avgNumInfinitePaths = response[1];
+		this.avgNumberInfinitePaths = avgNumInfinitePaths;
+		return averagePathLength;
 	}
 
 	private double averagePathLengthForIteration() {

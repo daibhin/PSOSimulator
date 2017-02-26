@@ -27,13 +27,14 @@ public class APLR_GIDN extends PSO {
 	private Run runTracker;
 
 	private double gamma = 2.0;
-	private double INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT = 2;
+	private int INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT = 2;
 	private double avgPathLength;
+	private double avgNumberInfinitePaths;
 	private int edgeAdditionIndex;
-	private int nextNeighbourhoodIncreaseIteration = 0;
+	private int nextNeighbourhoodIncreaseIteration;
 	private int iterationSpacingCounter;
-	private int numItersBetweenUpdates;
-	private boolean hasAddedParticles;
+	private double numItersBetweenUpdates;
+	private double nextSize;
 
 	public APLR_GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
@@ -43,6 +44,7 @@ public class APLR_GIDN extends PSO {
 		this.runTracker = runStats;
 		this.MAX_ITERATIONS = numIter;
 		this.generator = new Random();
+		nextNeighbourhoodIncreaseIteration = this.iteration;
 		initializeSwarm();
 	}
 
@@ -52,33 +54,25 @@ public class APLR_GIDN extends PSO {
 		while (iteration < MAX_ITERATIONS) {
 
 			if (iteration == nextNeighbourhoodIncreaseIteration) {
-				resetNetworkUpdateParameters();
-				findIterationofNextNetworkIncrease();
-				setParticleNeighbourhoodUpdateSpacing();
-			} else {
-				if (shouldUpdateNextParticle()) {
-					edgeAdditionIndex++;
-					iterationSpacingCounter = 0;
-					hasAddedParticles = false;
-				} else {
-					iterationSpacingCounter++;
-				}
+				updateNextIncreaseAndDefineNewSize();
+				int iterationDifference = nextNeighbourhoodIncreaseIteration - this.iteration;
+				double neighbourhoodSizeDifference = nextSize - neighbourhoodSizeForIteration(this.iteration);
+				double numIterNeighbourhoodIncreaseByOne = iterationDifference / neighbourhoodSizeDifference;
+				numItersBetweenUpdates = (int) Math.round(numIterNeighbourhoodIncreaseByOne / SWARM_SIZE);
+				iterationSpacingCounter = this.iteration + 1;
 			}
 
 			for (int index = 0; index < SWARM_SIZE; index++) {
 				Particle particle = particles[index];
 
 				// UPDATE NEIGHBOURHOOD //
-				ArrayList<Particle> neighbourhoodParticles = particle.getNeighbourhood().getParticles();
-				if((edgeAdditionIndex == index && !hasAddedParticles) || neighbourhoodParticles.size() < 2) {
-					hasAddedParticles = true;
-					int particlesToAdd = neighbourhoodSizeForIteration(nextNeighbourhoodIncreaseIteration) - (neighbourhoodParticles.size() - 1);
-					ArrayList<Particle> copiedParticles = new ArrayList<Particle>(Arrays.asList(this.particles));
-					copiedParticles.removeAll(neighbourhoodParticles);
-					copiedParticles.remove(particle);
-					ArrayList<Particle> newParticles = randomlySelectedParticles(copiedParticles, particlesToAdd);
-					particle.getNeighbourhood().addToNeighbourhood(newParticles);
-					this.avgPathLength = calculateAvgPathLength();
+				if (iteration == 0) {
+					int particlesToAdd = INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT;
+					addParticlesToNeighbourhood(particlesToAdd, particle);
+				} else if (index == edgeAdditionIndex && iterationSpacingCounter == this.iteration) {
+					iterationSpacingCounter += numItersBetweenUpdates;
+					int particlesToAdd = 1;
+					addParticlesToNeighbourhood(particlesToAdd, particle);
 				}
 				if (iteration == 0) {
 					particle.getNeighbourhood().setInitialBestPosition(function);
@@ -126,12 +120,11 @@ public class APLR_GIDN extends PSO {
 
 				// UPDATE NEIGHBOURHOOD BEST //
 				particle.getNeighbourhood().updateBestPosition(function);
-
 			}
 
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
-			this.runTracker.setClusteringValue(iteration, calculateEnclosingRadius());
 			this.runTracker.setAvgPathLength(iteration, this.avgPathLength);
+			this.runTracker.setAvgNumInfinitePaths(iteration, this.avgNumberInfinitePaths);
 			this.runTracker.setClusteringCoefficientValue(iteration, calculateClusteringCoefficient());
 			if (iteration == 1000 - 1) {
 				this.runTracker.setOneThousandValue(this.globalFitness);
@@ -139,85 +132,63 @@ public class APLR_GIDN extends PSO {
 			if (iteration == 10000 - 1) {
 				this.runTracker.setTenThousandValue(this.globalFitness);
 			}
-
 			iteration++;
 		}
 		return this.globalBest;
 	}
 
-	private boolean shouldUpdateNextParticle() {
-		return iterationSpacingCounter == numItersBetweenUpdates;
-	}
-
-	private void setParticleNeighbourhoodUpdateSpacing() {
-		int iterationDifference = nextNeighbourhoodIncreaseIteration - this.iteration;
-		numItersBetweenUpdates = iterationDifference / SWARM_SIZE;
-	}
-
-	private void findIterationofNextNetworkIncrease() {
-		int size = neighbourhoodSizeForIteration(nextNeighbourhoodIncreaseIteration);
-		while(size <= neighbourhoodSizeForIteration(this.iteration)) {
+	private void updateNextIncreaseAndDefineNewSize() {
+		int currentSize = neighbourhoodSizeForIteration(this.iteration);
+		nextSize = neighbourhoodSizeForIteration(nextNeighbourhoodIncreaseIteration);
+		while(currentSize == nextSize) {
 			nextNeighbourhoodIncreaseIteration++;
-			size = neighbourhoodSizeForIteration(nextNeighbourhoodIncreaseIteration);
+			nextSize = neighbourhoodSizeForIteration(nextNeighbourhoodIncreaseIteration);
 		}
 	}
 
-	private void resetNetworkUpdateParameters() {
-		edgeAdditionIndex = 0;
-		hasAddedParticles = false;
-		iterationSpacingCounter = 0;
+	private int neighbourhoodSizeForIteration(int iteration) {
+		double iterationIncrease = (Math.pow(iteration/MAX_ITERATIONS, this.gamma)*(SWARM_SIZE-1));
+		return (int) Math.floor(iterationIncrease + INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT);
+	}
+
+	private void addParticlesToNeighbourhood(int numParticlesToAdd, Particle particle) {
+		ArrayList<Particle> neighbourhoodParticles = particle.getNeighbourhood().getParticles();
+		ArrayList<Particle> copiedParticles = new ArrayList<Particle>(Arrays.asList(this.particles));
+		copiedParticles.removeAll(neighbourhoodParticles);
+		ArrayList<Particle> newParticles = randomlySelectedParticles(copiedParticles, numParticlesToAdd);
+		particle.getNeighbourhood().addToNeighbourhood(newParticles);
+		updateEdgeAdditionParticleIndex(); // add to a different particle each iteration
+		this.avgPathLength = calculateAvgPathLength();
+	}
+
+	private void updateEdgeAdditionParticleIndex() {
+		if (this.edgeAdditionIndex == (SWARM_SIZE - 1)) {
+			this.edgeAdditionIndex = 0;
+		} else {
+			edgeAdditionIndex++;
+		}
 	}
 
 	private double calculateAvgPathLength() {
-		return GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
+		double[] response = GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
+		double averagePathLength = response[0];
+		double avgNumInfinitePaths = response[1];
+		this.avgNumberInfinitePaths = avgNumInfinitePaths;
+		return averagePathLength;
 	}
 
 	private double calculateClusteringCoefficient() {
 		return GraphUtilities.clusteringCoefficient(SWARM_SIZE, this.particles);
 	}
 
-	private double calculateEnclosingRadius() {
-		ArrayPointSet ps = new ArrayPointSet(DIMENSIONS, SWARM_SIZE);
-		for (int i = 0; i < SWARM_SIZE; ++i) {
-			for (int j = 0; j < DIMENSIONS; ++j) {
-				ps.set(i, j, particles[i].getLocation().getValues()[j]);
-			}
-		}
-		Miniball miniball = new Miniball(ps);
-		return miniball.radius();
-	}
-
-	private void printNeighbourhood(Particle particle, ArrayList<Particle> neighbourhoodParticles) {
-		System.out.println("Particle: " + findPosition(particle));
-		String neighbourIndices = "";
-		for (int i=0; i<neighbourhoodParticles.size(); i++) {
-			neighbourIndices += " " + findPosition(neighbourhoodParticles.get(i));
-		}
-		System.out.println("Neighbourhood Particles: [" + neighbourIndices + "]");
-		System.out.println("************");
-	}
-	private int findPosition(Particle p) {
-		for(int i=0; i< SWARM_SIZE; i++) {
-			if (this.particles[i] == p) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
 	private ArrayList<Particle> randomlySelectedParticles(ArrayList<Particle> copiedParticles, int particlesToAdd) {
 		ArrayList<Particle> selectedParticles = new ArrayList<Particle>();
 		Collections.shuffle(copiedParticles);
 		int min = Math.min(copiedParticles.size(), particlesToAdd);
-		for (int i=0; i < min; i++) {
+		for (int i = 0; i < min; i++) {
 			selectedParticles.add(copiedParticles.get(i));
 		}
 		return selectedParticles;
-	}
-
-	private int neighbourhoodSizeForIteration(int iteration) {
-		double iterationIncrease = (Math.pow(iteration/MAX_ITERATIONS, this.gamma)*(SWARM_SIZE-1));
-		return (int) Math.floor(iterationIncrease + INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT);
 	}
 
 	private void initializeSwarm() {

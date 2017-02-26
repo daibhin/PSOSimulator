@@ -3,16 +3,18 @@ package com.github.daibhin;
 import com.github.daibhin.Functions.Func;
 
 public class FunctionRunner implements Runnable {
-	
+
+	private static final String GRAPH_DIRECTORY = "./FinalGraphs/";
+
 	private static final int NUM_ITERATIONS = 10000;
-	private static final int NUM_RUNS = 25;
+	private static final int NUM_RUNS = 50;
 	
 	private Func function;
 	private BoundaryCondition boundary;
 	private boolean noBounds;
 	private int dimensions;
 	private int algorithmIndex;
-	private static int NUM_ALGORITHMS = 3;
+	private static int NUM_ALGORITHMS = 10;
 
 	public FunctionRunner(Func function, BoundaryCondition boundary, boolean boundaries, int dims, int algorithmIndex) {
 		this.function = function;
@@ -26,17 +28,18 @@ public class FunctionRunner implements Runnable {
 		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : dimensions;
 		Grapher convergenceGraph = new Grapher();
 		Grapher pathLengthGraph = new Grapher();
+		Grapher infinitePathLengths = new Grapher();
 		Grapher clusteringCoefficientGraph = new Grapher();
 		if(algorithmIndex < 0) {
 			for(int algorithm = 0; algorithm <= NUM_ALGORITHMS - 1; algorithm++) {
-				runSingleAlgorithm(algorithm, function, boundary, functionDimensions, noBounds, convergenceGraph, pathLengthGraph, clusteringCoefficientGraph);
+				runSingleAlgorithm(algorithm, function, boundary, functionDimensions, noBounds, convergenceGraph, pathLengthGraph, infinitePathLengths, clusteringCoefficientGraph);
 			}
 		} else {
-			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBounds, convergenceGraph, pathLengthGraph, clusteringCoefficientGraph);
+			runSingleAlgorithm(algorithmIndex, function, boundary, functionDimensions, noBounds, convergenceGraph, pathLengthGraph, infinitePathLengths, clusteringCoefficientGraph);
 		}
 	}
 
-	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher pathLengthGraph, Grapher clusteringCoefficientGraph) {
+	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher pathLengthGraph, Grapher infinitePathLengthGraph, Grapher clusteringCoefficientGraph) {
 		StatsTracker stats = new StatsTracker(NUM_RUNS);
 		PSO algorithm = null;
 		for(int run = 0; run < NUM_RUNS; run++) {
@@ -45,26 +48,24 @@ public class FunctionRunner implements Runnable {
 			algorithm.run();
 			stats.addRun(runStats);
 
-			double[] convergenceValues = runStats.getConvergenceValues();
-			double lastVal = convergenceValues[NUM_ITERATIONS-1];
-			if (lastVal < 0) {
-				convergenceGraph.addSeries(algorithm.getName() + " - Convergence", convergenceValues);
-				convergenceGraph.createChart(function.name() + " - Convergence", "Iteration", "Fitness");
-			} else {
-				convergenceGraph.addDecibleSeries(algorithm.getName() + " - Convergence", convergenceValues, "Iteration", "Fitness (Log Scale)");
-			}
-			convergenceGraph.saveChart("./NewGraphs/" + algorithm.getName() + "/" + function.name() + "/Convergence/", run + ".png");
+			convergenceGraph.addSeries(algorithm.getName() + " - Convergence", runStats.getConvergenceValues());
+			convergenceGraph.createChart(function.name() + " - Convergence", "Iteration", "Fitness");
+			convergenceGraph.saveChart(GRAPH_DIRECTORY + algorithm.getName() + "/" + function.name() + "/Convergence/", run + ".png");
 			convergenceGraph.clearSeries();
 
 			pathLengthGraph.addSeries(algorithm.getName() + " - Path Length", runStats.getAvgPathLengthValues());
 			pathLengthGraph.createChart(function.name() + " - Average Path Length", "Iteration", "Path Length");
-			pathLengthGraph.saveChart("./NewGraphs/" + algorithm.getName() + "/" + function.name() + "/PathLength/", run + ".png");
-			pathLengthGraph.plotChart("Test");
-//			pathLengthGraph.clearSeries();
+			pathLengthGraph.saveChart(GRAPH_DIRECTORY + algorithm.getName() + "/" + function.name() + "/PathLength/", run + ".png");
+			pathLengthGraph.clearSeries();
+
+			infinitePathLengthGraph.addSeries(algorithm.getName() + " - Infinite Path Lengths", runStats.getAvgNumInfinitePaths());
+			infinitePathLengthGraph.createChart(function.name() + " - Average Infinite Path Lengths", "Iteration", "Average Number of Infinite Paths");
+			infinitePathLengthGraph.saveChart(GRAPH_DIRECTORY + algorithm.getName() + "/" + function.name() + "/InfinitePaths/", run + ".png");
+			pathLengthGraph.clearSeries();
 
 //			clusteringCoefficientGraph.addSeries(algorithm.getName() + " - Clustering Coefficient", runStats.getClusteringCoefficientValues());
 //			clusteringCoefficientGraph.createChart(function.name() + " - Clustering Coefficient", "Iteration", "Percentage");
-//			clusteringCoefficientGraph.saveChart("./NewGraphs/" + algorithm.getName() + "/" + function.name() + "/ClusteringCoefficient/", run + ".png");
+//			clusteringCoefficientGraph.saveChart("./FinalGraphs/" + algorithm.getName() + "/" + function.name() + "/ClusteringCoefficient/", run + ".png");
 //			clusteringCoefficientGraph.clearSeries();
 		}
 		stats.printResults(function.name() + "_" + algorithm.getName());
@@ -83,6 +84,7 @@ public class FunctionRunner implements Runnable {
 			case 6:  return new Structured_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 7:  return new EandE_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 8:  return new APLR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 9:  return new LinearR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 		}
 		return null;
 	}

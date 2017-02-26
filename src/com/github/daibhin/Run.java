@@ -3,16 +3,16 @@ package com.github.daibhin;
 public class Run {
 	
 	private double[] convergenceValues;
-	private double[] clusteringValues;
 	private double[] avgPathLength;
+	private double[] avgInfinitePaths;
 	private double[] clusteringCoefficientValues;
 	private double oneThousandValue;
 	private double tenThousandValue;
 	
 	public Run(int numIter) {
 		convergenceValues = new double[numIter];
-		clusteringValues = new double[numIter];
 		avgPathLength = new double[numIter];
+		avgInfinitePaths = new double[numIter];
 		clusteringCoefficientValues = new double[numIter];
 	}
 
@@ -34,17 +34,17 @@ public class Run {
 	public void setConvergenceValue(int i, double fitness) {
 		convergenceValues[i] = fitness;
 	}
-	public double[] getClusteringValues() {
-		return clusteringValues;
-	}
-	public void setClusteringValue(int i, double radius) {
-		clusteringValues[i] = radius;
-	}
 	public double[] getAvgPathLengthValues() {
 		return avgPathLength;
 	}
 	public void setAvgPathLength(int i, double apl) {
 		avgPathLength[i] = apl;
+	}
+	public void setAvgNumInfinitePaths(int i, double value) {
+		avgInfinitePaths[i] = value;
+	}
+	public double[] getAvgNumInfinitePaths() {
+		return avgInfinitePaths;
 	}
 	public double[] getClusteringCoefficientValues() {
 		return clusteringCoefficientValues;

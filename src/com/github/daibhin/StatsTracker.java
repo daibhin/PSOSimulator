@@ -8,6 +8,7 @@ import java.util.Arrays;
 public class StatsTracker {
 	
 	private static final String outputLocation = "/Users/David/Documents/College/Final Year Project/Results/";
+	private static final String GRAPH_DIRECTORY = "./FinalGraphs/";
 	
 	ArrayList<Run> runs;
 	
@@ -23,7 +24,7 @@ public class StatsTracker {
 			for(Run run : runs) {
 				double finalValue = run.getConvergenceValues()[run.getConvergenceValues().length - 1];
 				System.out.println(finalValue);
-				writer.write(finalValue + "\n");
+				writer.write(finalValue + "\r\n");
 			}
 			writer.close();
 		} catch (IOException e) {
@@ -104,22 +105,31 @@ public class StatsTracker {
 	public void saveAveragedGraphs(String algorithmName, String functionName) {
 		double[] avgConvergenceValues = new double[runs.get(0).getConvergenceValues().length];
 		double[] avgPathLengthValues = new double[avgConvergenceValues.length];
+		double[] infinitePathLengthValues = new double[avgConvergenceValues.length];
 		double[] avgCluesteringCoefficientValues = new double[avgConvergenceValues.length];
 		for(Run run : runs) {
 			for (int i=0; i < run.getConvergenceValues().length; i++) {
 				avgConvergenceValues[i] += run.getConvergenceValues()[i];
 				avgPathLengthValues[i] += run.getAvgPathLengthValues()[i];
+				infinitePathLengthValues[i] += run.getAvgNumInfinitePaths()[i];
 				avgCluesteringCoefficientValues[i] += run.getClusteringCoefficientValues()[i];
 			}
 		}
 		for (int j=0; j < avgConvergenceValues.length; j++) {
 			avgConvergenceValues[j] /= runs.size();
 			avgPathLengthValues[j] /= runs.size();
+			infinitePathLengthValues[j] /= runs.size();
 			avgCluesteringCoefficientValues[j] /= runs.size();
 		}
 
+		writeAveragedResults(algorithmName, functionName, "Convergence.txt", avgConvergenceValues);
+		writeAveragedResults(algorithmName, functionName, "AveragePathLength.txt", avgPathLengthValues);
+		writeAveragedResults(algorithmName, functionName, "InfinitePathLength.txt", infinitePathLengthValues);
+		writeAveragedResults(algorithmName, functionName, "ClusteringCoefficient.txt", avgCluesteringCoefficientValues);
+
 		saveGraph(algorithmName, functionName, "Convergence Graph", "Iteration", "Best Fitness", "Convergence.png", avgConvergenceValues);
 		saveGraph(algorithmName, functionName, "Average Path Length Graph", "Iteration", "Average Path Length", "PathLength.png", avgPathLengthValues);
+		saveGraph(algorithmName, functionName, "Average Number of Infinite Paths Graph", "Iteration", "Average Number of Infinite Paths", "InfinitePaths.png", infinitePathLengthValues);
 		saveGraph(algorithmName, functionName, "Clustering Coefficient Graph", "Iteration", "Clustering Coefficient", "ClusteringCoefficient.png", avgCluesteringCoefficientValues);
 	}
 
@@ -127,6 +137,19 @@ public class StatsTracker {
 		Grapher graph = new Grapher();
 		graph.addSeries(algorithmName, values);
 		graph.createChart(functionName + " - " + graphName, xLabel, yLabel);
-		graph.saveChart("./Graphs/" + algorithmName + "/" + functionName + "/", filename);
+		graph.saveChart(GRAPH_DIRECTORY + algorithmName + "/" + functionName + "/", filename);
+	}
+
+	private void writeAveragedResults(String algorithmName, String functionName, String filename, double[] values) {
+		FileWriter writer;
+		try {
+			writer = new FileWriter(GRAPH_DIRECTORY + algorithmName + "/" + functionName + "/" + filename);
+			for (int i=0; i < values.length; i++) {
+				writer.write(values[i]+ "\r\n");
+			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

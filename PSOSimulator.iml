@@ -44,5 +44,6 @@
     </orderEntry>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="library" name="miniball" level="project" />
+    <orderEntry type="library" name="gephi-toolkit-0.9.1-all" level="project" />
   </component>
 </module>

@@ -124,7 +124,6 @@ public class Sigmoid_GIDN extends PSO {
 //			}
 
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
-			this.runTracker.setClusteringValue(iteration, calculateEnclosingRadius());
 			this.runTracker.setAvgPathLength(iteration, this.avgPathLength);
 			this.runTracker.setClusteringCoefficientValue(iteration, calculateClusteringCoefficient());
 			if (iteration == 1000 - 1) {
@@ -140,7 +139,9 @@ public class Sigmoid_GIDN extends PSO {
 	}
 
 	private double calculateAvgPathLength() {
-		return GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
+		double[] response = GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
+		double averagePathLength = response[0];
+		return averagePathLength;
 	}
 
 	private double calculateClusteringCoefficient() {

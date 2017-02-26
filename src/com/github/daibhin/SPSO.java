@@ -100,7 +100,6 @@ public class SPSO extends PSO {
 //			}
 			
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
-			this.runTracker.setClusteringValue(iteration, calculateEnclosingRadius());
 			if (iteration == 1000 - 1) {
 				this.runTracker.setOneThousandValue(this.globalFitness);
 			}
