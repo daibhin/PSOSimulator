@@ -61,7 +61,7 @@ public class FunctionRunner implements Runnable {
 			infinitePathLengthGraph.addSeries(algorithm.getName() + " - Infinite Path Lengths", runStats.getAvgNumInfinitePaths());
 			infinitePathLengthGraph.createChart(function.name() + " - Average Infinite Path Lengths", "Iteration", "Average Number of Infinite Paths");
 			infinitePathLengthGraph.saveChart(GRAPH_DIRECTORY + algorithm.getName() + "/" + function.name() + "/InfinitePaths/", run + ".png");
-			pathLengthGraph.clearSeries();
+			infinitePathLengthGraph.clearSeries();
 
 //			clusteringCoefficientGraph.addSeries(algorithm.getName() + " - Clustering Coefficient", runStats.getClusteringCoefficientValues());
 //			clusteringCoefficientGraph.createChart(function.name() + " - Clustering Coefficient", "Iteration", "Percentage");
