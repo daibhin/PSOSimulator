@@ -81,9 +81,9 @@ public class Benchmarker {
 //		runSingleFunction(0);
 //		runEntireExperiment(7);
 
-		runSingleAlgorithm(0);
-		runSingleAlgorithm(1);
-		runSingleAlgorithm(2);
+		runSingleAlgorithm(10);
+//		runSingleAlgorithm(1);
+//		runSingleAlgorithm(2);
 
 //		runEntireExperiment();
 //		runFunctionTest();

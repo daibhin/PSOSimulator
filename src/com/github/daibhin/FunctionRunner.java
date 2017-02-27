@@ -14,7 +14,7 @@ public class FunctionRunner implements Runnable {
 	private boolean noBounds;
 	private int dimensions;
 	private int algorithmIndex;
-	private static int NUM_ALGORITHMS = 10;
+	private static int NUM_ALGORITHMS = 12;
 
 	public FunctionRunner(Func function, BoundaryCondition boundary, boolean boundaries, int dims, int algorithmIndex) {
 		this.function = function;
@@ -85,6 +85,8 @@ public class FunctionRunner implements Runnable {
 			case 7:  return new EandE_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 8:  return new APLR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 9:  return new LinearR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 10:  return new Sphere_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 11:  return new Connected_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 		}
 		return null;
 	}
