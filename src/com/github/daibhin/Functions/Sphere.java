@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class Sphere extends Func {
+public class Sphere extends Function {
 	
 	static final public String FUNCTION_NAME = "Sphere Function";
 

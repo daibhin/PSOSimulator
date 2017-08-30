@@ -1,22 +1,22 @@
 package com.github.daibhin;
 
-import com.github.daibhin.Functions.Func;
+import com.github.daibhin.Functions.Function;
 
 public class FunctionRunner implements Runnable {
 
 	private static final String GRAPH_DIRECTORY = "./FinalGraphs/";
 
 	private static final int NUM_ITERATIONS = 10000;
-	private static final int NUM_RUNS = 50;
+	private static final int NUM_RUNS = 1;
 	
-	private Func function;
+	private Function function;
 	private BoundaryCondition boundary;
 	private boolean noBounds;
 	private int dimensions;
 	private int algorithmIndex;
 	private static int NUM_ALGORITHMS = 12;
 
-	public FunctionRunner(Func function, BoundaryCondition boundary, boolean boundaries, int dims, int algorithmIndex) {
+	public FunctionRunner(Function function, BoundaryCondition boundary, boolean boundaries, int dims, int algorithmIndex) {
 		this.function = function;
 		this.boundary = boundary;
 		this.noBounds = boundaries;
@@ -31,7 +31,7 @@ public class FunctionRunner implements Runnable {
 		Grapher infinitePathLengths = new Grapher();
 		Grapher clusteringCoefficientGraph = new Grapher();
 		if(algorithmIndex < 0) {
-			for(int algorithm = 0; algorithm <= NUM_ALGORITHMS - 1; algorithm++) {
+			for(int algorithm = 2; algorithm <= 2; algorithm++) {
 				runSingleAlgorithm(algorithm, function, boundary, functionDimensions, noBounds, convergenceGraph, pathLengthGraph, infinitePathLengths, clusteringCoefficientGraph);
 			}
 		} else {
@@ -39,7 +39,7 @@ public class FunctionRunner implements Runnable {
 		}
 	}
 
-	public void runSingleAlgorithm(int algorithmIndex, Func function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher pathLengthGraph, Grapher infinitePathLengthGraph, Grapher clusteringCoefficientGraph) {
+	public void runSingleAlgorithm(int algorithmIndex, Function function, BoundaryCondition boundary, int dimensions, boolean noBoundaries, Grapher convergenceGraph, Grapher pathLengthGraph, Grapher infinitePathLengthGraph, Grapher clusteringCoefficientGraph) {
 		StatsTracker stats = new StatsTracker(NUM_RUNS);
 		PSO algorithm = null;
 		for(int run = 0; run < NUM_RUNS; run++) {
@@ -48,20 +48,25 @@ public class FunctionRunner implements Runnable {
 			algorithm.run();
 			stats.addRun(runStats);
 
-			convergenceGraph.addSeries(algorithm.getName() + " - Convergence", runStats.getConvergenceValues());
-			convergenceGraph.createChart(function.name() + " - Convergence", "Iteration", "Fitness");
-			convergenceGraph.saveChart(GRAPH_DIRECTORY + algorithm.getName() + "/" + function.name() + "/Convergence/", run + ".png");
-			convergenceGraph.clearSeries();
+			if (algorithmIndex == 2 && run == 0) {
+				convergenceGraph.addSeries(algorithm.getName() + " - Convergence", runStats.getConvergenceValues());
+				convergenceGraph.createChart(function.name() + " - Convergence", "Iteration", "Fitness");
+				convergenceGraph.plotChart("Convergence");
+//				convergenceGraph.saveChart(GRAPH_DIRECTORY + algorithm.getName() + "/" + function.name() + "/Convergence/", run + ".png");
+//				convergenceGraph.clearSeries();
 
-			pathLengthGraph.addSeries(algorithm.getName() + " - Path Length", runStats.getAvgPathLengthValues());
-			pathLengthGraph.createChart(function.name() + " - Average Path Length", "Iteration", "Path Length");
-			pathLengthGraph.saveChart(GRAPH_DIRECTORY + algorithm.getName() + "/" + function.name() + "/PathLength/", run + ".png");
-			pathLengthGraph.clearSeries();
+				pathLengthGraph.addSeries(algorithm.getName() + " - Path Length", runStats.getAvgPathLengthValues());
+				pathLengthGraph.createChart(function.name() + " - Average Path Length", "Iteration", "Path Length");
+				pathLengthGraph.plotChart("Average path length");
+//				pathLengthGraph.saveChart(GRAPH_DIRECTORY + algorithm.getName() + "/" + function.name() + "/PathLength/", run + ".png");
+//				pathLengthGraph.clearSeries();
 
-			infinitePathLengthGraph.addSeries(algorithm.getName() + " - Infinite Path Lengths", runStats.getAvgNumInfinitePaths());
-			infinitePathLengthGraph.createChart(function.name() + " - Average Infinite Path Lengths", "Iteration", "Average Number of Infinite Paths");
-			infinitePathLengthGraph.saveChart(GRAPH_DIRECTORY + algorithm.getName() + "/" + function.name() + "/InfinitePaths/", run + ".png");
-			infinitePathLengthGraph.clearSeries();
+				infinitePathLengthGraph.addSeries(algorithm.getName() + " - Infinite Path Lengths", runStats.getAvgNumInfinitePaths());
+				infinitePathLengthGraph.createChart(function.name() + " - Average No. Disconnected Paths", "Iteration", "Average No. Disconnected Paths");
+				infinitePathLengthGraph.plotChart("Disconnected Paths");
+//				infinitePathLengthGraph.saveChart(GRAPH_DIRECTORY + algorithm.getName() + "/" + function.name() + "/InfinitePaths/", run + ".png");
+//				infinitePathLengthGraph.clearSeries();
+			}
 
 //			clusteringCoefficientGraph.addSeries(algorithm.getName() + " - Clustering Coefficient", runStats.getClusteringCoefficientValues());
 //			clusteringCoefficientGraph.createChart(function.name() + " - Clustering Coefficient", "Iteration", "Percentage");
@@ -69,24 +74,25 @@ public class FunctionRunner implements Runnable {
 //			clusteringCoefficientGraph.clearSeries();
 		}
 		stats.printResults(function.name() + "_" + algorithm.getName());
-		stats.saveAveragedGraphs(algorithm.getName(), function.name());
+//		stats.saveAveragedGraphs(algorithm.getName(), function.name());
 		System.out.println("\n************************\n");
 	}
 	
-	private PSO getAlgorithm(int index, Func function, BoundaryCondition boundary, int dimensions, Run statsTracker, boolean noBounds) {
+	private PSO getAlgorithm(int index, Function function, BoundaryCondition boundary, int dimensions, Run statsTracker, boolean noBounds) {
 		switch(index) {
 			case 0:  return new GlobalPSO(function, boundary, dimensions, statsTracker, noBounds, NUM_ITERATIONS);
 			case 1:  return new SPSO(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 2:  return new GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 3:  return new APL_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 4:  return new Linear_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 5:  return new Sigmoid_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 6:  return new Structured_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 7:  return new EandE_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 8:  return new APLR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 9:  return new LinearR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 10:  return new Sphere_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 11:  return new Connected_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+//			case 3:  return new APL_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+//			case 4:  return new Linear_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+//			case 5:  return new Sigmoid_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 3:  return new Structured_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+//			case 7:  return new EandE_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 4:  return new APLR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 5:  return new LinearR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 6:  return new Sphere_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 7:  return new Connected_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 8:  return new DynamicGlobalPSO(function, boundary, dimensions, statsTracker, noBounds, NUM_ITERATIONS);
 		}
 		return null;
 	}

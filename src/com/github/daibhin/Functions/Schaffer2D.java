@@ -2,7 +2,7 @@ package com.github.daibhin.Functions;
 
 import com.github.daibhin.Position;
 
-public class Schaffer2D extends Func {
+public class Schaffer2D extends Function {
 
 	private static final String FUNCTION_NAME = "Schaffer2D Function";
 	private static final int DIMENSION_SIZE = 2;

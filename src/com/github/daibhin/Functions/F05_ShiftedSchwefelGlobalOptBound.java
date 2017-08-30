@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F05_ShiftedSchwefelGlobalOptBound extends Func {
+public class F05_ShiftedSchwefelGlobalOptBound extends Function {
 	
 	static final public String FUNCTION_NAME = "Schwefel's Problem 2.6 with Global Optimum on Bounds";
 	static final public String SHIFTED_OPTIMUM_POINTS = applicationDirectory + "/Java-ypchen-050309/supportData/schwefel_206_data.txt";

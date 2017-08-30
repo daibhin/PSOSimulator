@@ -5,7 +5,7 @@ import java.util.Random;
 
 import com.dreizak.miniball.highdim.Miniball;
 import com.dreizak.miniball.model.ArrayPointSet;
-import com.github.daibhin.Functions.Func;
+import com.github.daibhin.Functions.Function;
 
 public class SPSO extends PSO {
 	
@@ -20,14 +20,14 @@ public class SPSO extends PSO {
 	private Position globalBest;
 	private double globalFitness;
 	
-	private Func function;
+	private Function function;
 	private Particle[] particles;
 	private BoundaryCondition boundary;
 	private boolean ignoreBoundaries = false;
 	
 	private Run runTracker;
 	
-	public SPSO(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
+	public SPSO(Function function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.generator = new Random();
 		this.boundary = boundary;

@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F12_Schwefel extends Func {
+public class F12_Schwefel extends Function {
 	
 	static final public String FUNCTION_NAME = "Schwefel's Problem 2.13";
 	static final public String FILE_DATA = applicationDirectory + "/Java-ypchen-050309/supportData/schwefel_213_data.txt";

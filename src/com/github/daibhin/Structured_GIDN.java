@@ -2,10 +2,9 @@ package com.github.daibhin;
 
 import com.dreizak.miniball.highdim.Miniball;
 import com.dreizak.miniball.model.ArrayPointSet;
-import com.github.daibhin.Functions.Func;
+import com.github.daibhin.Functions.Function;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -30,7 +29,7 @@ public class Structured_GIDN extends PSO {
 
 	private Run runTracker;
 
-	public Structured_GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
+	public Structured_GIDN(Function function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;

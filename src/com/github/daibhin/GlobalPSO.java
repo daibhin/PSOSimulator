@@ -2,7 +2,7 @@ package com.github.daibhin;
 
 import com.dreizak.miniball.highdim.Miniball;
 import com.dreizak.miniball.model.ArrayPointSet;
-import com.github.daibhin.Functions.Func;
+import com.github.daibhin.Functions.Function;
 
 import java.util.Random;
 
@@ -17,7 +17,7 @@ public class GlobalPSO extends PSO {
 	private Random generator;
 	private BoundaryCondition boundary;
 	private boolean ignoreBoundaries = false;
-	private Func function;
+	private Function function;
 	private Particle[] particles;
 
 	private Position globalBest;
@@ -25,7 +25,7 @@ public class GlobalPSO extends PSO {
 
 	private Run runTracker;
 
-	public GlobalPSO(Func function, BoundaryCondition boundary, int dimensions, Run runTracker, boolean noBounds, int numIter) {
+	public GlobalPSO(Function function, BoundaryCondition boundary, int dimensions, Run runTracker, boolean noBounds, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
@@ -103,7 +103,7 @@ public class GlobalPSO extends PSO {
 				this.runTracker.setTenThousandValue(this.globalFitness);
 			}
 			if (iteration % 100 == 0) {
-//				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
+				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
 			}
 //			System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
 			iteration++;

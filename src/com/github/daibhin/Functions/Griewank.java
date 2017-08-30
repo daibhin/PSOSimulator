@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class Griewank extends Func {
+public class Griewank extends Function {
 	
 	private static final String FUNCTION_NAME = "Griewank Function";
 

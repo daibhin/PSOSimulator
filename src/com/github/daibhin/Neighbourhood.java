@@ -2,7 +2,7 @@ package com.github.daibhin;
 
 import java.util.ArrayList;
 
-import com.github.daibhin.Functions.Func;
+import com.github.daibhin.Functions.Function;
 
 public class Neighbourhood {
 	private ArrayList<Particle> particles;
@@ -10,7 +10,7 @@ public class Neighbourhood {
 	private double bestFitness;
 	
 	
-	public Neighbourhood(ArrayList<Particle> particles, Func function, Particle[] allParticles) {
+	public Neighbourhood(ArrayList<Particle> particles, Function function, Particle[] allParticles) {
 		this.particles = particles;
 		setInitialBestPosition(function);
 		
@@ -26,7 +26,7 @@ public class Neighbourhood {
 //		System.out.println("****");
 	}
 	
-	public void setInitialBestPosition(Func function) {
+	public void setInitialBestPosition(Function function) {
 		if (particles.size() > 0) {
 			this.neighbourhoodBest = particles.get(0).getLocation();
 			this.bestFitness = particles.get(0).getBestFitness();
@@ -34,7 +34,7 @@ public class Neighbourhood {
 		}
 	}
 	
-	public void updateBestPosition(Func function) {
+	public void updateBestPosition(Function function) {
 		for(int i=0; i< particles.size(); i++) {
 			double particleBest = particles.get(i).getBestFitness();
 			if (function.isFitter(particleBest, this.bestFitness)) {

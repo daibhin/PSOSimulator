@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F07_ShiftedRotatedGriewank extends Func {
+public class F07_ShiftedRotatedGriewank extends Function {
 	
 	static final public String FUNCTION_NAME = "Shifted Rotated Griewank's Function without Bounds";
 	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/griewank_func_data.txt";

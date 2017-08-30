@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class Rastrigin extends Func {
+public class Rastrigin extends Function {
 	
 	private static final String FUNCTION_NAME = "Rastrigin Function";
 

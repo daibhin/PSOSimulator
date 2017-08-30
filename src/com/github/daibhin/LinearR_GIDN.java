@@ -1,6 +1,6 @@
 package com.github.daibhin;
 
-import com.github.daibhin.Functions.Func;
+import com.github.daibhin.Functions.Function;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +30,7 @@ public class LinearR_GIDN extends PSO {
 	private double startingAverage;
 	private int edgeAdditionIndex = 0;
 
-	public LinearR_GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
+	public LinearR_GIDN(Function function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
@@ -54,6 +54,7 @@ public class LinearR_GIDN extends PSO {
 				if (iteration == 0) {
 					addParticlesToNeighbourhood(INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT, particle);
 					this.startingAverage = this.avgPathLength;
+//					this.startingAverage = calculateAvgPathLength();
 				} else {
 					double desiredAverage = averagePathLengthForIteration();
 					if (desiredAverage <= this.avgPathLength && (index == edgeAdditionIndex)) {
@@ -118,9 +119,9 @@ public class LinearR_GIDN extends PSO {
 			if (iteration == 10000 - 1) {
 				this.runTracker.setTenThousandValue(this.globalFitness);
 			}
-			System.out.println(iteration);
 			iteration++;
 		}
+		System.out.println(this.globalFitness);
 		return this.globalBest;
 	}
 

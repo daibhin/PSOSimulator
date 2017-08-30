@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class Ackley extends Func {
+public class Ackley extends Function {
 	
 	private static final String FUNCTION_NAME = "Ackley Function";
 	

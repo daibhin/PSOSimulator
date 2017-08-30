@@ -6,6 +6,9 @@ import java.util.Map;
 /**
  * Created by David on 26/02/2017.
  */
+
+// Adapted from pseudocode on: http://www.vogella.com/tutorials/JavaAlgorithmsDijkstra/article.html#algorithm_implementation & https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+
 public final class Dijkstra {
     /**
      * Given a directed, weighted graph G and a source node s, produces the

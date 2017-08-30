@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class Rosenbrock extends Func {
+public class Rosenbrock extends Function {
 	
 	private static final String FUNCTION_NAME = "Rosenbrock Function";
 

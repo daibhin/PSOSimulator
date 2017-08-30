@@ -12,43 +12,6 @@ import java.util.concurrent.TimeUnit;
 import com.github.daibhin.Functions.*;
 
 public class Benchmarker {
-
-	static public ClassLoader loader = ClassLoader.getSystemClassLoader();
-	
-	static final public String[] FUNCTION_CLASS_NAMES = {
-			"Sphere",
-			"Rosenbrock",
-			"Ackley",
-			"Griewank",
-			"Rastrigin",
-			"Schaffer2D",
-			"Griewank10D",
-			"F01_ShiftedSphere",
-			"F02_ShiftedSchwefel",
-			"F03_ShiftedRotatedElliptic",
-			"F04_ShiftedSchwefelNoise",
-			"F05_ShiftedSchwefelGlobalOptBound",
-			"F06_ShiftedRosenbrock",
-			"F07_ShiftedRotatedGriewank",
-			"F08_ShiftedRotatedAckleyGlobalOptBound",
-			"F09_ShiftedRastrigin",
-			"F10_ShiftedRotatedRastrigin",
-			"F11_ShiftedRotatedWeierstrass",
-			"F12_Schwefel",
-			"F13_ShiftedExpandedGriewankRosenbrock",
-			"F14_ShiftedRotatedExpandedScaffer",
-			"F15_HybridComposition_1",
-			"F16_RotatedHybridComposition_1",
-			"F17_RotatedHybridCompositionNoise_1",
-			"F18_RotatedHybridComposition_2",
-			"F19_RotatedHybridCompositionNarrowBasinGlobalOpt_2",
-			"F20_RotatedHybridCompositionGlobalOptBound_2",
-			"F21_RotatedHybridComposition_3",
-			"F22_RotatedHybridCompositionHighConditionNumMatrix_3",
-			"F23_NoncontinuousRotatedHybridComposition_3",
-			"F24_RotatedHybridComposition_4",
-			"F25_RotatedHybridCompositionWithoutBounds_4"
-		};
 	
 	static final public double[] BIASES = {
 			0, 0, 0, 0, 0, 0, 0, -450, -450, -450,
@@ -66,7 +29,6 @@ public class Benchmarker {
 	// precomputed values
 	static final public double PIx2 = Math.PI * 2.0;
 	
-	static final public int MAX_SUPPORT_DIM = 100;
 	static final public int NUM_TEST_FUNC = 32;
 	private static final int BOUNDARY_INDEX = 0;
 	private static final int DIMENSIONS = 30;
@@ -78,33 +40,23 @@ public class Benchmarker {
 	}
 
 	public Benchmarker() {
+
+		runSingleAlgorithm(1);
+
 //		runSingleFunction(0);
 //		runEntireExperiment(7);
-
-		runSingleAlgorithm(10);
-//		runSingleAlgorithm(1);
-//		runSingleAlgorithm(2);
-
 //		runEntireExperiment();
 //		runFunctionTest();
-//		testHybridFunction(9);
-	}
-
-	private void testHybridFunction(int funcNum) {
-		double[] posnValues = {-3.7426816821351503, -3.1517680337692378, 1.4019930525031743, 1.879781084925467, -4.370985040522219, -4.188630585350585, 4.371525369064557, -2.387668410066135, -1.0898241089235294, -2.1781563222501052, 1.5917810727743884, -3.6003932372257106, 2.257975593892178, 2.4205654994895145, 3.7144870099410277, -0.8035991874502066, -0.7636841759429425, 2.280011609803948, -2.067018762340247, -3.2654292301055188, -0.11325409646270845, -3.425196005827619, 4.952321927012219, 4.244996184098271, -0.872799483691491, 2.997205464685498, 4.656882088941659, 4.966818996938915, 3.249618782943248, 3.2847767019554794};
-		double bias = Benchmarker.BIASES[funcNum];
-		Func function = getFunction(funcNum, 30, bias);
-		System.out.print(function.evaluate(new Position(posnValues)));
 	}
 	
 	private void runSingleAlgorithm(int algorithmIndex) {
-		ExecutorService executor = Executors.newFixedThreadPool(1);
+		ExecutorService executor = Executors.newFixedThreadPool(5);
 		for(int functionIndex = 0; functionIndex < NUM_TEST_FUNC; functionIndex++) {
 			double bias = Benchmarker.BIASES[functionIndex];
 			boolean noBoundaries = Benchmarker.NO_BOUNDARIES[functionIndex];
 			BoundaryCondition boundary = getBoundaryCondition(BOUNDARY_INDEX);
 			
-			Func function = getFunction(functionIndex, DIMENSIONS, bias);
+			Function function = getFunction(functionIndex, DIMENSIONS, bias);
 			int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
 			FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions, algorithmIndex);
 			executor.execute(fr);
@@ -130,7 +82,7 @@ public class Benchmarker {
 	}
 
 	public void runSingleFunction(int funcNum) {
-		ExecutorService executor = Executors.newFixedThreadPool(4);
+		ExecutorService executor = Executors.newFixedThreadPool(1);
 		runSingleFunction(funcNum, BOUNDARY_INDEX, executor);
 		executor.shutdown();
 	}
@@ -140,7 +92,7 @@ public class Benchmarker {
 		boolean noBoundaries = Benchmarker.NO_BOUNDARIES[funcNum];
 		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
 
-		Func function = getFunction(funcNum, DIMENSIONS, bias);
+		Function function = getFunction(funcNum, DIMENSIONS, bias);
 		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
 		FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions, -1);
 		executor.execute(fr);
@@ -152,14 +104,14 @@ public class Benchmarker {
 		switch(index) {
 			case 0:  return new InvisibleBoundary();
 			case 1:  return new ReflectingBoundary();
+            default: return null;
 		}
-		return null;
 	}
 	
 	private static final int TWO_DIMENSIONS = 2;
 	private static final int TEN_DIMENSIONS = 10;
 	
-	private Func getFunction(int index, int dimensions, double bias) {
+	private Function getFunction(int index, int dimensions, double bias) {
 		switch(index) {
 			case 0:  return new Sphere(dimensions, bias);
 			case 1:  return new Rosenbrock(dimensions, bias);
@@ -594,7 +546,7 @@ public class Benchmarker {
 			
 			int func_num = 3;
 			double bias = Benchmarker.BIASES[func_num + 4];
-			Func aFunc = new F03_ShiftedRotatedElliptic(test_dimension, bias);
+			Function aFunc = new F03_ShiftedRotatedElliptic(test_dimension, bias);
 
 			double[] test_f = new double[num_test_points];
 			double[][] test_x = new double[num_test_points][test_dimension];

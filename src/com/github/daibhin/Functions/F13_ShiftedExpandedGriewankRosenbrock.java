@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F13_ShiftedExpandedGriewankRosenbrock extends Func {
+public class F13_ShiftedExpandedGriewankRosenbrock extends Function {
 	
 	static final public String FUNCTION_NAME = "Shifted Expanded Griewank's plus Rosenbrock's Function";
 	static final public String OPTIMUM_VALUES = applicationDirectory + "/Java-ypchen-050309/supportData/EF8F2_func_data.txt";

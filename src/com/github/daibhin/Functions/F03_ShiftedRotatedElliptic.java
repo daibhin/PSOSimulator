@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F03_ShiftedRotatedElliptic extends Func {
+public class F03_ShiftedRotatedElliptic extends Function {
 	
 	static final public String FUNCTION_NAME = "Shifted Rotated High Conditioned Elliptic Function";
 	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/high_cond_elliptic_rot_data.txt";

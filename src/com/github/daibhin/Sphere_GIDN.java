@@ -1,6 +1,6 @@
 package com.github.daibhin;
 
-import com.github.daibhin.Functions.Func;
+import com.github.daibhin.Functions.Function;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +29,7 @@ public class Sphere_GIDN extends PSO {
 
 	private Run runTracker;
 
-	public Sphere_GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
+	public Sphere_GIDN(Function function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
@@ -119,7 +119,7 @@ public class Sphere_GIDN extends PSO {
 			}
 			iteration++;
 		}
-		System.out.print(this.globalFitness);
+//		System.out.print(this.globalFitness);
 		return this.globalBest;
 	}
 

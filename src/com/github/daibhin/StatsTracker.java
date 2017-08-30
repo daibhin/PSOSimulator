@@ -18,22 +18,22 @@ public class StatsTracker {
 	
 	public void printResults(String title) {
 		System.out.println("\n" + title + "\n");
-		FileWriter writer;
-		try {
-			writer = new FileWriter(outputLocation + title + ".txt");
-			for(Run run : runs) {
-				double finalValue = run.getConvergenceValues()[run.getConvergenceValues().length - 1];
-				System.out.println(finalValue);
-				writer.write(finalValue + "\r\n");
-			}
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		FileWriter writer;
+//		try {
+//			writer = new FileWriter(outputLocation + title + ".txt");
+//			for(Run run : runs) {
+//				double finalValue = run.getConvergenceValues()[run.getConvergenceValues().length - 1];
+//				System.out.println(finalValue);
+//				writer.write(finalValue + "\r\n");
+//			}
+//			writer.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		
-		System.out.println("\n1000 iterations");
-		double[] oneThousands = getOneThousands();
-		printQuartileResults(oneThousands);
+//		System.out.println("\n1000 iterations");
+//		double[] oneThousands = getOneThousands();
+//		printQuartileResults(oneThousands);
 		System.out.println("\n10,000 iterations");
 		double[] tenThousands = getTenThousands();
 		printQuartileResults(tenThousands);
@@ -56,26 +56,26 @@ public class StatsTracker {
 
 	public static void documentResults(String title, double[] values) {
 		System.out.println("\n" + title);
-		
-		System.out.println("\n1000 iterations");
-		printQuartileResults(values);
-		
+
+//		System.out.println("\n1000 iterations");
+//		printQuartileResults(values);
+
 		System.out.println("\n10,000 iterations");
 		printQuartileResults(values);
 	}
 	
 	private static void printQuartileResults(double[] values) {
 		Arrays.sort(values);
-		System.out.println("1st (Best): " + values[0]);
-		
-		int firstQuarter = (int) Math.ceil(values.length/4.0);
-		System.out.println(firstQuarter + "th: " + values[firstQuarter - 1]);
-		
-		int thirdQuarter = (int) Math.ceil((values.length/4.0)*3);
-		System.out.println(thirdQuarter + "th: " + values[thirdQuarter - 1]);
-		
-		int last = values.length;
-		System.out.println(last + "th (Worst): " + values[last - 1]);
+//		System.out.println("1st (Best): " + values[0]);
+//
+//		int firstQuarter = (int) Math.ceil(values.length/4.0);
+//		System.out.println(firstQuarter + "th: " + values[firstQuarter - 1]);
+//
+//		int thirdQuarter = (int) Math.ceil((values.length/4.0)*3);
+//		System.out.println(thirdQuarter + "th: " + values[thirdQuarter - 1]);
+//
+//		int last = values.length;
+//		System.out.println(last + "th (Worst): " + values[last - 1]);
 		
 		double mean = calculateMean(values);
 		System.out.println("Mean: " + mean);

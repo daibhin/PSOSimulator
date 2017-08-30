@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F10_ShiftedRotatedRastrigin extends Func {
+public class F10_ShiftedRotatedRastrigin extends Function {
 	
 	static final public String FUNCTION_NAME = "Shifted Rotated Rastrigin's Function";
 	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/rastrigin_func_data.txt";

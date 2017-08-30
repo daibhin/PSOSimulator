@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F14_ShiftedRotatedExpandedScaffer extends Func {
+public class F14_ShiftedRotatedExpandedScaffer extends Function {
 	
 	static final public String FUNCTION_NAME = "Shifted Rotated Expanded Scaffer's F6 Function";
 	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/E_ScafferF6_func_data.txt";

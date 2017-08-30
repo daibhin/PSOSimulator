@@ -7,7 +7,7 @@ import java.util.Random;
 
 import com.dreizak.miniball.highdim.Miniball;
 import com.dreizak.miniball.model.ArrayPointSet;
-import com.github.daibhin.Functions.Func;
+import com.github.daibhin.Functions.Function;
 
 public class APL_GIDN extends PSO {
 
@@ -35,7 +35,7 @@ public class APL_GIDN extends PSO {
 	private int numItersBetweenUpdates;
 	private boolean hasAddedParticles;
 
-	public APL_GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
+	public APL_GIDN(Function function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;

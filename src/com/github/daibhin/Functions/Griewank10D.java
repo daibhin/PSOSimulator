@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class Griewank10D extends Func {
+public class Griewank10D extends Function {
 	
 	private static final String FUNCTION_NAME = "Griewank10D Function";
 	private static final int DIMENSION_SIZE = 10;

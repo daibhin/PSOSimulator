@@ -5,9 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
-import com.dreizak.miniball.highdim.Miniball;
-import com.dreizak.miniball.model.ArrayPointSet;
-import com.github.daibhin.Functions.Func;
+import com.github.daibhin.Functions.Function;
 
 public class GIDN extends PSO {
 	
@@ -31,7 +29,7 @@ public class GIDN extends PSO {
 	
 	private Run runTracker;
 		
-	public GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
+	public GIDN(Function function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
@@ -119,9 +117,14 @@ public class GIDN extends PSO {
 			if (iteration == (10000 - 1)) {
 				this.runTracker.setTenThousandValue(this.globalFitness);
 			}
+
+			if (iteration%100 == 0) {
+				System.out.println("Iteration: " + iteration + " / Fitness: " + this.globalFitness);
+			}
+
 			iteration++;
 		}
-		System.out.print(this.globalFitness);
+//		System.out.print(this.globalFitness);
 		return this.globalBest;
 	}
 

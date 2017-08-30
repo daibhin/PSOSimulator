@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F25_RotatedHybridCompositionWithoutBounds_4 extends Func {
+public class F25_RotatedHybridCompositionWithoutBounds_4 extends Function {
 	
 	static final public String FUNCTION_NAME = "Rotated Hybrid Composition Function 4 without bounds";
 

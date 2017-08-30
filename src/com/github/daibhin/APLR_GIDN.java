@@ -1,8 +1,6 @@
 package com.github.daibhin;
 
-import com.dreizak.miniball.highdim.Miniball;
-import com.dreizak.miniball.model.ArrayPointSet;
-import com.github.daibhin.Functions.Func;
+import com.github.daibhin.Functions.Function;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +34,7 @@ public class APLR_GIDN extends PSO {
 	private double numItersBetweenUpdates;
 	private double nextSize;
 
-	public APLR_GIDN(Func function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
+	public APLR_GIDN(Function function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runStats, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;

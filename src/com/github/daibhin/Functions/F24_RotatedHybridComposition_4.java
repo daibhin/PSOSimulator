@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F24_RotatedHybridComposition_4 extends Func {
+public class F24_RotatedHybridComposition_4 extends Function {
 
 	static final public String FUNCTION_NAME = "Rotated Hybrid Composition Function 4";
 	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func4_data.txt";

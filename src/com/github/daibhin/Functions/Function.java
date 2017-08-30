@@ -2,7 +2,7 @@ package com.github.daibhin.Functions;
 
 import com.github.daibhin.Position;
 
-public abstract class Func {
+public abstract class Function {
 	
 	static final public String DEFAULT_FILE_SUFFIX = ".txt";
 	static final public String applicationDirectory = System.getProperty("user.dir");
@@ -15,16 +15,13 @@ public abstract class Func {
 	public abstract double getUpperBound();
 	public abstract double getLowerBound();
 	
-	public Func(int dimensions, double bias, String name) {
+	public Function(int dimensions, double bias, String name) {
 		this.dimensions = dimensions;
 		this.bias = bias;
 		this.funcName = name;
 	}
 	
 	public boolean isFitter(Position position, Position other) {
-//		double posnValue = this.evaluate(position);
-//		double otherValue = this.evaluate(other);
-//		return Double.compare(posnValue, otherValue) == -1.0;
 		return this.evaluate(position) < this.evaluate(other);
 	}
 	

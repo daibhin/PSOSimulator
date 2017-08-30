@@ -3,7 +3,7 @@ package com.github.daibhin.Functions;
 import com.github.daibhin.Benchmarker;
 import com.github.daibhin.Position;
 
-public class F22_RotatedHybridCompositionHighConditionNumMatrix_3 extends Func {
+public class F22_RotatedHybridCompositionHighConditionNumMatrix_3 extends Function {
 	
 	static final public String FUNCTION_NAME = "Rotated Hybrid Composition Function 3 with High Condition Number Matrix";
 	static final public String OPTIMUM_VALUES_FILE = applicationDirectory + "/Java-ypchen-050309/supportData/hybrid_func3_data.txt";

@@ -3,23 +3,20 @@ package com.github.daibhin;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
-import java.util.Random;
 
 import javax.swing.JFrame;
 
+// http://www.jfree.org/jfreechart/:
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-
-import com.github.daibhin.Functions.Func;
 
 public class Grapher {
 	
