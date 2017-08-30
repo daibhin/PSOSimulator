@@ -83,17 +83,13 @@ public class FunctionRunner implements Runnable {
 			case 0:  return new GlobalPSO(function, boundary, dimensions, statsTracker, noBounds, NUM_ITERATIONS);
 			case 1:  return new SPSO(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 2:  return new GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-//			case 3:  return new APL_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-//			case 4:  return new Linear_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-//			case 5:  return new Sigmoid_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 3:  return new Structured_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-//			case 7:  return new EandE_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 4:  return new APLR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
-			case 5:  return new LinearR_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 4:  return new Gradual_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
+			case 5:  return new Linear_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 6:  return new Sphere_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 7:  return new Connected_GIDN(function, boundary, dimensions, noBounds, statsTracker, NUM_ITERATIONS);
 			case 8:  return new DynamicGlobalPSO(function, boundary, dimensions, statsTracker, noBounds, NUM_ITERATIONS);
+			default: return null;
 		}
-		return null;
 	}
 }

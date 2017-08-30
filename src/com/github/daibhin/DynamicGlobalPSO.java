@@ -8,12 +8,6 @@ import java.util.Random;
 
 public class DynamicGlobalPSO extends PSO {
 
-	private int SWARM_SIZE = 50;
-	private int DIMENSIONS = 30;
-	private int MAX_ITERATIONS = 10000;
-	private double CONSTRICTION_FACTOR = 0.72984;
-	private double C_1 = 2.05;
-	private double C_2 = 2.05;
 	private Random generator;
 	private BoundaryCondition boundary;
 	private boolean ignoreBoundaries = false;
@@ -103,7 +97,7 @@ public class DynamicGlobalPSO extends PSO {
 
 	private static double cTotal = 4.1;
 	private void recalculateC1AndC2(int iteration) {
-		double c1Percentage = (((double)iteration)/maxIterations);
+		double c1Percentage = (((double)iteration)/MAX_ITERATIONS);
 		C_1 = c1Percentage * cTotal;
 		C_2 = cTotal - C_1;
 	}

@@ -145,8 +145,8 @@ public class Benchmarker {
 			case 29:  return new F23_NoncontinuousRotatedHybridComposition_3(dimensions, bias);
 			case 30:  return new F24_RotatedHybridComposition_4(dimensions, bias);
 			case 31:  return new F25_RotatedHybridCompositionWithoutBounds_4(dimensions, bias);
+            default:  return null;
 		}
-		return null;
 	}
 	
 	// Random Problem Space Vector

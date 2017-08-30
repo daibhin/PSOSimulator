@@ -1,7 +1,5 @@
 package com.github.daibhin;
 
-import com.dreizak.miniball.highdim.Miniball;
-import com.dreizak.miniball.model.ArrayPointSet;
 import com.github.daibhin.Functions.Function;
 
 import java.util.ArrayList;
@@ -11,13 +9,6 @@ import java.util.Random;
 
 public class Linear_GIDN extends PSO {
 
-	private int iteration = 0;
-	private int SWARM_SIZE = 50;
-	private int DIMENSIONS = 30;
-	private double MAX_ITERATIONS = 10000.0;
-	private double CONSTRICTION_FACTOR = 0.72984;
-	private double C_1 = 2.05;
-	private double C_2 = 2.05;
 	private BoundaryCondition boundary;
 	private boolean ignoreBoundaries = false;
 	private Position globalBest;
@@ -26,8 +17,7 @@ public class Linear_GIDN extends PSO {
 	private Random generator;
 	private Run runTracker;
 
-	private double gamma = 2.0;
-	private double INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT = 2;
+	private int INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT = 2;
 	private double avgPathLength;
 	private double avgNumberInfinitePaths;
 	private double startingAverage;
@@ -43,30 +33,27 @@ public class Linear_GIDN extends PSO {
 		this.generator = new Random();
 
 		initializeSwarm();
-		setupNeighbourhoods();
-		this.startingAverage = calculateAvgPathLength();
 	}
 
 	@Override
 	public Position run() {
 		this.avgPathLength = calculateAvgPathLength();
+		int iteration = 0;
 		while (iteration < MAX_ITERATIONS) {
-
 
 			for (int index = 0; index < SWARM_SIZE; index++) {
 				Particle particle = particles[index];
 
 				// UPDATE NEIGHBOURHOOD //
-				ArrayList<Particle> neighbourhoodParticles = particle.getNeighbourhood().getParticles();
-				double desiredAverage = averagePathLengthForIteration();
-				if (desiredAverage < this.avgPathLength && (index == edgeAdditionIndex)) {
-					int particlesToAdd = 1;
-					ArrayList<Particle> copiedParticles = new ArrayList<Particle>(Arrays.asList(this.particles));
-					copiedParticles.removeAll(neighbourhoodParticles);
-					ArrayList<Particle> newParticles = randomlySelectedParticles(copiedParticles, particlesToAdd);
-					particle.getNeighbourhood().addToNeighbourhood(newParticles);
-					updateEdgeAdditionParticleIndex(); // add to a different particle each iteration
-					this.avgPathLength = calculateAvgPathLength();
+				if (iteration == 0) {
+					addParticlesToNeighbourhood(INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT, particle);
+					this.startingAverage = this.avgPathLength;
+//					this.startingAverage = calculateAvgPathLength();
+				} else {
+					double desiredAverage = averagePathLengthForIteration(iteration);
+					if (desiredAverage <= this.avgPathLength && (index == edgeAdditionIndex)) {
+						addParticlesToNeighbourhood(1, particle);
+					}
 				}
 				if (iteration == 0) {
 					particle.getNeighbourhood().setInitialBestPosition(function);
@@ -83,7 +70,6 @@ public class Linear_GIDN extends PSO {
 					double currentVelocity = particle.getVelocity()[vel];
 					newVelocity[vel] = CONSTRICTION_FACTOR * (currentVelocity + personalContribution + socialContribution);
 				}
-//				printNeighbourhood(particle, particle.getNeighbourhood().getParticles());
 				particle.setVelocity(newVelocity);
 
 				// UPDATE PARTICLE POSITION //
@@ -117,12 +103,6 @@ public class Linear_GIDN extends PSO {
 
 			}
 
-
-//			System.out.println(neighbourhoodSizeForIteration());
-//			if (iteration % 10 == 0) {
-//				System.out.println("Iteration: " + iteration + " / Path Length: " + calculateAvgPathLength());
-//			}
-
 			this.runTracker.setConvergenceValue(iteration, this.globalFitness);
 			this.runTracker.setAvgPathLength(iteration, this.avgPathLength);
 			this.runTracker.setAvgNumInfinitePaths(iteration, this.avgNumberInfinitePaths);
@@ -135,7 +115,18 @@ public class Linear_GIDN extends PSO {
 			}
 			iteration++;
 		}
+		System.out.println(this.globalFitness);
 		return this.globalBest;
+	}
+
+	private void addParticlesToNeighbourhood(int numParticlesToAdd, Particle particle) {
+		ArrayList<Particle> neighbourhoodParticles = particle.getNeighbourhood().getParticles();
+		ArrayList<Particle> copiedParticles = new ArrayList<Particle>(Arrays.asList(this.particles));
+		copiedParticles.removeAll(neighbourhoodParticles);
+		ArrayList<Particle> newParticles = randomlySelectedParticles(copiedParticles, numParticlesToAdd);
+		particle.getNeighbourhood().addToNeighbourhood(newParticles);
+		updateEdgeAdditionParticleIndex(); // add to a different particle each iteration
+		this.avgPathLength = calculateAvgPathLength();
 	}
 
 	private void updateEdgeAdditionParticleIndex() {
@@ -154,41 +145,13 @@ public class Linear_GIDN extends PSO {
 		return averagePathLength;
 	}
 
-	private double averagePathLengthForIteration() {
-		return startingAverage - ((startingAverage - 1) * (this.iteration/MAX_ITERATIONS));
+	private static double MINIMUM_PATH_LENGTH = 1.0;
+	private double averagePathLengthForIteration(int iteration) {
+		return startingAverage - ((startingAverage - MINIMUM_PATH_LENGTH) * (iteration/MAX_ITERATIONS));
 	}
 
 	private double calculateClusteringCoefficient() {
 		return GraphUtilities.clusteringCoefficient(SWARM_SIZE, this.particles);
-	}
-
-	private double calculateEnclosingRadius() {
-		ArrayPointSet ps = new ArrayPointSet(DIMENSIONS, SWARM_SIZE);
-		for (int i = 0; i < SWARM_SIZE; ++i) {
-			for (int j = 0; j < DIMENSIONS; ++j) {
-				ps.set(i, j, particles[i].getLocation().getValues()[j]);
-			}
-		}
-		Miniball miniball = new Miniball(ps);
-		return miniball.radius();
-	}
-
-	private void printNeighbourhood(Particle particle, ArrayList<Particle> neighbourhoodParticles) {
-		System.out.println("Particle: " + findPosition(particle));
-		String neighbourIndices = "";
-		for (int i=0; i<neighbourhoodParticles.size(); i++) {
-			neighbourIndices += " " + findPosition(neighbourhoodParticles.get(i));
-		}
-		System.out.println("Neighbourhood Particles: [" + neighbourIndices + "]");
-		System.out.println("************");
-	}
-	private int findPosition(Particle p) {
-		for(int i=0; i< SWARM_SIZE; i++) {
-			if (this.particles[i] == p) {
-				return i;
-			}
-		}
-		return -1;
 	}
 
 	private ArrayList<Particle> randomlySelectedParticles(ArrayList<Particle> copiedParticles, int particlesToAdd) {
@@ -199,15 +162,6 @@ public class Linear_GIDN extends PSO {
 			selectedParticles.add(copiedParticles.get(i));
 		}
 		return selectedParticles;
-	}
-
-	private int neighbourhoodSizeForIteration() {
-		double iterationIncrease = (Math.pow(this.iteration/MAX_ITERATIONS, this.gamma)*(SWARM_SIZE-1));
-		return (int) Math.floor(iterationIncrease + INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT);
-	}
-	private int neighbourhoodSizeForIteration(int iteration) {
-		double iterationIncrease = (Math.pow(iteration/MAX_ITERATIONS, this.gamma)*(SWARM_SIZE-1));
-		return (int) Math.floor(iterationIncrease + INITIAL_NEIGHBOURHOOD_PARTICLE_COUNT);
 	}
 
 	private void initializeSwarm() {
@@ -234,29 +188,7 @@ public class Linear_GIDN extends PSO {
 				this.globalBest = particle.getLocation();
 				this.globalFitness = currentFitness;
 			}
-		}
-	}
-
-	private void setupNeighbourhoods() {
-		for(int index=0; index < SWARM_SIZE; index++) {
-			ArrayList<Particle> neighbourhoodParticles = new ArrayList<Particle>(); // ring topology
-			if (index == 0) { // first particle
-				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 1]); // last
-				neighbourhoodParticles.add(this.particles[1]); // second
-				neighbourhoodParticles.add(this.particles[0]); // itself (first)
-			} else if (index == (SWARM_SIZE - 1)) { // last particle
-				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 2]); // second last
-				neighbourhoodParticles.add(this.particles[0]); // first
-				neighbourhoodParticles.add(this.particles[SWARM_SIZE - 1]); // itself (last)
-			} else { // other particles
-				neighbourhoodParticles.add(this.particles[index + 1]); // before
-				neighbourhoodParticles.add(this.particles[index - 1]); //after
-				neighbourhoodParticles.add(this.particles[index]); // itself
-			}
-
-			Particle particle = this.particles[index];
-
-			particle.setNeighbourhood(neighbourhoodParticles, this.function, this.particles);
+			particle.setNeighbourhood(new ArrayList<Particle>(), this.function, this.particles);
 		}
 	}
 
@@ -285,6 +217,6 @@ public class Linear_GIDN extends PSO {
 
 	@Override
 	public String getName() {
-		return "Linear_GIDN";
+		return "LinearR_GIDN";
 	}
 }
