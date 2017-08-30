@@ -25,6 +25,8 @@ public class Benchmarker {
 			false, false, false, false, false, false, false, false, false,false,
 			false, true
 	};
+
+    private static final int NUM_ITERATIONS = 10000;
 	
 	// precomputed values
 	static final public double PIx2 = Math.PI * 2.0;
@@ -40,63 +42,36 @@ public class Benchmarker {
 	}
 
 	public Benchmarker() {
-
 		runSingleAlgorithm(1);
-
-//		runSingleFunction(0);
-//		runEntireExperiment(7);
 //		runEntireExperiment();
-//		runFunctionTest();
-	}
-	
-	private void runSingleAlgorithm(int algorithmIndex) {
-		ExecutorService executor = Executors.newFixedThreadPool(5);
-		for(int functionIndex = 0; functionIndex < NUM_TEST_FUNC; functionIndex++) {
-			double bias = Benchmarker.BIASES[functionIndex];
-			boolean noBoundaries = Benchmarker.NO_BOUNDARIES[functionIndex];
-			BoundaryCondition boundary = getBoundaryCondition(BOUNDARY_INDEX);
-			
-			Function function = getFunction(functionIndex, DIMENSIONS, bias);
-			int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
-			FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions, algorithmIndex);
-			executor.execute(fr);
-		}
-		executor.shutdown();
-		try {
-			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
-	private void runEntireExperiment(int functionIndex) {
-		ExecutorService executor = Executors.newFixedThreadPool(8);
-		for (int index = functionIndex; index < NUM_TEST_FUNC; index++) {
-			runSingleFunction(index, BOUNDARY_INDEX, executor);
-		}
-		executor.shutdown();
-	}
 
 	private void runEntireExperiment() {
-		runEntireExperiment(0);
+        for (int index = 0; index < FunctionRunner.NUM_ALGORITHMS; index++) {
+            runSingleAlgorithm(index);
+        }
 	}
 
-	public void runSingleFunction(int funcNum) {
-		ExecutorService executor = Executors.newFixedThreadPool(1);
-		runSingleFunction(funcNum, BOUNDARY_INDEX, executor);
-		executor.shutdown();
-	}
+    private void runSingleAlgorithm(int algorithmIndex) {
+        ExecutorService executor = Executors.newFixedThreadPool(5);
+        for(int functionIndex = 0; functionIndex < NUM_TEST_FUNC; functionIndex++) {
+            double bias = Benchmarker.BIASES[functionIndex];
+            boolean noBoundaries = Benchmarker.NO_BOUNDARIES[functionIndex];
+            BoundaryCondition boundary = getBoundaryCondition(BOUNDARY_INDEX);
 
-	public void runSingleFunction(int funcNum, int boundaryIndex, ExecutorService executor) {
-		double bias = Benchmarker.BIASES[funcNum];
-		boolean noBoundaries = Benchmarker.NO_BOUNDARIES[funcNum];
-		BoundaryCondition boundary = getBoundaryCondition(boundaryIndex);
-
-		Function function = getFunction(funcNum, DIMENSIONS, bias);
-		int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
-		FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions, -1);
-		executor.execute(fr);
-	}
+            Function function = getFunction(functionIndex, DIMENSIONS, bias);
+            int functionDimensions = function.hasDefinedDimensions() ? function.getDimensions() : DIMENSIONS;
+            FunctionRunner fr = new FunctionRunner(function, boundary, noBoundaries, functionDimensions, algorithmIndex, NUM_ITERATIONS);
+            executor.execute(fr);
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 	
 	// *** PARAMETERS *** //
 	
@@ -148,7 +123,7 @@ public class Benchmarker {
             default:  return null;
 		}
 	}
-	
+
 	// Random Problem Space Vector
 	public static double[] randomProblemSpaceVector(double max, double min, int dimensions) {
 		Random generator = new Random();

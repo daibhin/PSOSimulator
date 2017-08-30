@@ -20,8 +20,7 @@ public abstract class PSO {
 	private double globalFitness;
 
 	public abstract Position run();
-	public abstract String getName();
-
+    public abstract String getName();
 
 	private void printNeighbourhood(Particle particle, ArrayList<Particle> neighbourhoodParticles) {
 		System.out.println("Particle: " + findPosition(particle));

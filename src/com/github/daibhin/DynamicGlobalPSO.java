@@ -19,7 +19,7 @@ public class DynamicGlobalPSO extends PSO {
 
 	private Run runTracker;
 
-	public DynamicGlobalPSO(Function function, BoundaryCondition boundary, int dimensions, Run runTracker, boolean noBounds, int numIter) {
+	public DynamicGlobalPSO(Function function, BoundaryCondition boundary, int dimensions, boolean noBounds, Run runTracker, int numIter) {
 		this.function = function;
 		this.boundary = boundary;
 		this.DIMENSIONS = dimensions;
