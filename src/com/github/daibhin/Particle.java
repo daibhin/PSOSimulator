@@ -46,8 +46,8 @@ public class Particle {
 		return this.neighbourhood;
 	}
 	
-	public void setNeighbourhood(ArrayList<Particle> particles, Function function, Particle[] allParticles) {
-		this.neighbourhood = new Neighbourhood(particles, function, allParticles);
+	public void setNeighbourhood(ArrayList<Particle> particles, Function function) {
+		this.neighbourhood = new Neighbourhood(particles, function);
 	}
 
 	public boolean withinBounds(Function function) {

@@ -207,7 +207,7 @@ public class Gradual_GIDN extends PSO {
 				this.globalBest = particle.getLocation();
 				this.globalFitness = currentFitness;
 			}
-			particle.setNeighbourhood(new ArrayList<Particle>(), this.function, this.particles);
+			particle.setNeighbourhood(new ArrayList<Particle>(), this.function);
 		}
 	}
 
@@ -230,7 +230,7 @@ public class Gradual_GIDN extends PSO {
 
 			Particle particle = this.particles[index];
 
-			particle.setNeighbourhood(neighbourhoodParticles, this.function, this.particles);
+			particle.setNeighbourhood(neighbourhoodParticles, this.function);
 		}
 	}
 

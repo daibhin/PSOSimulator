@@ -164,7 +164,7 @@ public class SPSO extends PSO {
 			
 			Particle particle = this.particles[index];
 
-			particle.setNeighbourhood(neighbourhoodParticles, this.function, this.particles);
+			particle.setNeighbourhood(neighbourhoodParticles, this.function);
 		}
 	}
 	

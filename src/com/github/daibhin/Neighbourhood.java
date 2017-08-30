@@ -10,20 +10,9 @@ public class Neighbourhood {
 	private double bestFitness;
 	
 	
-	public Neighbourhood(ArrayList<Particle> particles, Function function, Particle[] allParticles) {
+	public Neighbourhood(ArrayList<Particle> particles, Function function) {
 		this.particles = particles;
 		setInitialBestPosition(function);
-		
-//		for(int i=0; i< particles.length; i++) {
-//			Particle p = particles[i];
-//			for(int j=0; j< allParticles.length; j++) {
-//				if (p == allParticles[j]) {
-//					System.out.print(j + " ");
-//				}
-//			}
-//		}
-//		System.out.println("");
-//		System.out.println("****");
 	}
 	
 	public void setInitialBestPosition(Function function) {
@@ -54,10 +43,6 @@ public class Neighbourhood {
 	
 	public Position getNeighbourhoodBest() {
 		return neighbourhoodBest;
-	}
-	
-	public void setNeighbourhoodBest(Position neighbourhoodBest) {
-		this.neighbourhoodBest = neighbourhoodBest;
 	}
 	
 	public void addToNeighbourhood(ArrayList<Particle> newParticles) {

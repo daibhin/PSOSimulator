@@ -224,7 +224,7 @@ public class Sphere_GIDN extends PSO {
 
 			Particle particle = this.particles[index];
 
-			particle.setNeighbourhood(neighbourhoodParticles, this.function, this.particles);
+			particle.setNeighbourhood(neighbourhoodParticles, this.function);
 		}
 	}
 

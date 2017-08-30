@@ -188,7 +188,7 @@ public class Linear_GIDN extends PSO {
 				this.globalBest = particle.getLocation();
 				this.globalFitness = currentFitness;
 			}
-			particle.setNeighbourhood(new ArrayList<Particle>(), this.function, this.particles);
+			particle.setNeighbourhood(new ArrayList<Particle>(), this.function);
 		}
 	}
 
