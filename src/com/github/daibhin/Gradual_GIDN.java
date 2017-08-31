@@ -162,15 +162,11 @@ public class Gradual_GIDN extends PSO {
 	}
 
 	private double calculateAvgPathLength() {
-		double[] response = GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
+		double[] response = GraphUtilities.averagePathLength(this.particles, SWARM_SIZE);
 		double averagePathLength = response[0];
 		double avgNumInfinitePaths = response[1];
 		this.avgNumberInfinitePaths = avgNumInfinitePaths;
 		return averagePathLength;
-	}
-
-	private double calculateClusteringCoefficient() {
-		return GraphUtilities.clusteringCoefficient(SWARM_SIZE, this.particles);
 	}
 
 	private ArrayList<Particle> randomlySelectedParticles(ArrayList<Particle> copiedParticles, int particlesToAdd) {

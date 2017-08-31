@@ -8,7 +8,25 @@ public class Neighbourhood {
 	private ArrayList<Particle> particles;
 	private Position neighbourhoodBest;
 	private double bestFitness;
-	
+
+	public static void printNeighbourhood(Particle particle, ArrayList<Particle> neighbourhoodParticles) {
+		System.out.println("Particle: " + findPosition(particle, neighbourhoodParticles));
+		String neighbourIndices = "";
+		for (int i=0; i < neighbourhoodParticles.size(); i++) {
+			neighbourIndices += " " + findPosition(neighbourhoodParticles.get(i), neighbourhoodParticles);
+		}
+		System.out.println("Neighbourhood Particles: [" + neighbourIndices + "]");
+		System.out.println("************");
+	}
+
+	private static int findPosition(Particle p, ArrayList<Particle> particles) {
+		for(int i=0; i< particles.size(); i++) {
+			if (particles.get(i) == p) {
+				return i;
+			}
+		}
+		return -1;
+	}
 	
 	public Neighbourhood(ArrayList<Particle> particles, Function function) {
 		this.particles = particles;

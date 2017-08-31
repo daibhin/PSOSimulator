@@ -7,47 +7,14 @@ import java.util.*;
  */
 public class GraphUtilities {
 
-    public static double[] averagePathLength(int SWARM_SIZE, Particle[] particles) {
-        DirectedGraph<Particle> newGraph = createGraph(particles, SWARM_SIZE);
-        int sum = 0;
-        double infiniteSum = 0;
-        for(int i=0; i<SWARM_SIZE; i++) {
-            Particle particle = particles[i];
-            Map<Particle, Double> distances = Dijkstra.shortestPaths(newGraph, particle);
-            for(Double d : distances.values()) {
-                if((d != 0.0) && (!d.isInfinite())) {
-                    sum += d;
-                }
-                else {
-                    if (d.isInfinite()) {
-                        infiniteSum++;
-                    }
-                }
-            }
-        }
-        return new double[] {((double) 1/(SWARM_SIZE*(SWARM_SIZE-1))) * sum, infiniteSum/SWARM_SIZE};
-    }
-
-    public static DirectedGraph<Particle> createGraph(Particle[] particles, int SWARM_SIZE) {
-        DirectedGraph<Particle> graph = new DirectedGraph<Particle>();
-        for(int i=0; i<SWARM_SIZE; i++) {
-            graph.addNode(particles[i]);
-        }
-        for(int i=0; i<SWARM_SIZE; i++) {
-            Particle particle = particles[i];
-            ArrayList<Particle> neighbours = particle.getNeighbourhood().getParticles();
-            for(Particle neighbour : neighbours) {
-                graph.addEdge(particle, neighbour, 1);
-            }
-        }
-        return graph;
-    }
-
-    public static int[][] constructGraph(int SWARM_SIZE, Particle[] particles) {
+    public static int[][] constructGraph(Particle[] particles, int SWARM_SIZE) {
         int[][] graph = new int[SWARM_SIZE][SWARM_SIZE];
         for(int i=0; i<graph.length; i++) {
             for(int j=0; j<graph[i].length; j++) {
-                graph[i][j] = Integer.MAX_VALUE;
+                // Set unconnected path lengths to be one greater than the number of path lengths
+                // acts as infinity without potential overflow & always true because of equal weights on edges (of 1)
+                // thus actual cost value can never be this high in worst case (ring connected topology)
+                graph[i][j] = SWARM_SIZE + 1;
             }
         }
 
@@ -66,6 +33,57 @@ public class GraphUtilities {
         }
 
         return graph;
+    }
+
+    public static int[][] floydWarshall(int[][] graph, int SWARM_SIZE) {
+        int[][] cost = new int[graph.length][graph.length];
+        for (int i=0; i < SWARM_SIZE; i++) {
+            for (int j=0; j < SWARM_SIZE; j++) {
+                if (i == j) {
+                    cost[i][j] = 0;
+                } else {
+                    cost[i][j] = graph[i][j];
+                }
+            }
+        }
+
+        for (int k=0; k < SWARM_SIZE; k++) {
+            for (int i=0; i < SWARM_SIZE; i++) {
+                for (int j=0; j < SWARM_SIZE; j++) {
+                    int sum = cost[i][k] + cost[k][j];
+                    if (sum < cost[i][j]) {
+                        cost[i][j] = sum;
+                    }
+                }
+            }
+        }
+
+        int sum = 0;
+        for (int i=0; i < SWARM_SIZE; i++) {
+            for (int j=0; j < SWARM_SIZE; j++) {
+                sum += ((double) cost[i][j])/SWARM_SIZE-1;
+            }
+        }
+        return cost;
+    }
+
+
+    public static double[] averagePathLength(Particle[] particles, int SWARM_SIZE) {
+        int[][] graph = constructGraph(particles, SWARM_SIZE);
+        int[][] cost = floydWarshall(graph, SWARM_SIZE);
+        double sum = 0;
+        double infiniteSum = 0;
+        for (int i=0; i < SWARM_SIZE; i++) {
+            for (int j=0; j < SWARM_SIZE; j++) {
+                int distance = cost[i][j];
+                if (distance == SWARM_SIZE + 1) {
+                    infiniteSum++;
+                } else {
+                    sum += distance;
+                }
+            }
+        }
+        return new double[] {((double) 1/(SWARM_SIZE*(SWARM_SIZE-1))) * sum, infiniteSum/SWARM_SIZE};
     }
 
     public static double clusteringCoefficient(int SWARM_SIZE, Particle[] particles) {

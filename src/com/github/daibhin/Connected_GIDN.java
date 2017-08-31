@@ -118,52 +118,11 @@ public class Connected_GIDN extends PSO {
 	}
 
 	private double calculateAvgPathLength() {
-		double[] response = GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
+		double[] response = GraphUtilities.averagePathLength(this.particles, SWARM_SIZE);
 		double averagePathLength = response[0];
 		double avgNumInfinitePaths = response[1];
 		this.avgNumberInfinitePaths = avgNumInfinitePaths;
 		return averagePathLength;
-	}
-
-	private double calculateClusteringCoefficient() {
-		double sum = 0;
-		for (int i = 0; i < SWARM_SIZE; ++i) {
-			Particle particle = this.particles[i];
-			ArrayList<Particle> particlesNeighbours = (ArrayList<Particle>) particle.getNeighbourhood().getParticles().clone();
-			particlesNeighbours.remove(particle);
-
-			double count = 0;
-			for(Particle neighbour : particlesNeighbours) {
-				ArrayList<Particle> neighboursNeighbours = (ArrayList<Particle>) neighbour.getNeighbourhood().getParticles().clone();
-				neighboursNeighbours.remove(neighbour);
-				for(Particle neighboursNeighbour : neighboursNeighbours) {
-					// increment if a particles neighbour has one of the same neighbours as it
-					if(particlesNeighbours.contains(neighboursNeighbour)) {
-						count++;
-					}
-				}
-			}
-			sum += (count/(particlesNeighbours.size() * (particlesNeighbours.size() - 1.0)));
-		}
-		return sum/SWARM_SIZE;
-	}
-	
-	private void printNeighbourhood(Particle particle, ArrayList<Particle> neighbourhoodParticles) {
-		System.out.println("Particle: " + findPosition(particle));
-		String neighbourIndices = "";
-		for (int i=0; i<neighbourhoodParticles.size(); i++) {
-			neighbourIndices += " " + findPosition(neighbourhoodParticles.get(i));
-		}
-		System.out.println("Neighbourhood Particles: [" + neighbourIndices + "]");
-		System.out.println("************");
-	}
-	private int findPosition(Particle p) {
-		for(int i=0; i< SWARM_SIZE; i++) {
-			if (this.particles[i] == p) {
-				return i;
-			}
-		}
-		return -1;
 	}
 	
 	private ArrayList<Particle> randomlySelectedParticles(ArrayList<Particle> copiedParticles, int particlesToAdd) {

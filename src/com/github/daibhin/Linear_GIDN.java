@@ -138,7 +138,7 @@ public class Linear_GIDN extends PSO {
 	}
 
 	private double calculateAvgPathLength() {
-		double[] response = GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
+		double[] response = GraphUtilities.averagePathLength(this.particles, SWARM_SIZE);
 		double averagePathLength = response[0];
 		double avgNumInfinitePaths = response[1];
 		this.avgNumberInfinitePaths = avgNumInfinitePaths;
@@ -148,10 +148,6 @@ public class Linear_GIDN extends PSO {
 	private static double MINIMUM_PATH_LENGTH = 1.0;
 	private double averagePathLengthForIteration(int iteration) {
 		return startingAverage - ((startingAverage - MINIMUM_PATH_LENGTH) * (iteration/MAX_ITERATIONS));
-	}
-
-	private double calculateClusteringCoefficient() {
-		return GraphUtilities.clusteringCoefficient(SWARM_SIZE, this.particles);
 	}
 
 	private ArrayList<Particle> randomlySelectedParticles(ArrayList<Particle> copiedParticles, int particlesToAdd) {

@@ -112,54 +112,11 @@ public class Structured_GIDN extends PSO {
 	}
 
 	private double calculateAvgPathLength() {
-		double[] response = GraphUtilities.averagePathLength(SWARM_SIZE, this.particles);
+		double[] response = GraphUtilities.averagePathLength(this.particles, SWARM_SIZE);
 		double averagePathLength = response[0];
 		return averagePathLength;
 	}
 
-	private double calculateClusteringCoefficient() {
-		double sum = 0;
-		for (int i = 0; i < SWARM_SIZE; ++i) {
-			Particle particle = this.particles[i];
-			ArrayList<Particle> particlesNeighbours = (ArrayList<Particle>) particle.getNeighbourhood().getParticles().clone();
-			particlesNeighbours.remove(particle);
-
-			double count = 0;
-			for(Particle neighbour : particlesNeighbours) {
-				ArrayList<Particle> neighboursNeighbours = (ArrayList<Particle>) neighbour.getNeighbourhood().getParticles().clone();
-				neighboursNeighbours.remove(neighbour);
-				for(Particle neighboursNeighbour : neighboursNeighbours) {
-					// increment if a particles neighbour has one of the same neighbours as it
-					if(particlesNeighbours.contains(neighboursNeighbour)) {
-						count++;
-					}
-				}
-			}
-			sum += (count/(particlesNeighbours.size() * (particlesNeighbours.size() - 1.0)));
-		}
-		return sum/SWARM_SIZE;
-	}
-
-	private double calculateEnclosingRadius() {
-		ArrayPointSet ps = new ArrayPointSet(DIMENSIONS, SWARM_SIZE);
-		for (int i = 0; i < SWARM_SIZE; ++i) {
-			for (int j = 0; j < DIMENSIONS; ++j) {
-				ps.set(i, j, particles[i].getLocation().getValues()[j]);
-			}
-		}
-		Miniball miniball = new Miniball(ps);
-		return miniball.radius();
-	}
-	
-	private void printNeighbourhood(Particle particle, ArrayList<Particle> neighbourhoodParticles) {
-		System.out.println("Particle: " + findPosition(particle));
-		String neighbourIndices = "";
-		for (int i=0; i<neighbourhoodParticles.size(); i++) {
-			neighbourIndices += " " + findPosition(neighbourhoodParticles.get(i));
-		}
-		System.out.println("Neighbourhood Particles: [" + neighbourIndices + "]");
-		System.out.println("************");
-	}
 	private int findPosition(Particle p) {
 		for(int i=0; i< SWARM_SIZE; i++) {
 			if (this.particles[i] == p) {
@@ -168,7 +125,7 @@ public class Structured_GIDN extends PSO {
 		}
 		return -1;
 	}
-	
+
 	private ArrayList<Particle> randomlySelectedParticles(ArrayList<Particle> copiedParticles, int particlesToAdd) {
 		ArrayList<Particle> selectedParticles = new ArrayList<Particle>();
 		Collections.shuffle(copiedParticles);
