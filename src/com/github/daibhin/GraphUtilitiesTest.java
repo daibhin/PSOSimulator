@@ -15,14 +15,14 @@ import static junit.framework.Assert.*;
  */
 public class GraphUtilitiesTest {
 
-    private static int SWARM_SIZE = 10;
+    private static int SWARM_SIZE = 5;
 
     @Test
     public void testAveragePathLengthWithNoInfinitePaths() throws Exception {
         Particle[] particles = initializeSwarm();
         setupStructuredNeighbourhoods(particles);
         double[] pathLength = GraphUtilities.averagePathLength(particles, particles.length);
-        assertEquals(pathLength[0], 2.7777777, 0.00001);
+        assertEquals(pathLength[0], 1.5);
         assertEquals(pathLength[1], 0.0);
     }
 
@@ -31,8 +31,8 @@ public class GraphUtilitiesTest {
         Particle[] particles = initializeSwarm();
         setupRandomNeighbourhoods(particles);
         double[] pathLength = GraphUtilities.averagePathLength(particles, particles.length);
-        assertEquals(pathLength[0], 1.5111111, 0.00001);
-        assertEquals(pathLength[1], 2.5);
+        assertEquals(pathLength[0], 0.9);
+        assertEquals(pathLength[1], 1.2);
     }
 
     private Particle[] initializeSwarm() {
@@ -65,16 +65,15 @@ public class GraphUtilitiesTest {
     }
 
     private void setupRandomNeighbourhoods(Particle[] particles) {
-        int[][] connectionArray = {{2,4}, {0,3}, {7,8}, {5,6}, {5,8}, {4,6}, {4,8}, {5,0}, {2,6}, {0,4}};
+        int[][] connectionArray = {{1,2}, {0,2}, {0,1}, {0,4}, {1,3}};
         int swarmSize = particles.length;
         for (int index = 0; index < swarmSize; index++) {
             Particle particle = particles[index];
-            ArrayList<Particle> neighbourhoodParticles = new ArrayList<Particle>();
+            ArrayList<Particle> neighbourhoodParticles = new ArrayList<>();
 
             int[] particleIndicesToAdd = connectionArray[index];
-            ArrayList<Particle> copiedParticles = new ArrayList<Particle>(Arrays.asList(particles));
+            ArrayList<Particle> copiedParticles = new ArrayList<>(Arrays.asList(particles));
 
-            copiedParticles.remove(particle);
             for (int i = 0; i < particleIndicesToAdd.length; i++) {
                 neighbourhoodParticles.add(copiedParticles.get(particleIndicesToAdd[i]));
             }
