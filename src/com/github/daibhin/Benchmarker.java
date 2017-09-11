@@ -34,6 +34,7 @@ public class Benchmarker {
 	static final public int NUM_TEST_FUNC = 32;
 	private static final int BOUNDARY_INDEX = 0;
 	private static final int DIMENSIONS = 30;
+	private static final int NUM_THREADS = 5;
 	
 	static final public Random generator = new Random();
 	
@@ -54,7 +55,7 @@ public class Benchmarker {
 	}
 
     private void runSingleAlgorithm(int algorithmIndex) {
-        ExecutorService executor = Executors.newFixedThreadPool(5);
+        ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
         for(int functionIndex = 0; functionIndex < NUM_TEST_FUNC; functionIndex++) {
             double bias = Benchmarker.BIASES[functionIndex];
             boolean noBoundaries = Benchmarker.NO_BOUNDARIES[functionIndex];

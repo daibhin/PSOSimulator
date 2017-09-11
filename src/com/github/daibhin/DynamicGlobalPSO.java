@@ -1,9 +1,6 @@
 package com.github.daibhin;
 
-import com.dreizak.miniball.highdim.Miniball;
-import com.dreizak.miniball.model.ArrayPointSet;
 import com.github.daibhin.Functions.Function;
-
 import java.util.Random;
 
 public class DynamicGlobalPSO extends PSO {
