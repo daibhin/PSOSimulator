@@ -8,3 +8,5 @@ A full set of stats tracking and plotting allows users to see the convergence, t
 
 As I was under time pressure to complete this project and this simulator simply acted as a means to the end research, I am not pleased with the overall code quality.
 It lacks proper testing and some basic CS patterns in particular. In this vein, I am open to receiving contributions but mostly wanted to open source this project for the benefit of other future PSO researchers.
+
+Also included in this repository is a copy of the thesis written as part of my research.
