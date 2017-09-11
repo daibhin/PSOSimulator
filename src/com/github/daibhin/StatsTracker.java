@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 public class StatsTracker {
 	
-	private static final String outputLocation = "/Users/David/Documents/College/Final Year Project/Results/";
+	private static final String outputLocation = "./Results/";
 	private static final String GRAPH_DIRECTORY = "./FinalGraphs/";
 	
 	ArrayList<Run> runs;
@@ -18,18 +18,18 @@ public class StatsTracker {
 	
 	public void printResults(String title) {
 		System.out.println("\n" + title + "\n");
-//		FileWriter writer;
-//		try {
-//			writer = new FileWriter(outputLocation + title + ".txt");
-//			for(Run run : runs) {
-//				double finalValue = run.getConvergenceValues()[run.getConvergenceValues().length - 1];
-//				System.out.println(finalValue);
-//				writer.write(finalValue + "\r\n");
-//			}
-//			writer.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		FileWriter writer;
+		try {
+			writer = new FileWriter(outputLocation + title + ".txt");
+			for(Run run : runs) {
+				double finalValue = run.getConvergenceValues()[run.getConvergenceValues().length - 1];
+				System.out.println(finalValue);
+				writer.write(finalValue + "\r\n");
+			}
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 //		System.out.println("\n1000 iterations");
 //		double[] oneThousands = getOneThousands();
